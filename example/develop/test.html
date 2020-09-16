@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+</body>
+<script>
+  var merge_option = {
+    title: '测试',
+    mask: true,
+    popupTime: 0,
+    content: {
+      fullContainer: true
+    },
+    layer: {
+      image: ['./test.jpg'],
+      toolbar: {
+        enable: true,
+        config: {
+          'crop': {
+            'enable': true,
+            'title': '裁剪111'
+          },
+          'spin': true,
+          'filter': {
+            enable: true,
+            config: {
+              blur: {
+                enable: true,
+                title: 'blur',
+                icon: null,
+                text: '模'
+              },
+              gray: {
+                enable: true,
+                title: 'gray',
+                icon: null,
+                text: '灰'
+              },
+              mirror: {
+                enable: true,
+                title: 'mirror',
+                icon: null,
+                text: '镜'
+              }
+            }
+          },
+          'revert': true,
+          'download': true,
+        }
+      }
+    }
+  };
+
+  var option = {
+    index: 0, // ID
+    ui: 'modal-layer-ui', // 统一的class
+    title: null, // 标题(传入false则不显示标题栏)
+    window: null, // 父窗口(父节点)
+    popupTime: 5, // 模态层默认显示时间
+    skin: 'default', // 皮肤样式
+    parentModalLayer: null, // 父模态层
+    areaProportion: [0.18, 0.21], // 浏览器窗口(可见区域)与模态层的比例 [width, height]
+    content: { // 内容容器设置
+      value: null, // 容器内容, 可以为文本或String Node
+      fullContainer: false // 是否将内容填充整个模态层
+    },
+    text: { // 文本描述
+      action: { // 响应按钮文本描述
+        'close': '关闭', // 关闭按钮文本描述
+        'expand': '全屏', // 全屏按钮文本描述
+        'minimize': '最小化' // 最小化按钮文本描述
+      },
+      interaction: { // 交互按钮文本描述
+        ok: '确定', // 确定按钮文本描述
+        no: '拒绝', // 拒绝按钮文本描述
+        cancel: '取消' // 取消按钮文本描述
+      }
+    },
+    transition: { // 过渡动画设置
+      time: 0.2, // 持续时间
+      opacity: 0, // 开始和结束时的透明度
+      scale: [0.45, 0.45] // 开始和结束时的缩放比例
+    },
+    mask: { // 遮罩层设置
+      enable: true, // 是否开启
+      clickRemove: true // 点击是否关闭
+    },
+    drag: { // 拖拽窗口设置
+      enable: true, // 是否开启
+      overflow: false, // 拖拽过程中是否允许超出父元素
+    },
+    resize: { // 改变窗口大小设置
+      enable: true // 是否开启
+    },
+    progress: { // 模态层时限进度条提醒设置
+      enable: false, // 是否开启
+      position: 'bottom', // 进度条显示位置
+      color: 'deepskyblue', // 进度条颜色
+      background: '#cecece', // 进度条背景颜色
+    },
+    layer: {
+      image: [], // 图片, 可以为file对象也可以为Image节点, 甚至可以为base64数据.当图片加载不成功时会迭代尝试.
+      size: { // 指定画布大小, 格式为[w, h], 可以为像素或是百分比、小数.
+        min: [0.15625, 0.160257], // 最小尺寸
+        max: [0.9, 0.9] // 最大尺寸, 可以为像素、百分比(浏览器可视区域比例, 最好不要超过90%), 不能使用auto(优先匹配高度, 缩放会保证不失真的情况下进行缩放, 如想强制缩放请设置min).
+      },
+      toolbar: { // 工具栏设置
+        enable: false, // 是否开启
+        config: { // 相关工具设置
+          crop: { // 是否开启裁剪
+            enable: false,
+            title: 'crop',
+            icon: 'fas fa-crop-alt'
+          },
+          spin: { // 是否开启旋转
+            enable: false,
+            title: 'spin',
+            icon: 'fas fa-redo-alt'
+          },
+          filter: { // 是否开启滤镜
+            enable: false,
+            config: {
+              blur: {
+                enable: false,
+                title: 'blur',
+                icon: null,
+                text: '模'
+              },
+              gray: {
+                enable: false,
+                title: 'gray',
+                icon: null,
+                text: '灰'
+              },
+              mirror: {
+                enable: false,
+                title: 'mirror',
+                icon: null,
+                text: '镜'
+              }
+            },
+            title: 'filter',
+            icon: 'fas fa-filter'
+          },
+          revert: { // 是否开启重载
+            enable: false,
+            title: 'revert',
+            icon: 'fas fa-sync-alt'
+          },
+          download: { // 是否开启下载
+            enable: false,
+            title: 'download',
+            icon: 'fas fa-download'
+          },
+        }
+      },
+    },
+    hook: { // 钩子
+      initStart: null, // 初始化之前执行
+      initEnded: null // 初始化之后执行
+    },
+    event: {
+      test: function () {},
+      child: {
+        one: function () {}
+      }
+    }
+  };
+
+  function get (o, k) {
+    let _o, _k;
+    _o = o;
+    _k = Array.isArray(k) ? k : k.split('.');
+    for (let i = 0; i < _k.length && _o !== null && _o !== undefined; i++)
+      _o = _o[_k[i]];
+    return _o;
+  }
+
+  function set (o, k, v) {
+    let _o, _k;
+    _o = o;
+    _k = Array.isArray(k) ? k : k.split('.');
+    for (let i = 0; i < _k.length; _o = _o[_k[i]], i++) {
+      if (i === _k.length - 1)
+        Object.defineProperty(_o, _k[i], {
+          value: v,
+          writable: true,
+          enumerable: true,
+          configurable: true
+        });
+      else if (_o[_k[i]] === null || _o[_k[i]] === undefined || _o[_k[i]].constructor !== Object)
+        _o[_k[i]] = {};
+    }
+  }
+  function isEmpty (v) {
+    return v === null || v === undefined;
+  }
+
+  function isOnlyObject (o) {
+    return !isEmpty(o) && o.__proto__.constructor === Object;
+  }
+
+  function deepCopy (obj) {
+    let nObj, prevObj;
+    let stack, _stack;
+    let k, key, v, val;
+
+    nObj = obj.constructor();
+    _stack = [nObj];
+    stack = [[Object.keys(obj), Object.values(obj)]];
+
+    do {
+      prevObj = _stack.shift();
+      [key, val] = stack.shift();
+
+      for (let i = 0; i < key.length; i++) {
+        k = key[i], v = val[i];
+        if (v instanceof Function) {
+          prevObj[k] = v.bind();
+        } else if (isOnlyObject(v) || Array.isArray(v)) {
+          prevObj[k] = v.constructor();
+          stack.push([Object.keys(v), Object.values(v)]);
+          _stack.push(prevObj[k]);
+        } else {
+          prevObj[k] = v;
+        }
+      }
+    } while (stack.length > 0);
+
+    return nObj;
+  }
+
+  function merge (sub, obj) {
+    let nObj, prevObj;
+    let stack, _stack;
+    let key, v, _v, val, _val;
+
+    nObj = obj.constructor();
+    _stack = [nObj];
+    stack = [
+      [
+        [Object.keys(sub), Object.values(sub)],
+        [Object.keys(obj), Object.values(obj)]
+      ]
+    ];
+
+    do {
+      prevObj = _stack.shift();
+      [[key, val], [_key, _val]] = stack.shift();
+
+      for (let i = 0; i < _key.length; i++) {
+        [_k, _v] = [_key[i], _val[i]];
+        v = val[key.indexOf(_k)];
+        if (_v instanceof Function) {
+          prevObj[_k] = isEmpty(v) ? _v.bind() : v.bind();
+        } else if (isOnlyObject(_v) || Array.isArray(_v)) {
+          let newEle = [];
+          prevObj[_k] = _v.constructor();
+          _stack.push(prevObj[_k]);
+          if (isEmpty(v))
+            newEle[0] = [[], []];
+          else
+            newEle[0] = [Object.keys(v), Object.values(v)];
+          newEle[1] = [Object.keys(_v), Object.values(_v)];
+          stack.push(newEle);
+        } else {
+          prevObj[_k] = isEmpty(v) ? _v : v;
+        }
+      }
+    } while (stack.length > 0);
+
+    return nObj;
+  }
+
+</script>
+</html>

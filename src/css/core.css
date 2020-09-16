@@ -1,0 +1,299 @@
+/*
+* @Author:             wolf
+* @Email:              dd112389@gmail.com
+* @Date:               2020-09-01 00:10:58
+* @Description         
+*
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-12 20:18:49
+*/
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+.modal-layer-ui {
+  color: black;
+  cursor: default;
+  font-size: 16px;
+  font-weight: normal;
+  font-family: 'Microsoft YaHei';
+}
+
+.modal-layer-hide {
+  overflow: hidden;
+  visibility: hidden;  
+}
+
+.modal-layer-show {
+  overflow: visible;
+  visibility: visible;
+}
+
+.modal-layer-mask {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.modal-layer-container {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: auto;
+  height: auto;
+  margin: auto;
+  display: flex;
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  flex-direction: column;
+}
+
+.modal-layer-container .modal-layer-title {
+  display: flex;  
+  position: relative;
+  flex-direction: row;
+}
+
+.modal-layer-container[allow-drag="1"] > .modal-layer-title {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.modal-layer-container .modal-layer-action {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.modal-layer-action .modal-layer-action-btn {
+  position: relative;
+  display: inline-block;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-box-flex: 0.1;
+  -moz-box-flex: 0.1;
+}
+
+.modal-layer-container[content-full-container="1"] > .modal-layer-content {
+  margin: 0px;
+  padding: 0px;
+}
+
+.modal-layer-container[modal-layer-type=image][load-status!="2"][content-full-container="1"] > .modal-layer-content {
+  height: 100%;
+}
+
+.modal-layer-container .modal-layer-interaction {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.modal-layer-container .modal-layer-progress-bar {
+  position: absolute;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=top] {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  height: 2px;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=left] {
+  top: 0px;
+  left: 0px;
+  width: 2px;
+  bottom: 0px;
+  height: 100%;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=right] {
+  top: 0px;
+  right: 0px;
+  width: 2px;
+  bottom: 0px;
+  height: 100%;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=bottom] {
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  bottom: 0px;
+  height: 2px;
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=top] .modal-layer-progress-bar-progress,
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=bottom] .modal-layer-progress-bar-progress {
+  width: 0px;
+  height: 100%;
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=left] .modal-layer-progress-bar-progress,
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=right] .modal-layer-progress-bar-progress {
+  width: 100%;
+  height: 0px;
+}
+
+.modal-layer-container > .modal-layer-resize-box {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  opacity: 0;
+  bottom: 0px;  
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  pointer-events: none;
+}
+
+.modal-layer-container .modal-layer-resize-bar {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left] {
+  left: 0px; cursor: w-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right] {
+  right: 0px; cursor: e-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left] {
+  left: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=right] {
+  right: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right] {
+  top: 10px;
+  width: 5px;
+  bottom: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-top] {
+  top: 0px; left: 0px; cursor: nw-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-top] {
+  top: 0px; right: 0px; cursor: ne-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-top] {
+  top: -5px; left: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=right-top] {
+  top: -5px; right: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-top],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-top] {
+  top: 0px;
+  width: 10px;
+  height: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=top] {
+  top: 0px; cursor: n-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=bottom] {
+  bottom: 0px; cursor: s-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=top] {
+  top: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=bottom] {
+  bottom: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=top],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=bottom] {
+  left: 10px;
+  height: 5px;
+  right: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-top],
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-top] {
+  width: 15px;
+  height: 15px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-bottom] {
+  left: 0px;
+  bottom: 0px;
+  cursor: ne-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-bottom] {
+  right: 0px;
+  bottom: 0px;
+  cursor: se-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-bottom] {
+  left: -5px;
+  bottom: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=right-bottom] {
+  right: -5px;
+  bottom: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-bottom],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-bottom] {
+  bottom: 0px;
+  width: 10px;
+  height: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-bottom],
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-bottom] {
+  width: 15px;
+  height: 15px;
+}
+
+.modal-layer-skin-default .modal-layer-drag-mask,
+.modal-layer-skin-default .modal-layer-resize-mask {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 1;
+  bottom: 0px;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  position: absolute;
+  background: transparent;
+}
+
+#modal-layer-minimize-queue {
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: flex;
+  position: fixed;
+  flex-direction: row;
+}
+
+#modal-layer-minimize-queue .modal-layer-minimize-queue-item {
+  flex: 0.14;
+  overflow: hidden;
+  display: inline-block;
+}

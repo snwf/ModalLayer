@@ -1,0 +1,227 @@
+/*
+* @Author:             wolf
+* @Email:              dd112389@gmail.com
+* @Date:               2020-09-01 20:47:10
+* @Description         
+*
+* @Last Modified by:   Wolf
+* @Last Modified time: 2020-09-16 23:00:20
+*/
+
+class ObjectAssistant {
+  /**
+   * 获取对象上某个属性
+   * 可以通过传入一串字符串或是数组进行深层的获取.
+   * 若其中某一个属性值不存在则直接返回undefined;
+   * 该函数行为于ES6新的运算符号?.相似.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-08T17:41:36+0800
+   * @param    {Object}                 o 对象
+   * @param    {Mixed}                  k 属性
+   * @return   {Mixed}                    属性值
+   */
+  static get (o, k) {
+    let _o, _k;
+    _o = o;
+    _k = Array.isArray(k) ? k : k.split('.');
+    for (let i = 0; i < _k.length && !ObjectAssistant['isEmpty'](_o); i++)
+      _o = _o[_k[i]];
+    return _o;
+  }
+
+  /**
+   * 设置一个属性到对象
+   * 与默认赋值方法不同的是该方法可以通过传入一串字符串或数组进行级联赋值
+   * 若父值不存在则自动赋值{}.
+   * 
+   * 注意:
+   * 如果属性的父值不为Object则会将其重新赋值为Object.
+   * 语义上该方法并不适用于数组.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-08T17:38:10+0800
+   * @param    {Object}                 o 对象
+   * @param    {Mixed}                  k 属性名称
+   * @param    {Object}                 v 属性值
+   */
+  static set (o, k, v) {
+    let _o, _k;
+    _o = o;
+    _k = Array.isArray(k) ? k : k.split('.');
+    for (let i = 0; i < _k.length; _o = _o[_k[i]], i++) {
+      if (i === _k.length - 1)
+        Object.defineProperty(_o, _k[i], {
+          value: v,
+          writable: true,
+          enumerable: true,
+          configurable: true
+        });
+      else if (!ObjectAssistant['isEmpty'](_o[_k[i]]) || _o[_k[i]].constructor !== Object)
+        _o[_k[i]] = {};
+    }
+  }
+
+  /**
+   * 判断对象是否为空
+   * 若为以下值则为空:
+   * null, undefined
+   * 注意: 空值, 也就是'', 并不为空.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-03T22:57:53+0800
+   * @return   {Boolean}                [description]
+   */
+  static isEmpty (v) {
+    return v === null || v === undefined;
+  }
+
+  /**
+   * 判断当前对象是否仅仅只是一个Object
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-07T23:42:08+0800
+   * @param    {Mixed}                 o  对象
+   * @return   {Boolean}                  
+   */
+  static isOnlyObject (o) {
+    return o && o.__proto__.constructor === Object;
+  }
+
+  /**
+   * 根据当前实例往前找.
+   * 返回父类classObject的method方法.
+   * 若没有找到则返回null.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-03T17:02:04+0800
+   * @param    {Object}                  instance     实例对象
+   * @param    {Object}                  classObject  类对象
+   * @param    {String}                  method       方法名称
+   * @return   {Function}                             找到的方法
+   */
+  static getMethod (instance, classObject, method) {
+    while(!ObjectAssistant['isEmpty'](instance)) {
+      if (Object.is(instance.constructor, classObject))
+        return instance[method];
+      instance = instance.__proto__;
+    }
+
+    return null;
+  }
+
+  /**
+   * 根据值获取对应的键值
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-03T15:30:38+0800
+   * @param    {Object}                 o 对象
+   * @param    {Mixed}                  v 值
+   * @return   {Mixed}                    键值
+   */
+  static getKeyByValue (o, v) {
+    let key, entries;
+
+    entries = Object.entries(o);
+    for (let i = 0; i < entries.length; i++)
+      if (entries[i][1] === v)
+        return entries[i][0];
+
+    return null;
+  }
+
+  /**
+   * 深度拷贝一个对象
+   * 待拷贝对象须支持枚举否则无法遍历
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-01T20:49:17+0800
+   * @param    {Object}                 object 原始对象
+   * @return   {Object}                        新的对象
+   */
+  static deepCopy (obj) {
+    let nObj, prevObj;
+    let stack, _stack;
+    let k, key, v, val;
+
+    if (ObjectAssistant['isEmpty'](obj)) return obj;
+
+    nObj = obj.constructor();
+    _stack = [nObj];
+    stack = [[Object.keys(obj), Object.values(obj)]];
+
+    do {
+      prevObj = _stack.shift();
+      [key, val] = stack.shift();
+
+      for (let i = 0; i < key.length; i++) {
+        k = key[i], v = val[i];
+        if (ObjectAssistant['isOnlyObject'](v) || Array.isArray(v)) {
+          prevObj[k] = v.constructor();
+          stack.push([Object.keys(v), Object.values(v)]);
+          _stack.push(prevObj[k]);
+        } else {
+          prevObj[k] = v;
+        }
+      }
+    } while (stack.length > 0);
+
+    return nObj;
+  }
+
+  /**
+   * 合并两个对象
+   * 用sub的属性覆盖obj的属性.
+   * 该合并为深度拷贝合并, 将会产生一个新的对象.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-01T20:58:58+0800
+   * @param    {Object}                 sub 主体对象
+   * @param    {Object}                 obj 次要对象
+   * @return   {Object}                     合并后新的对象
+   */
+  static merge (sub, obj) {
+    let nObj, prevObj;
+    let stack, _stack;
+    let k, _k, key, _key, totalKey, v, _v, val, _val;
+
+    if (ObjectAssistant['isEmpty'](sub)) return obj;
+    if (ObjectAssistant['isEmpty'](obj)) return sub;
+
+    nObj = obj.constructor();
+    _stack = [nObj];
+    stack = [
+      [
+        [Object.keys(sub), Object.values(sub)],
+        [Object.keys(obj), Object.values(obj)]
+      ]
+    ];
+
+    do {
+      prevObj = _stack.shift();
+      [[key, val], [_key, _val]] = stack.shift();
+      _key = _key.concat(key).filter((v, i, curr) => curr.indexOf(v) === i);
+
+      for (let i = 0; i < _key.length; i++) {
+        let nCover;
+        [_k, _v] = [_key[i], _val[i]];
+        v = val[key.indexOf(_k)];
+        nCover = ObjectAssistant['isEmpty'](v);
+        if (ObjectAssistant['isOnlyObject'](_v) || Array.isArray(_v)) {
+          let newEle = [];
+          prevObj[_k] = _v.constructor();
+          newEle[1] = [Object.keys(_v), Object.values(_v)];
+          newEle[0] = nCover ? [[], []] : [Object.keys(v), Object.values(v)];
+          _stack.push(prevObj[_k]);
+          stack.push(newEle);
+        } else {
+          prevObj[_k] = nCover ? _v : v;
+        }
+      }
+    } while (stack.length > 0);
+
+    return nObj;
+  }
+}
+
+Object.defineProperty(ModalLayer['_assistant'], 'object', {value: ObjectAssistant});

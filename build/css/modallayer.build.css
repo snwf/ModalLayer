@@ -1,0 +1,623 @@
+@charset "utf-8";
+
+/*
+* @Author:             wolf
+* @Email:              dd112389@gmail.com
+* @Date:               2020-09-01 00:10:58
+* @Description         
+*
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-12 20:18:49
+*/
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+.modal-layer-ui {
+  color: black;
+  cursor: default;
+  font-size: 16px;
+  font-weight: normal;
+  font-family: 'Microsoft YaHei';
+}
+
+.modal-layer-hide {
+  overflow: hidden;
+  visibility: hidden;  
+}
+
+.modal-layer-show {
+  overflow: visible;
+  visibility: visible;
+}
+
+.modal-layer-mask {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.modal-layer-container {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: auto;
+  height: auto;
+  margin: auto;
+  display: flex;
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  flex-direction: column;
+}
+
+.modal-layer-container .modal-layer-title {
+  display: flex;  
+  position: relative;
+  flex-direction: row;
+}
+
+.modal-layer-container[allow-drag="1"] > .modal-layer-title {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.modal-layer-container .modal-layer-action {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.modal-layer-action .modal-layer-action-btn {
+  position: relative;
+  display: inline-block;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-box-flex: 0.1;
+  -moz-box-flex: 0.1;
+}
+
+.modal-layer-container[content-full-container="1"] > .modal-layer-content {
+  margin: 0px;
+  padding: 0px;
+}
+
+.modal-layer-container[modal-layer-type=image][load-status!="2"][content-full-container="1"] > .modal-layer-content {
+  height: 100%;
+}
+
+.modal-layer-container .modal-layer-interaction {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.modal-layer-container .modal-layer-progress-bar {
+  position: absolute;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=top] {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  height: 2px;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=left] {
+  top: 0px;
+  left: 0px;
+  width: 2px;
+  bottom: 0px;
+  height: 100%;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=right] {
+  top: 0px;
+  right: 0px;
+  width: 2px;
+  bottom: 0px;
+  height: 100%;
+}
+
+.modal-layer-container .modal-layer-progress-bar[progress-bar-position=bottom] {
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  bottom: 0px;
+  height: 2px;
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=top] .modal-layer-progress-bar-progress,
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=bottom] .modal-layer-progress-bar-progress {
+  width: 0px;
+  height: 100%;
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=left] .modal-layer-progress-bar-progress,
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=right] .modal-layer-progress-bar-progress {
+  width: 100%;
+  height: 0px;
+}
+
+.modal-layer-container > .modal-layer-resize-box {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  opacity: 0;
+  bottom: 0px;  
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  pointer-events: none;
+}
+
+.modal-layer-container .modal-layer-resize-bar {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left] {
+  left: 0px; cursor: w-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right] {
+  right: 0px; cursor: e-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left] {
+  left: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=right] {
+  right: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right] {
+  top: 10px;
+  width: 5px;
+  bottom: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-top] {
+  top: 0px; left: 0px; cursor: nw-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-top] {
+  top: 0px; right: 0px; cursor: ne-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-top] {
+  top: -5px; left: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=right-top] {
+  top: -5px; right: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-top],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-top] {
+  top: 0px;
+  width: 10px;
+  height: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=top] {
+  top: 0px; cursor: n-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=bottom] {
+  bottom: 0px; cursor: s-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=top] {
+  top: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=bottom] {
+  bottom: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=top],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=bottom] {
+  left: 10px;
+  height: 5px;
+  right: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-top],
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-top] {
+  width: 15px;
+  height: 15px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-bottom] {
+  left: 0px;
+  bottom: 0px;
+  cursor: ne-resize;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-bottom] {
+  right: 0px;
+  bottom: 0px;
+  cursor: se-resize;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-bottom] {
+  left: -5px;
+  bottom: -5px;
+}
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=right-bottom] {
+  right: -5px;
+  bottom: -5px;
+}
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=left-bottom],
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-bottom] {
+  bottom: 0px;
+  width: 10px;
+  height: 10px;
+}
+
+.modal-layer-container .modal-layer-resize-bar[position-resize-bar=right-bottom],
+.modal-layer-container[content-full-container="1"] .modal-layer-resize-bar[position-resize-bar=left-bottom] {
+  width: 15px;
+  height: 15px;
+}
+
+.modal-layer-skin-default .modal-layer-drag-mask,
+.modal-layer-skin-default .modal-layer-resize-mask {
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 1;
+  bottom: 0px;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  position: absolute;
+  background: transparent;
+}
+
+#modal-layer-minimize-queue {
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: flex;
+  position: fixed;
+  flex-direction: row;
+}
+
+#modal-layer-minimize-queue .modal-layer-minimize-queue-item {
+  flex: 0.14;
+  overflow: hidden;
+  display: inline-block;
+}
+/*
+* @Author:             wolf
+* @Email:              dd112389@gmail.com
+* @Date:               2020-09-01 00:17:47
+* @Description         
+*
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-12 20:18:42
+*/
+
+.modal-layer-mask {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.modal-layer-container {
+  background: white;
+  border-radius: 2px;
+  box-shadow: 1px 1px 25px rgba(255, 255, 255,.3);
+}
+
+#modal-layer-minimize-queue {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+}
+
+#modal-layer-minimize-queue .modal-layer-minimize-queue-item {
+  height: 100%;
+  background: white;
+  box-shadow: 0px 0px 5px 1px #ccc;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+#modal-layer-minimize-queue .modal-layer-minimize-queue-item:not(:first-child):last-child {
+  margin-right: 8%;
+}
+
+.modal-layer-minimize-queue-item .modal-layer-minimize-queue-item-title {
+  color: #444;
+  margin: 0px 1em;
+  font-size: 0.9em;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: normal;
+  text-overflow: ellipsis;
+}
+
+.modal-layer-skin-default .modal-layer-title {
+  font-size: 0.9em;
+  background: #f8f8f8;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-layer-skin-default[allow-drag="1"] .modal-layer-title,
+.modal-layer-skin-default[allow-drag="1"] .modal-layer-title *,
+.modal-layer-skin-default[allow-drag="1"] .modal-layer-action {
+  cursor: move;
+}
+
+.modal-layer-skin-default .modal-layer-title-content {
+  flex: 4;
+  color: #444;
+  font-size: 1em;
+  overflow: hidden;
+  min-height: 1rem;
+  padding: 12px 2px;
+  margin-left: 20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.modal-layer-skin-default .modal-layer-action {
+  padding: 14px 0px;
+  margin-right: 20px;
+  justify-content: flex-end;
+}
+
+.modal-layer-skin-default .modal-layer-action .modal-layer-action-btn {
+  color: #666;
+  height: 100%;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.modal-layer-skin-default .modal-layer-action-btn {
+  cursor: pointer;
+}
+
+.modal-layer-skin-default[modal-layer-type=loading] > .modal-layer-content {
+  height: 100%;
+}
+
+.modal-layer-skin-default[modal-layer-type=loading] .modal-layer-loading-box {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.modal-layer-skin-default[modal-layer-type=image] .modal-layer-content {
+  height: 100%;
+  display: flex;
+  font-size: 0px;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-layer-skin-default .modal-layer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-layer-toolbar .modal-layer-toolbar-item {
+  font-size: 0px;
+  position: relative;
+  display: inline-block;
+}
+
+.modal-layer-toolbar-item .modal-layer-toolbar-item-icon {
+  color: gray;
+  padding: 10px;
+}
+
+.modal-layer-toolbar-item .modal-layer-toolbar-item-icon:hover {
+  color: white;
+  background: rgba(0, 0, 0, .15);
+}
+
+.modal-layer-toolbar-item .modal-layer-toolbar-item-child-list {  
+    top: 0px;
+    left: 50%;
+    opacity: 0;
+    height: 68%;
+    font-size: 16px;
+    padding: 0px 6px;
+    visibility: hidden;
+    position: absolute;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, .4);
+    border-radius: 0px 0px 2px 2px;
+}
+
+.modal-layer-toolbar-item-child-list .modal-layer-toolbar-filter-icon {
+  color: white;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-family: 'FangSong';
+  transition: background .2s ease;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.modal-layer-toolbar-item-child-list .modal-layer-toolbar-filter-icon:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.modal-layer-toolbar-item:hover .modal-layer-toolbar-item-child-list {
+  display: flex;
+  visibility: visible;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  animation: filterChild .2s ease;
+  animation-fill-mode:forwards;
+}
+
+.modal-layer-skin-default .modal-layer-content {
+  color: black;
+  font-size: 0.9em;
+  margin: 24px 20px;
+  position: relative;
+}
+
+.modal-layer-skin-default .modal-layer-interaction {
+  margin: 0px 20px;
+  text-align: right;
+  padding: 0px 0px 10px 0px;
+}
+
+.modal-layer-skin-default .modal-layer-interaction-btn {
+  flex: 0.4;
+  color: #333;
+  cursor: pointer;
+  padding: 5px 0px;
+  font-size: 0.85em;
+  background: white;
+  border-radius: 2px;
+  text-align: center;
+  white-space: normal;
+  word-break: break-all;
+  margin: 2px 0px 2px 10px;
+  border: 1px solid #dedede;
+  -webkit-filter: saturate(0.9);
+  -o-filter: saturate(0.9);
+  filter: saturate(0.9);
+}
+
+.modal-layer-skin-default .modal-layer-interaction-btn-ok {
+  color: white;
+  background: #1e9fff;
+  border-color: #1e9fff;
+}
+
+.modal-layer-skin-default .modal-layer-interaction-btn-no {
+  color: white;
+  background: #d9534f;
+  border-color: #d9534f;
+}
+
+.modal-layer-skin-default .modal-layer-interaction-btn:hover {
+  -webkit-filter: saturate(1.25);
+  -o-filter: saturate(1.25);
+  filter: saturate(1.25);
+}
+
+.modal-layer-skin-default[modal-layer-type=alert] > .modal-layer-interaction,
+.modal-layer-skin-default[modal-layer-type=prompt] > .modal-layer-interaction,
+.modal-layer-skin-default[modal-layer-type=confirm] > .modal-layer-interaction {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar-background {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar-progress {
+  display: block;
+  background: deepskyblue;
+}
+/*
+* @Author:             wolf
+* @Email:              dd112389@gmail.com
+* @Date:               2020-09-01 01:12:28
+* @Description         
+*
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-12 20:18:46
+*/
+
+/**
+ * 宽度变化
+ */
+@keyframes widthFull {
+  from {width: 0px;}
+  to {width: 100%;}
+}
+
+/**
+ * 高度变化
+ */
+@keyframes heightFull {
+  from {height: 0px;}
+  to {height: 100%;}
+}
+
+/**
+ * 透明度变化
+ */
+@keyframes opacity {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/**
+ * 透明度反向变化
+ */
+@keyframes opacity-reverse {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+/**
+ * 缩放变化
+ */
+@keyframes scale {
+  from {transform: scale(0.45, 0.45);}
+  to {transform: scale(1, 1);}
+}
+
+/**
+ * 展开盒子
+ */
+@keyframes unfoldBox {
+  from {
+    width: 0px;
+    padding: 0px;
+  }
+  to {
+    width: auto;
+    padding: 0px 15px;
+  }
+}
+
+@keyframes filterChild {
+  from {
+    top: 0px;
+    opacity: 0;
+    z-index: -1;
+  }
+  to {
+    top: 100%;
+    opacity: 1;
+    z-index: 2;
+  }
+}

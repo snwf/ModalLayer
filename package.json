@@ -1,0 +1,26 @@
+{
+  "name": "ModalLayer-Compiler",
+  "version": "1.0.0",
+  "description": "Modal window written by Javascript",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snwf/ModalLayer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/snwf/ModalLayer/issues"
+  },
+  "homepage": "https://github.com/snwf/ModalLayer#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
+    "clean-css": "^4.2.3",
+    "google-closure-compiler-windows": "^20200830.0.0"
+  },
+  "dependencies": {}
+}

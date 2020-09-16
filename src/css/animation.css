@@ -1,0 +1,76 @@
+/*
+* @Author:             wolf
+* @Email:              dd112389@gmail.com
+* @Date:               2020-09-01 01:12:28
+* @Description         
+*
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-12 20:18:46
+*/
+
+/**
+ * 宽度变化
+ */
+@keyframes widthFull {
+  from {width: 0px;}
+  to {width: 100%;}
+}
+
+/**
+ * 高度变化
+ */
+@keyframes heightFull {
+  from {height: 0px;}
+  to {height: 100%;}
+}
+
+/**
+ * 透明度变化
+ */
+@keyframes opacity {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/**
+ * 透明度反向变化
+ */
+@keyframes opacity-reverse {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+/**
+ * 缩放变化
+ */
+@keyframes scale {
+  from {transform: scale(0.45, 0.45);}
+  to {transform: scale(1, 1);}
+}
+
+/**
+ * 展开盒子
+ */
+@keyframes unfoldBox {
+  from {
+    width: 0px;
+    padding: 0px;
+  }
+  to {
+    width: auto;
+    padding: 0px 15px;
+  }
+}
+
+@keyframes filterChild {
+  from {
+    top: 0px;
+    opacity: 0;
+    z-index: -1;
+  }
+  to {
+    top: 100%;
+    opacity: 1;
+    z-index: 2;
+  }
+}

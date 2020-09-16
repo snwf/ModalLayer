@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Example</title>
+  <link rel="stylesheet" href="../../dist/css/modallayer.min.css">
+  <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=Proxy%2Ces2015%2Ces2016%2Ces2017%2Ces2018%2Ces2019%2Ces5%2Ces7%2Ces6"></script> -->
+  <script src="../../static/fontawesome-free-5.14.0/js/all.min.js"></script>
+  <script src="../../dist/js/modallayer.min.js"></script>
+  <style>
+    #test-button-container {
+      position: absolute;
+      top: 50%;
+      left: 0px;  
+      right: 0px;
+      width: 145px;
+      margin: 0px auto;
+      text-align: center;
+      transform: translateY(-50%);
+    }
+
+    #test-button-container button {
+      width: 145px;
+      margin: 5px 0px;
+      padding: 10px 0px;
+    }
+  </style>
+</head>
+<body>
+  <div id="test-button-container">
+    <button id="loading-button" type="button">测试loading</button>
+    <button id="msg-button" type="button">测试msg</button>
+    <button id="alert-button" type="button">测试alert</button>
+    <button id="confirm-button" type="button">测试confirm</button>
+    <button id="prompt-button" type="button">测试prompt</button>
+    <button id="page-button-1" type="button">测试page</button>
+    <button id="page-button-2" type="button">测试page</button>
+    <button id="image-button" type="button">测试image</button>
+    <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
+  </div>
+  <div id="test-box" style="width: 500px; height: 500px; position: relative;"></div>
+</body>
+<script>
+  // 测试loading
+  document.querySelector('#loading-button').onclick = function () {
+    let option = {
+      popupTime: 0,
+      layer: {
+        icon: 0,
+        duration: 1,
+        rate: 'ease'
+      },
+      window: '#test-box',
+    };
+
+    ModalLayer.loading(option, e => {
+      console.error(e);
+    });
+  }
+
+  // 测试msg
+  document.querySelector('#msg-button').onclick = function () {
+    let option = {
+      popupTime: 20,
+      hook: {
+        initStart: function () {
+          // 检查之前老旧实例如果存在则销毁
+          if (document.querySelector('#modal-layer-container'))
+            ModalLayer.removeAll();
+        }
+      },
+      progress: {
+        enable: true,
+        color: 'red',
+        position: 'top',
+      },
+      content: '<i class="fas fa-check" style="color: deepskyblue"></i>点击遮罩层自动消失!',
+    };
+
+    ModalLayer.msg(option, function (error) {
+      console.error(error);
+    });
+    // ModalLayer.msg('测试一下', function (error) {
+    //   console.error(error);
+    // });
+  }
+
+  // 测试alert
+  document.querySelector('#alert-button').onclick = function () {
+    let option = {
+      hook: {
+        initStart: function () {
+          // 检查之前老旧实例如果存在则销毁
+          if (document.querySelector('#modal-layer-container'))
+            ModalLayer.removeAll();
+        }
+      },
+      popupTime: 0,
+      title: '测试喜喜',
+      drag: {
+        enable: true,
+        overflow: false
+      },
+      content: '<i class="fas fa-check" style="color: deepskyblue"></i>点击遮罩层自动消失!',
+    };
+
+    ModalLayer.alert(option, function (error) {
+      console.error(error);
+    });
+  }
+  // 测试confirm
+  document.querySelector('#confirm-button').onclick = function () {
+    let option = {
+      title: '测试',
+      popupTime: 0,
+      hook: {
+        initStart: function () {
+          // 检查之前老旧实例如果存在则销毁
+          if (document.querySelector('#modal-layer-container'))
+            ModalLayer.removeAll();
+        }
+      },
+      event: {
+        interaction: {}
+      },
+      progress: {
+        enable: true,
+        position: 'left',
+      },
+      content: 'php是世界上最好的语言！',
+      text: {
+        interaction: {
+          ok: '妥妥儿的!',
+          no: '你在说个锤子?'
+        }
+      }
+    };
+
+    option.event.interaction.ok = function (layer) {
+      layer.hide();
+      ModalLayer.alert({
+        popupTime: 0,
+        parentModalLayer: layer,
+        text: {
+          interaction: {
+            ok: '确定'
+          }
+        },
+        event: {
+          interaction: {
+            ok: function (layer) {
+              void layer.remove();
+            }
+          }
+        },
+        content: '<i class="fas fa-check-circle" style="color: green"></i> 小伙子很有眼光嘛!'
+      });
+    };
+
+    option.event.interaction.no = function () {
+      ModalLayer.alert({
+        content: '<i class="fas fa-window-close" style="color: red"></i> More Confidence!!<br>你再骂！(五秒后自动关闭该窗口)'
+      });
+    };
+
+    ModalLayer.confirm(option, function (error) {
+      console.error(error);
+    });
+  }
+
+  // 测试prompt
+  document.querySelector('#prompt-button').onclick = function () {
+    let option = {
+      title: '测试',
+      popupTime: 0,
+      hook: {
+        initStart: function () {
+          // 检查之前老旧实例如果存在则销毁
+          if (document.querySelector('#modal-layer-container'))
+            ModalLayer.removeAll();
+        }
+      },
+      text: {
+        interaction: {
+          ok: '提交',
+          no: '取消'
+        }
+      },
+      progress: {
+        enable: true,
+        color: 'red',
+        position: 'right',
+      },
+      content: '<input type="text" style="width: calc(100% - 2px); height: 24px; font-size: 16px; color: red;" placeholder="输入内容进行测试">',
+      event : {
+        interaction: {
+          ok: function (layer) {
+            layer.hide();
+            ModalLayer.alert({
+              parentModalLayer: layer,
+              content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + layer.variable.nodes.container.querySelector('input').value
+            });
+          }
+        }
+      }
+    };
+
+    ModalLayer.prompt(option, function (err) {
+      console.error(err);
+    });
+  }
+
+
+  // 测试Page
+  document.querySelector('#page-button-1').onclick = function () {
+    let option = {
+      mask: {
+        enable: false
+      },
+      title: '测试测试',
+      popupTime: 0,
+      content: {
+        fullContainer: false
+      },
+      layer: {
+        src: 'https://baidu.com',
+      }
+    };
+    ModalLayer.page(option, function (err) {
+      console.error(err);
+    });
+  }
+  document.querySelector('#page-button-2').onclick = function () {
+    let option = {
+      mask: {
+        enable: false
+      },
+      title: '测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试',
+      popupTime: 0,
+      content: {
+        fullContainer: false
+      },
+      layer: {
+        scrolling: 'yes',
+        src: 'https://www.hao123.com/',
+      }
+    };
+    ModalLayer.page(option, function (err) {
+      console.error(err);
+    });
+  }
+
+  // 测试Image
+  document.querySelector('#image-button').onclick = function () {
+    // 方式一
+    let option = {
+      title: '测试',
+      mask: true,
+      popupTime: 0,
+      content: {
+        fullContainer: true
+      },
+      layer: {
+        size: {
+          max: [0.5, 0.9],
+        },
+        image: ['./Booklet_002.png'],
+        toolbar: {
+          enable: true,
+          config: {
+            'crop': {
+              'enable': true,
+              'title': '裁剪111'
+            },
+            'spin': true,
+            'filter': {
+              enable: true,
+              config: {
+                blur: {
+                  enable: true,
+                  title: 'blur',
+                  icon: null,
+                  text: '模'
+                },
+                gray: {
+                  enable: true,
+                  title: 'gray',
+                  icon: null,
+                  text: '灰'
+                },
+                mirror: {
+                  enable: true,
+                  title: 'mirror',
+                  icon: null,
+                  text: '镜'
+                }
+              }
+            },
+            'revert': true,
+            'download': true,
+          }
+        }
+      }
+    };
+    ModalLayer.image(option, function (e) {
+      console.error(e);
+    });
+
+    // 方式二
+    // let inputNode = document.querySelector('#image-layer-test-input');
+    // inputNode.click();
+
+    // inputNode.onchange = function () {
+    //   let option = {
+    //     popupTime: 0,
+    //     mask: false,
+    //     imageOption: {
+    //       image: inputNode.files
+    //     }
+    //   };
+    //   ModalLayer.image(option);
+    // }
+  }
+</script>
+</html>
