@@ -4,8 +4,8 @@
 * @Date:               2020-09-04 00:13:10
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 02:45:12
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-18 23:26:57
 */
 
 class ImageLayer extends ModalLayer {
@@ -80,14 +80,15 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-04T14:14:23+0800
    */
   compatibleOption (options) {
+    let imageList;
     let base, wSize;
     let filterConfig, toolbarConfig;
 
     ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'compatibleOption').call(this, options);
 
-    if (!Array.isArray(ModalLayer['_assistant']['object'].get(options, 'layer.image')))
+    imageList = ModalLayer['_assistant']['object'].get(options, 'layer.image');
+    if (!Array.isArray(imageList) && !(imageList instanceof FileList))
       options.layer.image = [options.layer.image];
-
 
     toolbarConfig = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config') ?? [];
     Object.keys(toolbarConfig).forEach(k => {

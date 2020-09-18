@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 01:18:08
 * @Description         一些常用的窗体的封装
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 02:37:57
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-19 00:23:28
 */
 
 class ModalLayer {
@@ -695,6 +695,7 @@ class ModalLayer {
     queueNode = document.querySelector('#modal-layer-minimize-queue');
     if (!queueNode) {
       queueNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue']])[0];
+      queueNode.classList.add(this.option.ui, `modal-layer-skin-${this.option.skin}`);
       document.body.insertAdjacentElement('beforeend', queueNode);
     }
 
@@ -702,6 +703,7 @@ class ModalLayer {
     title = this['variable']['nodes']['container'].querySelector('.modal-layer-title-content').innerHTML;
     queueItemNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue_item']])[0];
 
+    queueItemNode.classList.add(this.option.ui);
     queueItemNode.setAttribute('modal-layer-index', this['option']['index']);
     queueItemNode.querySelector('.modal-layer-minimize-queue-item-title').innerHTML = title;
     queueNode.insertAdjacentElement('beforeend', queueItemNode);

@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 20:47:10
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 23:00:20
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-18 21:27:56
 */
 
 class ObjectAssistant {
@@ -200,7 +200,7 @@ class ObjectAssistant {
     do {
       prevObj = _stack.shift();
       [[key, val], [_key, _val]] = stack.shift();
-      _key = _key.concat(key).filter((v, i, curr) => curr.indexOf(v) === i);
+      _key = [...new Set(_key.concat(key))];
 
       for (let i = 0; i < _key.length; i++) {
         let nCover;

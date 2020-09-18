@@ -4,8 +4,8 @@
 * @Date:               2020-09-02 21:20:11
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 23:58:27
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-18 21:51:41
 */
 
 class CssAssistant {
@@ -14,7 +14,7 @@ class CssAssistant {
    *
    * @type {Object}
    */
-  static cssList = {};
+  static cssList = new Map;
 
   /**
    * 分隔符
@@ -56,7 +56,7 @@ class CssAssistant {
    * @return   {Boolean}                     [description]
    */
   static hasCss (name) {
-    return CssAssistant['cssList'][name] !== undefined;
+    return CssAssistant['cssList'].has(name);
   }
 
   /**
@@ -68,16 +68,14 @@ class CssAssistant {
    * @param    {String}                 cssText css代码块
    */
   static addCss (name, cssText) {
-    if (CssAssistant['hasCss'](name)) return;
-    if (!CssAssistant['styleNode'])
-      CssAssistant['styleNode'] = document.querySelector('style');
-    if (!CssAssistant['styleNode']) {
+    if (CssAssistant['hasCss'](name)) return false;
+    if (!CssAssistant['styleNode']){
       CssAssistant['styleNode'] = document.createElement('style');
       document.head.appendChild(CssAssistant['styleNode']);
     }
 
     cssText = cssText.trim();
-    CssAssistant['cssList'][name] = cssText;
+    CssAssistant['cssList'].set(name, cssText);
     CssAssistant['styleNode'].innerHTML += CssAssistant['delimiter'] + cssText;
   }
 
@@ -90,8 +88,8 @@ class CssAssistant {
    */
   static delCss (name) {
     let regular;
-    if (CssAssistant['cssList'][name]) {
-      regular = new RegExp(CssAssistant['delimiter'] + CssAssistant['cssList'][name], 'g');
+    if (CssAssistant['hasCss'](name)) {
+      regular = new RegExp(CssAssistant['delimiter'] + CssAssistant['cssList'].get(name), 'g');
       CssAssistant['styleNode'].innerHTML = CssAssistant['styleNode'].innerHTML.replace(regular, '');
     }
   }
