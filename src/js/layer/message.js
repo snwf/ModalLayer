@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 23:06:59
+* @Last Modified time: 2020-09-21 00:55:09
 */
 
 class MessageLayer extends ModalLayer {
@@ -16,7 +16,7 @@ class MessageLayer extends ModalLayer {
    * @DateTime 2020-09-01T23:01:58+0800
    */
   initOption (options) {
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initOption').call(this, options);
+    super.initOption(options);
 
     this['option']['title'] = false;
     this['option']['drag']['enable'] = false;
@@ -32,7 +32,7 @@ class MessageLayer extends ModalLayer {
   initStruct () {
     let content, resize, progress, container;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initStruct').call(this);
+    super.initStruct();
 
     container = this['variable']['struct']['_build']['container'];
     content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
@@ -57,7 +57,7 @@ class MessageLayer extends ModalLayer {
   initNode () {
     let contentNode, contentChild;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initNode').call(this);
+    super.initNode();
 
     contentNode = this['variable']['nodes']['container'].querySelector('.modal-layer-content');
 
@@ -73,5 +73,5 @@ class MessageLayer extends ModalLayer {
   }
 }
 
-Object.defineProperty(ModalLayer['_achieve'], 'msg', {value: MessageLayer});
-Object.defineProperty(ModalLayer['_achieve'], 'message', {value: MessageLayer});
+ModalLayer['_achieve'].set('msg', MessageLayer);
+ModalLayer['_achieve'].set('message', MessageLayer);

@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 23:04:16
+* @Last Modified time: 2020-09-22 01:11:37
 */
 
 class ElementAssistant {
@@ -145,8 +145,10 @@ class ElementAssistant {
    * @param    {Function}               callback   回调函数
    * @param    {Mixed}                  args       回调函数传入参数
    * @param    {Boolean}                useCapture 是否捕获
+   * @return   {Promise}                           触发后的Promise
    */
-  static eventTarget (node, selector, type, callback, args = undefined, useCapture = false) {
+  // TODO 需要重构, 同一个委托节点不需要重新绑定监听事件. 并且需要支持Promise的写法.
+  static eventTarget (node, selector, type, callback = undefined, args = undefined, useCapture = false) {
     if (!Array.isArray(args)) args = [args];
     node.addEventListener(type, function (event) {
       if (event.target === node || event.target.contains(node)) return false;
@@ -239,6 +241,26 @@ class ElementAssistant {
    */
   static getFullscreenNode () {
     return document.fullscreenElement;
+  }
+
+  /**
+   * 创建一个script节点
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-20T16:33:20+0800
+   * @param    {Object}                 options 选项设置
+   * @return   {Element}                        创建的script
+   */
+  static createScript (options) {
+    let node, attrs;
+
+    node = document.createElement('script');
+    attrs = ['src', 'type', 'async', 'defer', 'charset', 'innerHTML'];
+    attrs.forEach(attr => {
+      options[attr] && (node[attr] = options[attr]);
+    });
+
+    return node;
   }
 }
 

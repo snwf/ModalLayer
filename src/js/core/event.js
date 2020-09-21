@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 02:46:26
+* @Last Modified time: 2020-09-22 00:23:37
 */
 
 /**
@@ -13,7 +13,7 @@
  *
  * @type {Object}
  */
-const EVENT = {};
+const EVENT = Object.create(null);
 
 /**
  * 点击遮罩层关闭模态层
@@ -59,7 +59,7 @@ Object.defineProperty(EVENT, 'active', {
     dEvent = dEvent ?? window.event;
 
     ModalLayer['_instance'].forEach(v => {
-      if (v['status'] === ModalLayer['_ENUM']['STATUS']['SHOW']) showLayers++;
+      if (v['status'] === ModalLayer['_enum']['STATUS']['SHOW']) showLayers++;
     });
 
     if (showLayers >= 2) {
@@ -414,7 +414,7 @@ Object.defineProperty(EVENT, 'action', {
       pageNode = nodes.container.querySelector('iframe[name=' + self.option.layer.name + self.option.index + ']');
       fullscreenchangeListener = event => {
         if (event.target === pageNode) {
-          self.setStatus(ModalLayer['_ENUM']['STATUS'].EXPAND);
+          self.setStatus(ModalLayer['_enum']['STATUS'].EXPAND);
         } else if (event.target === false) {
           window.removeEventListener('fullscreenchange', fullscreenchangeListener);
           self.setStatus(oldStatus);
@@ -457,27 +457,27 @@ Object.defineProperty(EVENT, 'imageTools', {
   'value': {
     // 裁剪
     'crop': function (self) {
-      if (self['variable']['image']['status'] === ModalLayer['_ENUM']['LOAD_STATUS']['LOADED'])
+      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
         self['crop']();
     },
     // 旋转
     'spin': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_ENUM']['LOAD_STATUS']['LOADED'])
+      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
         self['spin']();
     },
     // 滤镜
     'filter': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_ENUM']['LOAD_STATUS']['LOADED'])
+      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
         self['filter'](window.event.target);
     },
     // 复位
     'revert': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_ENUM']['LOAD_STATUS']['LOADED'])
+      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
         self['revert']();
     },
     // 下载
     'download': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_ENUM']['LOAD_STATUS']['LOADED'])
+      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
         self['download']();
     }
   }

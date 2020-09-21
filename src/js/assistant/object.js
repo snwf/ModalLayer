@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 20:47:10
 * @Description         
 *
-* @Last Modified by:   wolf
-* @Last Modified time: 2020-09-18 21:27:56
+* @Last Modified by:   Wolf
+* @Last Modified time: 2020-09-22 00:11:21
 */
 
 class ObjectAssistant {
@@ -85,7 +85,7 @@ class ObjectAssistant {
    * @return   {Boolean}                  
    */
   static isOnlyObject (o) {
-    return o && o.__proto__.constructor === Object;
+    return o && (o.constructor === Object || o.constructor === undefined);
   }
 
   /**
@@ -146,7 +146,7 @@ class ObjectAssistant {
 
     if (ObjectAssistant['isEmpty'](obj)) return obj;
 
-    nObj = obj.constructor();
+    nObj = obj.constructor?.() ?? Object.create(null);
     _stack = [nObj];
     stack = [[Object.keys(obj), Object.values(obj)]];
 
@@ -157,7 +157,7 @@ class ObjectAssistant {
       for (let i = 0; i < key.length; i++) {
         k = key[i], v = val[i];
         if (ObjectAssistant['isOnlyObject'](v) || Array.isArray(v)) {
-          prevObj[k] = v.constructor();
+          prevObj[k] = v.constructor?.() ?? Object.create(null);
           stack.push([Object.keys(v), Object.values(v)]);
           _stack.push(prevObj[k]);
         } else {
@@ -176,11 +176,12 @@ class ObjectAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-01T20:58:58+0800
-   * @param    {Object}                 sub 主体对象
-   * @param    {Object}                 obj 次要对象
-   * @return   {Object}                     合并后新的对象
+   * @param    {Object}                 sub  主体对象
+   * @param    {Object}                 obj  次要对象
+   * @param    {Number}                 mode 如果出现重复值采取的动作[0: 深入补全, 1: 完全覆盖]
+   * @return   {Object}                      合并后新的对象
    */
-  static merge (sub, obj) {
+  static merge (sub, obj, mode = 0) {
     let nObj, prevObj;
     let stack, _stack;
     let k, _k, key, _key, totalKey, v, _v, val, _val;
@@ -188,7 +189,7 @@ class ObjectAssistant {
     if (ObjectAssistant['isEmpty'](sub)) return obj;
     if (ObjectAssistant['isEmpty'](obj)) return sub;
 
-    nObj = obj.constructor();
+    nObj = obj.constructor?.() ?? Object.create(null);
     _stack = [nObj];
     stack = [
       [
@@ -209,13 +210,17 @@ class ObjectAssistant {
         nCover = ObjectAssistant['isEmpty'](v);
         if (ObjectAssistant['isOnlyObject'](_v) || Array.isArray(_v)) {
           let newEle = [];
-          prevObj[_k] = _v.constructor();
-          newEle[1] = [Object.keys(_v), Object.values(_v)];
+          prevObj[_k] = (nCover ? _v.constructor : v.constructor)?.() ?? Object.create(null);
+          newEle[1] = mode === 0 ? [Object.keys(_v), Object.values(_v)] : [Object.keys(v), []];
           newEle[0] = nCover ? [[], []] : [Object.keys(v), Object.values(v)];
           _stack.push(prevObj[_k]);
           stack.push(newEle);
         } else {
-          prevObj[_k] = nCover ? _v : v;
+          Object.defineProperty(prevObj, _k, {
+            'writable': true,
+            'enumerable': true,
+            'value': nCover ? _v : v
+          })
         }
       }
     } while (stack.length > 0);

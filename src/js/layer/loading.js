@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 01:47:37
+* @Last Modified time: 2020-09-21 00:54:48
 */
 
 class LoadingLayer extends ModalLayer {
@@ -18,10 +18,10 @@ class LoadingLayer extends ModalLayer {
    */
   initOption (options) {
     // 初始化公共配置
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initOption').call(this, options);
+    super.initOption(options);
 
     // 初始化加载层特殊配置
-    this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], LOADING_OPTION);
+    this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], ModalLayer['_option']['loading']);
 
     this['option']['title'] = false;
     this['option']['drag']['enable'] = false;
@@ -44,7 +44,7 @@ class LoadingLayer extends ModalLayer {
       'left': 'flex-start'
     };
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'compatibleOption').call(this, options);
+    super.compatibleOption(options);
 
     if (!ModalLayer['_assistant']['object']['isEmpty'](options['layer']['position'])) {
       if (!Array.isArray(options['layer']['position']))
@@ -62,7 +62,7 @@ class LoadingLayer extends ModalLayer {
    * @DateTime 2020-09-04T12:22:48+0800
    */
   checkOption () {
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'checkOption').call(this);
+    super.checkOption();
 
     if (!Array.isArray(this['option']['layer'].position) && !['left', 'center', 'right'].includes(this['option']['layer'].position))
       throw new Error('layer.position does not meet expectations');
@@ -78,7 +78,7 @@ class LoadingLayer extends ModalLayer {
     let content, container;
     let loading, loadingIcon;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initStruct').call(this);
+    super.initStruct();
 
     container = this['variable']['struct']['_build']['container'];
     content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
@@ -104,7 +104,7 @@ class LoadingLayer extends ModalLayer {
   initNodeFinally () {
     let content, container, loadingBox, loadingIcon;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initNodeFinally').call(this);
+    super.initNodeFinally();
 
     // 根据参数进行设置.
     container = this['variable']['nodes']['container'];
@@ -121,4 +121,4 @@ class LoadingLayer extends ModalLayer {
   }
 }
 
-Object.defineProperty(ModalLayer['_achieve'], 'loading', {value: LoadingLayer});
+ModalLayer['_achieve'].set('loading', LoadingLayer);

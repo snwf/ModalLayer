@@ -5,10 +5,10 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 17:14:31
+* @Last Modified time: 2020-09-20 21:54:07
 */
 
-const ENUM = {};
+const ENUM = Object.create(null);
 
 /**
  * 方向键(Keycode)

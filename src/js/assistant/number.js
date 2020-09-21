@@ -5,10 +5,117 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 17:26:08
+* @Last Modified time: 2020-09-22 04:58:19
 */
 
 class NumberAssistant {
+  /**
+   * 乘法
+   * 规避js处理浮点数不精确的问题.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-22T03:07:57+0800
+   * @param    {Number}                 mul1 乘数
+   * @param    {Number}                 mul2 乘数
+   * @return   {Number}                      乘积
+   */
+  static mul (mul1, mul2) {
+    let mul, carry;
+
+    mul = [
+      mul1.toString().split('.'),
+      mul2.toString().split('.')
+    ];
+
+    carry = window.Math.pow(10, window.Math.max(
+      mul[0][1].length ?? 0,
+      mul[1][1].length ?? 0
+    ));
+
+    mul = [
+      [Number(mul[0][0]), Number('0.' + mul[0][1]) * carry],
+      [Number(mul[1][0]), Number('0.' + mul[1][1]) * carry]
+    ];
+
+    return (mul[0][0] !== 0 ? mul[0][0] : 1) * (mul[1][0] !== 0 ? mul[1][0] : 1) + (mul[0][1] * mul[1][1] / carry);
+  }
+
+  /**
+   * 除法
+   * 规避js处理浮点数不精确的问题
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-22T03:10:51+0800
+   * @param    {Number}                 dividend 被除数
+   * @param    {Number}                 divisor  除数
+   * @return   {Number}                          商
+   */
+  static div (dividend, divisor) {
+    let carry;
+
+    carry = window.Math.pow(10, window.Math.max(
+      dividend.toString().split('.')[1]?.length ?? 0,
+      divisor.toString().split('.')[1]?.length ?? 0
+    ));
+
+    return (dividend * carry) / (divisor * carry);
+  }
+
+  /**
+   * 得到中位数
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-22T04:18:44+0800
+   * @param    {Array}                  num 数组
+   * @return   {Number}                     中位数
+   */
+  static getMedian (num) {
+    let median;
+    let ascAry, medianIdx;
+
+    ascAry = num.map(n => n).sort((a, b) => a - b);
+    if (ascAry.length % 2 === 1) {
+      medianIdx = window.parseInt(ascAry.length / 2);
+      median = ascAry[medianIdx];
+    } else {
+      medianIdx = window.parseInt(ascAry.length / 2);
+      median = (ascAry[medianIdx - 1] + ascAry[medianIdx]) / 2;
+    }
+
+    return median;
+  }
+
+  /**
+   * 得到众数
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-22T04:36:38+0800
+   * @param    {Array}                  num 数组
+   * @return   {Array}                      众数数组
+   */
+  static getMode (num) {
+    let mode;
+    let max, findTime, findTimes;
+
+    max = 0;
+    mode = [];
+    findTimes = new Map;
+
+    num.forEach(n => {
+      findTime = findTimes.get(n) ?? 0;
+      findTimes.set(n, findTime + 1);
+    });
+
+    max = window.Math.max(...findTimes.values());
+
+    findTimes.forEach((t, n) => {
+      if (t === max)
+        mode.push(n);
+    });
+
+    return mode;
+  }
+
   /**
    * 判断是否为浮点数
    * 百分数、千分数也属于浮点数.

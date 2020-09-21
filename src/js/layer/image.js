@@ -4,8 +4,8 @@
 * @Date:               2020-09-04 00:13:10
 * @Description         
 *
-* @Last Modified by:   wolf
-* @Last Modified time: 2020-09-18 23:26:57
+* @Last Modified by:   Wolf
+* @Last Modified time: 2020-09-22 05:50:18
 */
 
 class ImageLayer extends ModalLayer {
@@ -20,14 +20,14 @@ class ImageLayer extends ModalLayer {
     let base, wSize;
 
     // 初始化公共配置
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initOption').call(this, options);
+    super.initOption(options);
 
     // 初始化图片层独有的配置
-    this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], IMAGE_OPTION);
+    this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], ModalLayer['_option']['image']);
 
     // 计算最大/最小尺寸
     wSize = [window.innerWidth, window.innerHeight];
-    Object.values(this['option']['layer']['size']).forEach(v => {
+    Object.values(this['option']['layer']['sizeRange']).forEach(v => {
       v.forEach((size, i) => {
         if (('' + size).endsWith('%'))
           base = 100;
@@ -42,10 +42,10 @@ class ImageLayer extends ModalLayer {
       });
     })
 
-    if (this['option']['layer']['size']['min'][0] > this['option']['layer']['size']['max'][0])
-      this['option']['layer']['size']['min'][0] = this['option']['layer']['size']['max'][0];
-    if (this['option']['layer']['size']['min'][1] > this['option']['layer']['size']['max'][1])
-      this['option']['layer']['size']['min'][1] = this['option']['layer']['size']['max'][1];
+    if (this['option']['layer']['sizeRange']['min'][0] > this['option']['layer']['sizeRange']['max'][0])
+      this['option']['layer']['sizeRange']['min'][0] = this['option']['layer']['sizeRange']['max'][0];
+    if (this['option']['layer']['sizeRange']['min'][1] > this['option']['layer']['sizeRange']['max'][1])
+      this['option']['layer']['sizeRange']['min'][1] = this['option']['layer']['sizeRange']['max'][1];
 
     // 一级工具栏
     Object.keys(this['option']['layer']['toolbar']['config']).forEach((key, val) => {
@@ -53,8 +53,8 @@ class ImageLayer extends ModalLayer {
       if (typeof val == 'boolean')
         this['option']['layer']['toolbar']['config'][key] = {
           'enable': val,
-          'title': IMAGE_OPTION['toolbar']['config'][key]['title'],
-          'icon': IMAGE_OPTION['toolbar']['config'][key]['icon']
+          'title': ModalLayer['_option']['image']['toolbar']['config'][key]['title'],
+          'icon': ModalLayer['_option']['image']['toolbar']['config'][key]['icon']
         }
       // 二级工具栏
       if (ModalLayer['_assistant']['object']['isOnlyObject'](val['config'])) {
@@ -63,12 +63,12 @@ class ImageLayer extends ModalLayer {
           if (typeof v == 'boolean')
             this['option']['layer']['toolbar']['config'][key]['config'][k] = {
               'enable': v,
-              'title': IMAGE_OPTION['toolbar']['config'][key]['config'][k]['title'],
-              'icon': IMAGE_OPTION['toolbar']['config'][key]['config'][k]['icon']
+              'title': ModalLayer['_option']['image']['toolbar']['config'][key]['config'][k]['title'],
+              'icon': ModalLayer['_option']['image']['toolbar']['config'][key]['config'][k]['icon']
             }
         })
-      } else if (IMAGE_OPTION['toolbar']['config'][key]['config']) {
-        this['option']['layer']['toolbar']['config'][key]['config'] = JSON.parse(JSON.stringify(IMAGE_OPTION['toolbar']['config'][key]['config']));
+      } else if (ModalLayer['_option']['image']['toolbar']['config'][key]['config']) {
+        this['option']['layer']['toolbar']['config'][key]['config'] = JSON.parse(JSON.stringify(ModalLayer['_option']['image']['toolbar']['config'][key]['config']));
       }
     });
   }
@@ -84,11 +84,13 @@ class ImageLayer extends ModalLayer {
     let base, wSize;
     let filterConfig, toolbarConfig;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'compatibleOption').call(this, options);
+    super.compatibleOption(options);
 
     imageList = ModalLayer['_assistant']['object'].get(options, 'layer.image');
-    if (!Array.isArray(imageList) && !(imageList instanceof FileList))
-      options.layer.image = [options.layer.image];
+    if (imageList instanceof FileList)
+      options['layer']['image'] = Object.values(imageList);
+    if (!Array.isArray(options['layer']['image']))
+      options['layer']['image'] = [options['layer']['image']];
 
     toolbarConfig = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config') ?? [];
     Object.keys(toolbarConfig).forEach(k => {
@@ -112,7 +114,7 @@ class ImageLayer extends ModalLayer {
     let filterEnable, toolbarEnable;
     let filterEntries, toolbarEntries;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'linkageOption').call(this);
+    super.linkageOption();
 
     toolbarEnable = filterEnable = false;
     toolbarEntries = Object.entries(this['option']['layer']['toolbar']['config']);
@@ -146,18 +148,24 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-04T00:36:26+0800
    */
   checkOption () {
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'checkOption').call(this);
+    super.checkOption();
 
     if (ModalLayer['_assistant']['object']['isEmpty'](this['option']['layer']['image']))
       throw new Error('layer.image can not be empty!');
 
-    if (
-      window.isNaN(parseInt(this['option']['layer']['size']['min'][0])) ||
-      window.isNaN(parseInt(this['option']['layer']['size']['min'][1])) ||
-      window.isNaN(parseInt(this['option']['layer']['size']['max'][0])) ||
-      window.isNaN(parseInt(this['option']['layer']['size']['max'][1]))
-    )
+    if (this['option']['layer']['size'] && !Array.isArray(this['option']['layer']['size']))
       throw new Error('layer.size does not meet expectations.');
+
+    if (
+      !this['option']['layer']['size'] && 
+      (
+        window.isNaN(parseInt(this['option']['layer']['sizeRange']['min'][0])) ||
+        window.isNaN(parseInt(this['option']['layer']['sizeRange']['min'][1])) ||
+        window.isNaN(parseInt(this['option']['layer']['sizeRange']['max'][0])) ||
+        window.isNaN(parseInt(this['option']['layer']['sizeRange']['max'][1]))
+      )
+    )
+      throw new Error('layer.sizeRange does not meet expectations.');
   }
 
   /**
@@ -167,7 +175,7 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-04T12:25:37+0800
    */
   initVariable () {
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initVariable').call(this);
+    super.initVariable();
 
     // 获取图片Blob内容
     this['variable']['image'] = {
@@ -184,7 +192,7 @@ class ImageLayer extends ModalLayer {
       'link': null,
       'history': [],
       'finish': null, // 保存一个图片加载完成的Promise对象
-      'status': ModalLayer['_ENUM']['LOAD_STATUS']['LOADING']
+      'status': ModalLayer['_enum']['LOAD_STATUS']['LOADING']
     };
   }
 
@@ -199,7 +207,7 @@ class ImageLayer extends ModalLayer {
     let title, content, resize, progress, container;
     let tools, toolbar, toolChild, contentImage, contentImageHidden;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initStruct').call(this);
+    super.initStruct();
 
     container = this['variable']['struct']['_build']['container'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
@@ -260,7 +268,7 @@ class ImageLayer extends ModalLayer {
   initNode () {
     let container, toolbar;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initNode').call(this);
+    super.initNode();
 
     container = this['variable']['nodes']['container'];
     toolbar = container.querySelector('.modal-layer-toolbar');
@@ -306,11 +314,11 @@ class ImageLayer extends ModalLayer {
     .catch(() => {
       let cas, fadeOption;
 
-      this['variable']['image']['status'] = ModalLayer['_ENUM']['LOAD_STATUS']['FAILED'];
-
       cas = container.querySelector('.modal-layer-image-canvas');
 
-      cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_ENUM']['LOAD_STATUS'], ModalLayer['_ENUM']['LOAD_STATUS']['FAILED']));
+      this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['FAILED'];
+
+      cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['FAILED']));
       
       fadeOption = {
         size: 72,
@@ -340,27 +348,27 @@ class ImageLayer extends ModalLayer {
   }
 
   /**
-   * 初始化事件
+   * 绑定事件
    *
    * @Author   Wolf
    * @DateTime 2020-09-04T15:46:52+0800
    */
-  initEvent () {
+  bindEvent () {
     let container;
     let failedText;
-
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initEvent').call(this);
+    
+    super.bindEvent();
 
     container = this['variable']['nodes']['container'];
-    failedText = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_ENUM']['LOAD_STATUS'], ModalLayer['_ENUM']['LOAD_STATUS']['FAILED']);
+    failedText = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['FAILED']);
 
     // 绑定重新加载事件
     ModalLayer['_assistant']['element']['eventTarget'](container, '.modal-layer-image-canvas[load-status="' + failedText + '"]', 'click', this['reload'], this);
 
     // 绑定工具栏相关事件
-    Object.keys(this['option']['event']['imageTools']).forEach(k => {
-      if (this['option']['event']['imageTools'][k] && this['option']['event']['imageTools'][k] instanceof Function)
-        ModalLayer['_assistant']['element']['eventTarget'](container, '.modal-layer-toolbar-item[tool-type="' + k + '"]', 'click', this['option']['event']['imageTools'][k], this);
+    Object.keys(this['event']['imageTools']).forEach(k => {
+      if (this['event']['imageTools'][k] && this['event']['imageTools'][k] instanceof Function)
+        ModalLayer['_assistant']['element']['eventTarget'](container, '.modal-layer-toolbar-item[tool-type="' + k + '"]', 'click', this['event']['imageTools'][k], this);
     });
   }
 
@@ -370,7 +378,6 @@ class ImageLayer extends ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T22:44:59+0800
    */
-  // TODO crop之后resize不正常
   resize () {
     let canvas;
     let defaultArea;
@@ -381,21 +388,25 @@ class ImageLayer extends ModalLayer {
     contentNode = container.querySelector('.modal-layer-content');
     canvas = contentNode.querySelector('.modal-layer-image-canvas');
 
-    contentComputedStyle = getComputedStyle(contentNode, null);
-    // Content之前的兄弟节点总共有多高
-    contentBeforeHeight = ModalLayer['_assistant']['element']['getBeforeElementHeight'](contentNode);
-    // Content距离上一个兄弟节点的上间距
-    contentOffsetTop = contentNode.offsetTop - contentBeforeHeight;
-    // Content距离Container有多少距离
-    totalHeight = contentBeforeHeight + (this['option']['content']['fullContainer'] ? 0 : contentOffsetTop * 2);
+    if (this['option']['layer']['size'])
+      defaultArea = this['option']['layer']['size'];
+    else {
+      contentComputedStyle = window.getComputedStyle(contentNode, null);
+      // Content之前的兄弟节点总共有多高
+      contentBeforeHeight = ModalLayer['_assistant']['element']['getBeforeElementHeight'](contentNode);
+      // Content距离上一个兄弟节点的上间距
+      contentOffsetTop = contentNode.offsetTop - contentBeforeHeight;
+      // Content距离Container有多少距离
+      totalHeight = contentBeforeHeight + (this['option']['content']['fullContainer'] ? 0 : contentOffsetTop * 2);
 
-    if (this['variable']['image']['status'] !== ModalLayer['_ENUM']['LOAD_STATUS']['LOADING'])
-      defaultArea = [canvas.width, canvas.height];
-    else
-      defaultArea = [...this['option']['layer']['size']['min']];
+      if (this['variable']['image']['status'] !== ModalLayer['_enum']['LOAD_STATUS']['LOADING'])
+        defaultArea = [canvas.width, canvas.height];
+      else
+        defaultArea = [...this['option']['layer']['sizeRange']['min']];
 
-    defaultArea[0] += parseFloat(contentComputedStyle.marginLeft) + parseFloat(contentComputedStyle.marginRight);
-    defaultArea[1] += totalHeight;
+      defaultArea[0] += parseFloat(contentComputedStyle.marginLeft) + parseFloat(contentComputedStyle.marginRight);
+      defaultArea[1] += totalHeight;
+    }
 
     // 记录初始化后的最小值
     this['variable']['defaultArea'] = defaultArea;
@@ -419,7 +430,8 @@ class ImageLayer extends ModalLayer {
   load () {
     let cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
 
-    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_ENUM']['LOAD_STATUS'], ModalLayer['_ENUM']['LOAD_STATUS']['LOADING']))
+    this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['LOADING'];
+    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['LOADING']))
 
     // 弹出加载层
     this['variable']['image']['layer'] = ModalLayer['loading']({
@@ -433,7 +445,6 @@ class ImageLayer extends ModalLayer {
       'window': this['variable']['nodes']['container']
     }, e => {throw e;});
 
-    this['variable']['image']['status'] = ModalLayer['_ENUM']['LOAD_STATUS']['LOADING'];
     return this['variable']['image']['finish'] = new Promise((resolve, reject) => {
       let node = new Image;
 
@@ -461,9 +472,9 @@ class ImageLayer extends ModalLayer {
   reload () {
     let cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
 
-    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_ENUM']['LOAD_STATUS'], ModalLayer['_ENUM']['LOAD_STATUS']['LOADING']))
+    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['LOADING']))
 
-    this['variable']['image']['status'] = ModalLayer['_ENUM']['LOAD_STATUS']['LOADING'];
+    this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['LOADING'];
     
     return this['variable']['image']['finish'] = new Promise((resolve, reject) => {
       let node = new Image;
@@ -499,16 +510,21 @@ class ImageLayer extends ModalLayer {
     cas = container.querySelector('.modal-layer-image-canvas');
     imgHide = container.querySelector('.modal-layer-image-hidden');
 
-    this['variable']['image']['status'] = ModalLayer['_ENUM']['LOAD_STATUS']['LOADED'];
-    if (img.naturalWidth > this['option']['layer']['size']['max'][0] || img.naturalHeight > this['option']['layer']['size']['max'][1])
-      this['variable']['image']['default']['size'] = ModalLayer['_assistant']['number']['getLegalSize']([img.naturalWidth, img.naturalHeight], this['option']['layer']['size']['max']);
-    else
-      this['variable']['image']['default']['size'] = [img.naturalWidth, img.naturalHeight];
+    this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['LOADED'];
 
+    if (this['option']['layer']['size']) {
+      this['variable']['image']['default']['size'] = this['option']['layer']['size'];
+    } else {
+      if (img.naturalWidth > this['option']['layer']['sizeRange']['max'][0] || img.naturalHeight > this['option']['layer']['sizeRange']['max'][1])
+        this['variable']['image']['default']['size'] = ModalLayer['_assistant']['number']['getLegalSize']([img.naturalWidth, img.naturalHeight], this['option']['layer']['sizeRange']['max']);
+      else
+        this['variable']['image']['default']['size'] = [img.naturalWidth, img.naturalHeight];
+    }
     cas.width = this['variable']['image']['default']['size'][0];
     cas.height = this['variable']['image']['default']['size'][1];
+
     this['variable']['image']['fadeAttr'] && cas.setAttribute(this['variable']['image']['fadeAttr'], 0);
-    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_ENUM']['LOAD_STATUS'], ModalLayer['_ENUM']['LOAD_STATUS']['LOADED']));
+    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['LOADED']));
 
     // 将img插入到画布后面作为备份.
     img.style.cssText = 'opacity: 0;visibility: hidden;position: relative;z-index: -1;pointer-events: none;';
@@ -538,9 +554,9 @@ class ImageLayer extends ModalLayer {
     container = this['variable']['nodes']['container'];
     cas = container.querySelector('.modal-layer-image-canvas');
 
-    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_ENUM']['LOAD_STATUS'], ModalLayer['_ENUM']['LOAD_STATUS']['FAILED']));
+    cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['FAILED']));
 
-    this['variable']['image']['status'] = ModalLayer['_ENUM']['LOAD_STATUS']['FAILED'];
+    this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['FAILED'];
     
     fadeOption = {
       size: 80,
@@ -578,15 +594,15 @@ class ImageLayer extends ModalLayer {
   removeAllEvent () {
     let container = this['variable']['nodes']['container'];
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'removeAllEvent').call(this);
+    super.removeAllEvent();
 
     // 释放重新加载事件
     container.removeEventListener('click', this['reload']);
 
     // 释放工具栏相关事件
-    Object.keys(this['option']['event']['imageTools']).forEach(k => {
-      if (this['option']['event']['imageTools'][k] && this['option']['event']['imageTools'][k] instanceof Function)
-        container.removeEventListener('click', this['option']['event']['imageTools'][k]);
+    Object.keys(this['event']['imageTools']).forEach(k => {
+      if (this['event']['imageTools'][k] && this['event']['imageTools'][k] instanceof Function)
+        container.removeEventListener('click', this['event']['imageTools'][k]);
     });
   }
 
@@ -884,56 +900,50 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-05T01:12:42+0800
    * 
    * TODO 通过css3 的transform scale解决图像缩放问题.
+   * 需要整个重写.
    */
   spin () {
+    let cas, ctx;
     let rect, radian;
-    let cas, ctx, backup;
     let newSize, newPoint;
 
     cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
     ctx = cas.getContext('2d');
 
-    backup = this['variable']['image']['spin']['backup'];
-    if (!backup) {
-      backup = new OffscreenCanvas(cas.width, cas.height);
-      backup.getContext('2d').drawImage(cas, 0, 0);
-      this['variable']['image']['spin']['backup'] = backup;
-    }
+    // this['variable']['image']['finish'].then(img => {
+    //   this['variable']['image']['spin']['total'] += this['variable']['image']['spin']['angle'];
+    //   radian = this['variable']['image']['spin']['total'] % 360 * window.Math.PI / 180;
 
-    this['variable']['image']['finish'].then(img => {
-      this['variable']['image']['spin']['total'] += this['variable']['image']['spin']['angle'];
-      radian = this['variable']['image']['spin']['total'] % 360 * window.Math.PI / 180;
+    //   cas.style.transform = 'rotate(' + this['variable']['image']['spin']['total'] + 'deg)';
+    //   rect = cas.getBoundingClientRect();
+    //   cas.style.transform = '';
 
-      img.style.transform = 'rotate(' + this['variable']['image']['spin']['total'] + 'deg)';
-      rect = img.getBoundingClientRect();
-      img.style.transform = '';
+    //   if (this['option']['layer']['size']['max'][0] >= rect.width && this['option']['layer']['size']['max'][1] >= rect.height)
+    //     newSize = [rect.width, rect.height];
+    //   else
+    //     newSize = ModalLayer['_assistant']['number']['getLegalSize']([rect.width, rect.height], this['option']['layer']['size']['max']);
 
-      if (this['option']['layer']['size']['max'][0] >= rect.width && this['option']['layer']['size']['max'][1] >= rect.height)
-        newSize = [rect.width, rect.height];
-      else
-        newSize = ModalLayer['_assistant']['number']['getLegalSize']([rect.width, rect.height], this['option']['layer']['size']['max']);
+    //   cas.width = newSize[0];
+    //   cas.height = newSize[1];
+    //   this['variable']['image']['spin']['total'] %= 360;
 
-      cas.width = newSize[0];
-      cas.height = newSize[1];
-      this['variable']['image']['spin']['total'] %= 360;
+    //   newPoint = [-cas.width / 2, -cas.height / 2];
 
-      newPoint = [-cas.width / 2, -cas.height / 2];
+    //   if (this['variable']['image']['spin']['total'] % 180 != 0) {
+    //     newSize = [newSize[1], newSize[0]];
+    //     newPoint = [-cas.height / 2, -cas.width / 2];
+    //   }
 
-      if (this['variable']['image']['spin']['total'] % 180 != 0) {
-        newSize = [newSize[1], newSize[0]];
-        newPoint = [-cas.height / 2, -cas.width / 2];
-      }
+    //   this['variable']['image']['spin']['total'] %= 360;
 
-      this['variable']['image']['spin']['total'] %= 360;
+    //   ctx.save();
+    //   ctx.translate(cas.width / 2, cas.height / 2);
+    //   ctx.rotate(radian);
+    //   ctx.drawImage(backup, 0, 0, backup.width, backup.height, ...newPoint, ...newSize);
+    //   ctx.restore();
 
-      ctx.save();
-      ctx.translate(cas.width / 2, cas.height / 2);
-      ctx.rotate(radian);
-      ctx.drawImage(backup, 0, 0, backup.width, backup.height, ...newPoint, ...newSize);
-      ctx.restore();
-
-      this.resize();
-    });
+    //   this.resize();
+    // });
   }
 
   /**
@@ -943,35 +953,107 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-05T01:12:49+0800
    */
   filter (target) {
-    let cas, ctx, filterType;
+
+    let wKey, sText, wScript;
+    let cas, ctx, imgData, filterType;
 
     cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
     if (cas.getAttribute('load-status') == 0) return;
 
     ctx = cas.getContext('2d');
     filterType = target.getAttribute('filter-type');
+    imgData = ctx.getImageData(0, 0, cas.width, cas.height);
+
+    this['variable']['image']['layer']['show']();
+
+    if (ModalLayer['_env']['feature']['worker']) {
+      wKey = 'image-layer-worker-' + Date.now();
+      sText = '!' + ModalLayer['_worker'].get('canvasFilter').toString() + '()';
+      wScript = URL.createObjectURL(new Blob(sText.split(''), {'type': 'text/javascript'}));
+      if (!ModalLayer['_assistant']['worker']['has'](wKey))
+        ModalLayer['_assistant']['worker']['create'](wKey, wScript);
+      ModalLayer['_assistant']['worker']['listener'](wKey).then(e => {
+        if (e['data']['error'] == 0)
+          ctx.putImageData(new ImageData(new Uint8ClampedArray(e['data']['buffer']), cas.width, cas.height), 0 , 0);
+        else
+          console.error(Error(e['data']['message']));
+        this['variable']['image']['layer']['hide']();
+
+        // 使用完毕关闭worker
+        ModalLayer['_assistant']['worker']['close'](wKey);
+      });
+    }
 
     ({
       'blur': () => {
-        let sigma, radius, imgData;
+        let sigma, radius;
 
         sigma = Number(target.getAttribute('data-sigma')) ?? 1;
         radius = Number(target.getAttribute('data-radius')) ?? 3;
 
-        imgData = ModalLayer['_assistant']['canvasFilter']['gaussianBlur'](ctx.getImageData(0, 0, cas.width, cas.height), radius, sigma);
+        if (ModalLayer['_env']['feature']['worker']) {
+          let divisor, maskIndex, gaussianMask;
 
-        ctx.putImageData(imgData, 0 , 0);
+          // 根据半径计算高斯掩码
+          if (ModalLayer['_assistant']['canvasFilter']['__gaussianMask'][[`${radius},${sigma}`]]) {
+            gaussianMask = ModalLayer['_assistant']['canvasFilter']['__gaussianMask'][[`${radius},${sigma}`]];
+          } else {
+            divisor = 0;
+            gaussianMask = [];
+            for (maskIndex = -radius; maskIndex <= radius; maskIndex++) {
+              let distribution = ModalLayer['_assistant']['formula']['gaussian']['getDistribution'](maskIndex, sigma, 1);
+              gaussianMask.push(distribution);
+              divisor += distribution;
+            }
+
+            // 归一化处理
+            for (let i = 0; i < gaussianMask.length; i++)
+              gaussianMask[i] /= divisor;
+
+            ModalLayer['_assistant']['canvasFilter']['__gaussianMask'][[`${radius},${sigma}`]] = gaussianMask;
+          }
+
+          ModalLayer['_assistant']['worker']['get'](wKey).postMessage({
+            'sigma': sigma,
+            'radius': radius,
+            'type': filterType,
+            'gaussianMask': gaussianMask,
+            'buffer': imgData.data.buffer,
+            'size': [cas.width, cas.height]
+          }, [imgData.data.buffer]);
+        } else {
+          imgData = ModalLayer['_assistant']['canvasFilter']['gaussianBlur'](imgData, radius, sigma);
+          ctx.putImageData(imgData, 0 , 0);
+          this['variable']['image']['layer']['hide']();
+        }
       },
       'gray': () => {
-        let imgData = ModalLayer['_assistant']['canvasFilter']['grayscale'](ctx.getImageData(0, 0, cas.width, cas.height));
+        if (ModalLayer['_env']['feature']['worker']) {
+          ModalLayer['_assistant']['worker']['get'](wKey).postMessage({
+            'type': filterType,
+            'buffer': imgData.data.buffer
+          }, [imgData.data.buffer]);
 
-        ctx.putImageData(imgData, 0, 0);
+        } else {
+          imgData = ModalLayer['_assistant']['canvasFilter']['grayscale'](ctx.getImageData(0, 0, cas.width, cas.height));
+          ctx.putImageData(imgData, 0, 0);
+          this['variable']['image']['layer']['hide']();
+        }
       },
       'mirror': () => {
-        let mirrorDirection = 0;
-        let imgData = ModalLayer['_assistant']['canvasFilter']['mirror'](ctx.getImageData(0, 0, cas.width, cas.height), mirrorDirection);
-        
-        ctx.putImageData(imgData, 0, 0);
+        let axis = Number(target.getAttribute('mirror-axis')) ?? 0;
+        if (ModalLayer['_env']['feature']['worker']) {
+          ModalLayer['_assistant']['worker']['get'](wKey).postMessage({
+            'axis': axis,
+            'type': filterType,
+            'buffer': imgData.data.buffer,
+            'size': [cas.width, cas.height]
+          }, [imgData.data.buffer]);
+        } else {
+          imgData = ModalLayer['_assistant']['canvasFilter']['mirror'](ctx.getImageData(0, 0, cas.width, cas.height), axis);
+          ctx.putImageData(imgData, 0, 0);
+          this['variable']['image']['layer']['hide']();
+        }
       }
     }[filterType])?.();    
   }
@@ -1013,4 +1095,4 @@ class ImageLayer extends ModalLayer {
   }
 }
 
-Object.defineProperty(ModalLayer['_achieve'], 'image', {value: ImageLayer});
+ModalLayer['_achieve'].set('image', ImageLayer);

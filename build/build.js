@@ -5,7 +5,7 @@
 * @Description         构建将要使用的js和css
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 17:51:40
+* @Last Modified time: 2020-09-22 05:09:36
 */
 
 const fs = require('fs');
@@ -19,6 +19,7 @@ const BUILD_PATH = path.join(BASE_PATH, '/build');
 // js
 const CORE_PATH = path.join(SOURCE_PATH, '/js/core');
 const LAYER_PATH = path.join(SOURCE_PATH, '/js/layer');
+const WORKER_PATH = path.join(SOURCE_PATH, '/js/worker');
 const ASSISTANT_PATH = path.join(SOURCE_PATH, '/js/assistant');
 
 // css
@@ -33,6 +34,7 @@ var code, style;
 var buildList, babelrc;
 buildList = {
   'js': [
+    path.join(CORE_PATH, '/env.js'),
     path.join(CORE_PATH, '/event.js'),
     path.join(CORE_PATH, '/option.js'),
     path.join(CORE_PATH, '/struct.js'),
@@ -40,6 +42,7 @@ buildList = {
     path.join(CORE_PATH, '/core.js'),
     path.join(ASSISTANT_PATH, '/css.js'),
     path.join(ASSISTANT_PATH, '/file.js'),
+    path.join(ASSISTANT_PATH, '/worker.js'),
     path.join(ASSISTANT_PATH, '/object.js'),
     path.join(ASSISTANT_PATH, '/number.js'),
     path.join(ASSISTANT_PATH, '/string.js'),
@@ -55,7 +58,8 @@ buildList = {
     path.join(LAYER_PATH, '/prompt.js'),
     path.join(LAYER_PATH, '/confirm.js'),
     path.join(LAYER_PATH, '/loading.js'),
-    path.join(LAYER_PATH, '/message.js')
+    path.join(LAYER_PATH, '/message.js'),
+    path.join(WORKER_PATH, '/canvas-filter.js'),
   ],
   'css': [
     path.join(SOURCE_PATH, '/css/core.css'),

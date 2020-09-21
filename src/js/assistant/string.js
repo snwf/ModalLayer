@@ -5,31 +5,96 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 17:25:12
+* @Last Modified time: 2020-09-22 04:23:09
 */
 
 class StringAssistant {
   /**
+   * base64编码
+   * 解决js原生base64无法编码中文
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-22T04:20:38+0800
+   * @param    {String}                 str 字符串
+   * @return   {String}                     编码后的字符串
+   */
+  static base64Encode (str) {
+    return window.btoa(window.unescape(window.encodeURIComponent(str)));
+  }
+
+  /**
+   * base64解码
+   * 解决js原生base64无法解码中文
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-22T04:20:38+0800
+   * @param    {String}                 str 字符串
+   * @return   {String}                     解码后的字符串
+   */
+  static base64Decode (str) {
+    return window.decodeURIComponent(window.escape(window.atob(str)));
+  }
+
+  /**
    * 在str中搜索search并替换为replace
+   * 注意: 该方法的从头部开始查找.
    *
    * @Author   Wolf
    * @DateTime 2020-09-03T00:43:18+0800
-   * @param    {String}                 str    原字符串
-   * @param    {Mixed}                  search 检索值, 可以为数组
-   * @param    {Mixed}                 replace 替换值, 可以为数组, 若为数组则长度必须与search长度一致
-   * @return   {String}                        新的字符串
+   * @param    {Mixed}                  str     若传入的是一个数组则返回也是一个数组
+   * @param    {Mixed}                  search  检索值, 可以为数组
+   * @param    {Mixed}                  replace 替换值, 可以为数组, 若为数组则长度必须与search长度一致
+   * @param    {Number}                 count   替换次数, 如果为0则不限制
+   * @return   {Mixed}                         新的字符串
    */
-  static str_replace (str, search, replace) {
-    // TODO 
-    // let nStr;
-    // let isAry;
+  static replace (str, search, replace, count = 0) {
+    let nStr, times;
+    let offset, strOffset, searchOffset;
+    let dealStr, dealSearch, dealReplace;
+    let strArray, searchArray, replaceArray;
 
-    // isAry = [Array.isArray(search),  Array.isArray(replace)];
+    strArray = Array.isArray(str);
+    searchArray = Array.isArray(search);
+    replaceArray = Array.isArray(replace);
 
-    // if (str.length <= 0) return str;
-    // if (isAry[0] && isAry[1] && search.length != replace.length) return str;
+    if (searchArray && replaceArray && search.length !== replace.length)
+      throw Error('The number of search strings does not match the number of replacement strings.');
 
-    
+    nStr = [];
+    str = strArray ? str : [str];
+    search = searchArray ? search : [search];
+    replace = replaceArray ? replace : [replace];
+    times = offset = strOffset = searchOffset = 0;
+
+    do {
+      let start, ended;
+
+      dealSearch = search[searchOffset];
+      dealReplace = replace[replaceArray ? searchOffset : 0];
+      dealStr = searchOffset === 0 ? str[strOffset] : nStr[strOffset];
+
+      start = offset;
+      ended = dealStr.indexOf(dealSearch, offset);
+
+      if (ended === -1) {
+        if (searchArray && searchOffset < search.length - 1) {
+          offset = 0;
+          searchOffset++;
+          continue;
+        } else if (strArray && strOffset < str.length - 1) {
+          strOffset++;
+          offset = searchOffset = 0;
+          continue;
+        }
+        offset = false;
+      } else {
+        offset = ended + dealSearch.length;
+        nStr[strOffset] = dealStr.substring(start, ended) + dealReplace + dealStr.substring(offset);
+      }
+
+    } while (offset !== false || (count !== 0 && times < count));
+
+    return strArray ? nStr : nStr.shift();
   }
 
   /**

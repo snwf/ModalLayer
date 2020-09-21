@@ -252,7 +252,7 @@
   }
 
   // 测试Image
-  document.querySelector('#image-button').onclick = function () {
+  document.querySelector('#image-button').addEventListener('click', function () {
     // 方式一
     let option = {
       title: '测试',
@@ -262,7 +262,7 @@
         fullContainer: true
       },
       layer: {
-        size: {
+        sizeRange: {
           max: [0.5, 0.9],
         },
         image: ['./Booklet_002.png'],
@@ -303,24 +303,19 @@
         }
       }
     };
-    ModalLayer.image(option, function (e) {
-      console.error(e);
-    });
+    // ModalLayer.image(option, function (e) {
+    //   console.error(e);
+    // });
 
     // 方式二
-    // let inputNode = document.querySelector('#image-layer-test-input');
-    // inputNode.click();
-
-    // inputNode.onchange = function () {
-    //   let option = {
-    //     popupTime: 0,
-    //     mask: false,
-    //     imageOption: {
-    //       image: inputNode.files
-    //     }
-    //   };
-    //   ModalLayer.image(option);
-    // }
-  }
+    let inputNode = document.querySelector('#image-layer-test-input');
+    inputNode.onchange = function () {
+      option.layer.image = inputNode.files;
+      ModalLayer.image(option, function (e) {
+        console.error(e);
+      });
+    }
+    inputNode.click();
+  });
 </script>
 </html>

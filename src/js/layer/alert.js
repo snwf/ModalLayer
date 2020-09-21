@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 00:36:38
+* @Last Modified time: 2020-09-21 00:53:52
 */
 
 class AlertLayer extends ModalLayer {
@@ -20,7 +20,7 @@ class AlertLayer extends ModalLayer {
     let interaction, interactionButton;
     let title, content, resize, progress, container;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initStruct').call(this);
+   super.initStruct();
 
     container = this['variable']['struct']['_build']['container'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
@@ -63,7 +63,7 @@ class AlertLayer extends ModalLayer {
   initNode () {
     let contentNode, contentChild;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initNode').call(this);
+    super.initNode();
 
     contentNode = this['variable']['nodes']['container'].querySelector('.modal-layer-content');
 
@@ -79,4 +79,4 @@ class AlertLayer extends ModalLayer {
   }
 }
 
-Object.defineProperty(ModalLayer['_achieve'], 'alert', {value: AlertLayer});
+ModalLayer['_achieve'].set('alert', AlertLayer);

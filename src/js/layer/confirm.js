@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 00:27:14
+* @Last Modified time: 2020-09-21 00:54:21
 */
 
 class ConfirmLayer extends AlertLayer {
@@ -16,10 +16,9 @@ class ConfirmLayer extends AlertLayer {
    * @DateTime 2020-09-01T23:10:16+0800
    */
   initStruct () {
-    ModalLayer['_assistant']['object']['getMethod'](this, AlertLayer,'initStruct').call(this);
+    super.initStruct();
 
     this['variable']['struct']['_backup']['interaction'].innerHTML.push(this['variable']['struct']['_backup']['interaction_button']['no']);
   }
 }
-
-Object.defineProperty(ModalLayer['_achieve'], 'confirm', {value: ConfirmLayer});
+ModalLayer['_achieve'].set('confirm', ConfirmLayer);

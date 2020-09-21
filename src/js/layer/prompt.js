@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 00:28:45
+* @Last Modified time: 2020-09-21 00:55:32
 */
 
 class PromptLayer extends AlertLayer {
@@ -16,10 +16,10 @@ class PromptLayer extends AlertLayer {
    * @DateTime 2020-09-01T23:10:16+0800
    */
   initStruct () {
-    ModalLayer['_assistant']['object']['getMethod'](this, AlertLayer,'initStruct').call(this);
+    super.initStruct();
 
     this['variable']['struct']['_backup']['interaction'].innerHTML.push(this['variable']['struct']['_backup']['interaction_button']['cancel']);
   }
 }
 
-Object.defineProperty(ModalLayer['_achieve'], 'prompt', {value: PromptLayer});
+ModalLayer['_achieve'].set('prompt', PromptLayer);

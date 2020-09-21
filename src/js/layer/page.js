@@ -4,8 +4,8 @@
 * @Date:               2020-09-03 16:56:54
 * @Description         
 *
-* @Last Modified by:   wolf
-* @Last Modified time: 2020-09-19 00:23:42
+* @Last Modified by:   Wolf
+* @Last Modified time: 2020-09-21 00:55:22
 */
 
 class PageLayer extends ModalLayer {
@@ -17,16 +17,9 @@ class PageLayer extends ModalLayer {
    * @param    {Object}                 options 配置
    */
   initOption (options) {
-    // 设置ID
-    options.index = ModalLayer['_instance'].length;
-    // 设置父窗口
-    options.window = options.window ?? document.body;
-    
-    // 初始化公共配置
-    this['option'] = ModalLayer['_assistant']['object']['merge'](options, ModalLayer['_option']);
-
+    super.initOption(options);
     // 初始化页面层独有的配置
-    this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], PAGE_OPTION);
+    this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], ModalLayer['_option']['page']);
   }
 
   /**
@@ -36,7 +29,7 @@ class PageLayer extends ModalLayer {
    * @DateTime 2020-09-04T14:15:59+0800
    */
   linkageOption () {
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'linkageOption').call(this);
+    super.linkageOption();
     
     // 如果src与srcdoc属性一起存在则使用src属性
     if (this['option']['layer'].src !== null && this['option']['layer'].srcdoc !== null)
@@ -54,7 +47,7 @@ class PageLayer extends ModalLayer {
     let action, actionButton;
     let title, content, resize, progress, container;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initStruct').call(this);
+    super.initStruct();
 
     container = this['variable']['struct']['_build']['container'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
@@ -96,7 +89,7 @@ class PageLayer extends ModalLayer {
     let pageNode, pageStyle;
     let scaleAnimationCss, scaleAnimationName, scaleAnimationChange;
 
-    ModalLayer['_assistant']['object']['getMethod'](this, ModalLayer, 'initNode').call(this);
+    super.initNode();
 
     container = this['variable']['nodes']['container'];
     pageNode = container.querySelector('.modal-layer-page-content');
@@ -155,4 +148,4 @@ class PageLayer extends ModalLayer {
   }
 }
 
-Object.defineProperty(ModalLayer['_achieve'], 'page', {value: PageLayer});
+ModalLayer['_achieve'].set('page', PageLayer);

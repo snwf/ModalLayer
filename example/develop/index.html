@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="../../src/css/core.css">
   <link rel="stylesheet" href="../../src/css/skin/default.css">
   <script src="../../static/fontawesome-free-5.14.0/js/all.min.js"></script>
-  <script src="../../src/js/core/enum.js"></script>
-  <script src="../../src/js/core/struct.js"></script>
+  <script src="../../src/js/core/env.js"></script>
   <script src="../../src/js/core/event.js"></script>
   <script src="../../src/js/core/option.js"></script>
+  <script src="../../src/js/core/enum.js"></script>
+  <script src="../../src/js/core/struct.js"></script>
   <script src="../../src/js/core/core.js"></script>
  
   <script src="../../src/js/layer/page.js"></script>
@@ -33,6 +34,10 @@
   <script src="../../src/js/assistant/file.js"></script>
   <script src="../../src/js/assistant/number.js"></script>
   <script src="../../src/js/assistant/css.js"></script>
+  <script src="../../src/js/assistant/worker.js"></script>
+
+  <script src="../../src/js/worker/canvas-filter.js"></script>
+
   <style>
     #test-button-container {
       position: absolute;
@@ -271,7 +276,7 @@
   }
 
   // 测试Image
-  document.querySelector('#image-button').onclick = function () {
+  document.querySelector('#image-button').addEventListener('click', function () {
     // 方式一
     let option = {
       title: '测试',
@@ -281,10 +286,8 @@
         fullContainer: true
       },
       layer: {
-        size: {
-          max: [0.5, 0.9],
-        },
-        image: ['./Booklet_002.png'],
+        // size: [800, 600],
+        image: ['./test.png'],
         toolbar: {
           enable: true,
           config: {
@@ -322,24 +325,19 @@
         }
       }
     };
-    ModalLayer.image(option, function (e) {
-      console.error(e);
-    });
+    // ModalLayer.image(option, function (e) {
+    //   console.error(e);
+    // });
 
     // 方式二
-    // let inputNode = document.querySelector('#image-layer-test-input');
-    // inputNode.click();
-
-    // inputNode.onchange = function () {
-    //   let option = {
-    //     popupTime: 0,
-    //     mask: false,
-    //     imageOption: {
-    //       image: inputNode.files
-    //     }
-    //   };
-    //   ModalLayer.image(option);
-    // }
-  }
+    let inputNode = document.querySelector('#image-layer-test-input');
+    inputNode.onchange = function () {
+      option.layer.image = inputNode.files;
+      ModalLayer.image(option, function (e) {
+        console.error(e);
+      });
+    }
+    inputNode.click();
+  });
 </script>
 </html>

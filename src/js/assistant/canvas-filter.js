@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 02:52:41
+* @Last Modified time: 2020-09-21 22:43:15
 */
 
 class CanvasFilterAssistant {
@@ -111,11 +111,8 @@ class CanvasFilterAssistant {
 
       // 根据半径计算高斯掩码
       divisor = 0;
-      if (CanvasFilterAssistant['__gaussianMask'][radius]) {
-        gaussianMask = CanvasFilterAssistant['__gaussianMask'][radius];
-        divisor = gaussianMask.reduce(function (sum, val) {
-          return sum + val;
-        }, 0);
+      if (CanvasFilterAssistant['__gaussianMask'][`${radius},${sigma}`]) {
+        gaussianMask = CanvasFilterAssistant['__gaussianMask'][`${radius},${sigma}`];
       } else {
         gaussianMask = [];
         for (maskIndex = -radius; maskIndex <= radius; maskIndex++) {
@@ -123,11 +120,13 @@ class CanvasFilterAssistant {
           gaussianMask.push(distribution);
           divisor += distribution;
         }
-      }
+        
+        // 归一化处理
+        for (let i = 0; i < gaussianMask.length; i++)
+          gaussianMask[i] /= divisor;
 
-      // 归一化处理
-      for (let i = 0; i < gaussianMask.length; i++)
-        gaussianMask[i] /= divisor;
+        CanvasFilterAssistant['__gaussianMask'][`${radius},${sigma}`] = gaussianMask;
+      }
 
       // 初始化newImgData
       newImgData = new Uint8ClampedArray(imageData.data.length);
@@ -199,11 +198,11 @@ class CanvasFilterAssistant {
    * @DateTime 2020-07-25T02:46:44+0800
    *
    * @param    {Mixed}                  image 图片[Image, ImageData]
-   * @param    {Number}                 axle  中心轴[0: x, 1: y]
+   * @param    {Number}                 axis  中心轴[0: x, 1: y]
    *
    * @return   {ImageData}                    处理后的图像数据
    */
-  static mirror (image, axle = 1) {
+  static mirror (image, axis = 1) {
     let imgX, imgY;
     let currIndex, mirrIndex;
     let r, g, b, width, height, imageData, newImgData;
@@ -220,12 +219,12 @@ class CanvasFilterAssistant {
       for (imgY = 0; imgY < height; imgY++) {
         for (imgX = 0; imgX < width; imgX++) {
           currIndex = (imgY * width + imgX) * 4;
-          if (axle == 0)
+          if (axis == 0)
             mirrIndex = (imgY * width + width - imgX) * 4
-          else if (axle == 1)
+          else if (axis == 1)
             mirrIndex = ((height - imgY) * width + imgX) * 4
           else
-            throw new Error('not give axle');
+            throw new Error('not give axis');
           
           newImgData[currIndex] = imageData.data[mirrIndex];
           newImgData[currIndex + 1] = imageData.data[mirrIndex + 1];
