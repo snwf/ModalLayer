@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 23:25:15
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 01:11:37
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-25 00:36:43
 */
 
 class ElementAssistant {
@@ -133,42 +133,7 @@ class ElementAssistant {
       return window.Math.max(prev, !isNaN(currNodeZIndex) ? currNodeZIndex : 0);
     }, 0));
   }
-
-  /**
-   * 绑定事件委托
-   *
-   * @Author   Wolf
-   * @DateTime 2020-09-01T23:39:30+0800
-   * @param    {Node}                   node       节点
-   * @param    {String}                 selector   CSS选择器
-   * @param    {String}                 type       事件类型
-   * @param    {Function}               callback   回调函数
-   * @param    {Mixed}                  args       回调函数传入参数
-   * @param    {Boolean}                useCapture 是否捕获
-   * @return   {Promise}                           触发后的Promise
-   */
-  // TODO 需要重构, 同一个委托节点不需要重新绑定监听事件. 并且需要支持Promise的写法.
-  static eventTarget (node, selector, type, callback = undefined, args = undefined, useCapture = false) {
-    if (!Array.isArray(args)) args = [args];
-    node.addEventListener(type, function (event) {
-      if (event.target === node || event.target.contains(node)) return false;
-      let targetNodes = Array.from(node.querySelectorAll(selector));
-      if (targetNodes.indexOf(event.target) !== -1) {
-        callback.apply(event.target, args);
-      } else {
-        let parentNode = event.target.parentNode;
-        while (parentNode && parentNode !== node) {
-          if (targetNodes.indexOf(parentNode) !== -1) {
-            callback.apply(parentNode, args);
-            break;
-          } else {
-            parentNode = parentNode.parentNode;
-          }
-        }
-      }
-    }, useCapture);
-  }
-
+  
   /**
    * 根据对象构造节点
    *

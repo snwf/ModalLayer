@@ -4,11 +4,27 @@
 * @Date:               2020-09-01 20:47:10
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 00:11:21
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-24 23:57:57
 */
 
 class ObjectAssistant {
+  /**
+   * 释放传入对象里面的引用
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-24T22:22:35+0800
+   * @param    {Mixed}                 v 需要释放引用的对象
+   */
+  static dereference (v) {
+    Object.keys(v).forEach(k => {
+      if (Array.isArray(v[k]) || ObjectAssistant['isOnlyObject'](v[k]))
+        ObjectAssistant['dereference'](v[k]);
+      v[k] = null;
+    });
+    v = null;
+  }
+
   /**
    * 获取对象上某个属性
    * 可以通过传入一串字符串或是数组进行深层的获取.
@@ -70,10 +86,22 @@ class ObjectAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-03T22:57:53+0800
-   * @return   {Boolean}                [description]
+   * @return   {Boolean}                
    */
   static isEmpty (v) {
     return v === null || v === undefined;
+  }
+
+  /**
+   * 判断对象是否为字符串
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-24T01:35:38+0800
+   * @param    {Mixed}                  v 
+   * @return   {Boolean}                  
+   */
+  static isString (v) {
+    return typeof v === 'string' || v instanceof String;
   }
 
   /**

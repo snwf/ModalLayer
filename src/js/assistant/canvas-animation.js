@@ -4,10 +4,10 @@
 * @Date:               2020-09-02 00:20:26
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 05:34:51
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-25 00:39:36
 */
-
+// TODO 优化所有动画性能
 class CanvasAnimationAssistant {
 
   /**

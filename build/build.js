@@ -4,8 +4,8 @@
 * @Date:               2020-09-15 17:44:59
 * @Description         构建将要使用的js和css
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 05:09:36
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-24 17:19:27
 */
 
 const fs = require('fs');
@@ -42,6 +42,7 @@ buildList = {
     path.join(CORE_PATH, '/core.js'),
     path.join(ASSISTANT_PATH, '/css.js'),
     path.join(ASSISTANT_PATH, '/file.js'),
+    path.join(ASSISTANT_PATH, '/event.js'),
     path.join(ASSISTANT_PATH, '/worker.js'),
     path.join(ASSISTANT_PATH, '/object.js'),
     path.join(ASSISTANT_PATH, '/number.js'),

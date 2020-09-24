@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 14:50:51
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-20 21:54:39
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-25 00:07:27
 */
 
 const STRUCT = Object.create(null);
@@ -172,23 +172,6 @@ Object.defineProperty(STRUCT, 'content_image', {
       'load-status': 2,
       'nodeType': 'canvas',
       'class': 'modal-layer-image-canvas'
-    }));
-  },
-  'enumerable' : true,
-  'configurable' : false
-});
-
-/**
- * 图片层隐藏img盒子
- *
- * @type {Object}
- */
-Object.defineProperty(STRUCT, 'content_image_hidden', {
-  get: function () {
-    return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
-      'class': 'modal-layer-image-hidden',
-      'style': 'width: 0; height: 0; overflow: hidden;'
     }));
   },
   'enumerable' : true,

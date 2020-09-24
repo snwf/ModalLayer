@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 16:14:29
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 00:09:25
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-23 02:08:44
 */
 
 const OPTION = Object.create(null);
@@ -78,19 +78,19 @@ Object.defineProperty(OPTION, 'image', {
               'enable': false,
               'title': 'blur',
               'icon': null,
-              'text': '模'
+              'textIcon': '模'
             },
             'gray': {
               'enable': false,
               'title': 'gray',
               'icon': null,
-              'text': '灰'
+              'textIcon': '灰'
             },
             'mirror': {
               'enable': false,
               'title': 'mirror',
               'icon': null,
-              'text': '镜'
+              'textIcon': '镜'
             }
           },
           'title': 'filter',

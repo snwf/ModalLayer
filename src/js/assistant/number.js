@@ -4,8 +4,8 @@
 * @Date:               2020-09-02 00:16:13
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 04:58:19
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-25 01:01:37
 */
 
 class NumberAssistant {
@@ -149,6 +149,38 @@ class NumberAssistant {
   }
 
   /**
+   * 根据最小尺寸获取合法尺寸
+   * 该方法不会改变图片原有比例, 会根据比例进行缩放.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-23T02:32:17+0800
+   * @param    {Array}                 nowSize 当前尺寸[width, height]
+   * @param    {Array}                 minSize 最小尺寸[width, height]
+   * @return   {Array}                         计算后的尺寸
+   */
+  static getMinLegalSize (nowSize, minSize) {
+    let newSize;
+    let priority, notPriority;
+    let aspectRatio, minAspectRatio;
+
+    newSize = [];
+    aspectRatio = nowSize[0] / nowSize[1];
+    minAspectRatio = minSize[0] / minSize[1];
+
+    priority = aspectRatio < 1 ? 0 : 1;
+    notPriority = Number(!priority);
+
+    if (nowSize[priority] < minSize[priority]) {
+      newSize[priority] = minSize[priority];
+      newSize[notPriority] = priority === 0 ? (minSize[priority] / aspectRatio) : (minSize[priority] * aspectRatio);
+    } else {
+      newSize = nowSize;
+    }
+
+    return newSize;
+  }
+
+  /**
    * 根据最大尺寸获取合法尺寸
    * 该方法不会改变图片原有比例, 会根据比例进行缩放.
    *
@@ -158,7 +190,7 @@ class NumberAssistant {
    * @param    {Array}                 maxSize 最大尺寸[width, height]
    * @return   {Array}                         计算后的尺寸
    */
-  static getLegalSize (nowSize, maxSize) {
+  static getMaxLegalSize (nowSize, maxSize) {
     let newSize;
     let priority, notPriority;
     let aspectRatio, maxAspectRatio;
@@ -170,10 +202,7 @@ class NumberAssistant {
     aspectRatio = nowSize[0] / nowSize[1];
     maxAspectRatio = maxSize[0] / maxSize[1];
 
-    if (maxAspectRatio >= 1)
-      priority = 1;
-    else
-      priority = 0;
+    priority = maxAspectRatio >= 1 ? 1 : 0;
     notPriority = Number(!priority);
 
     if (nowSize[priority] > maxSize[priority]) {

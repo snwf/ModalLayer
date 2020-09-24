@@ -4,277 +4,413 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script>
+    class ObjectAssistant {
+      /**
+       * 获取对象上某个属性
+       * 可以通过传入一串字符串或是数组进行深层的获取.
+       * 若其中某一个属性值不存在则直接返回undefined;
+       * 该函数行为于ES6新的运算符号?.相似.
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-08T17:41:36+0800
+       * @param    {Object}                 o 对象
+       * @param    {Mixed}                  k 属性
+       * @return   {Mixed}                    属性值
+       */
+      static get (o, k) {
+        let _o, _k;
+        _o = o;
+        _k = Array.isArray(k) ? k : k.split('.');
+        for (let i = 0; i < _k.length && !ObjectAssistant['isEmpty'](_o); i++)
+          _o = _o[_k[i]];
+        return _o;
+      }
+
+      /**
+       * 设置一个属性到对象
+       * 与默认赋值方法不同的是该方法可以通过传入一串字符串或数组进行级联赋值
+       * 若父值不存在则自动赋值{}.
+       * 
+       * 注意:
+       * 如果属性的父值不为Object则会将其重新赋值为Object.
+       * 语义上该方法并不适用于数组.
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-08T17:38:10+0800
+       * @param    {Object}                 o 对象
+       * @param    {Mixed}                  k 属性名称
+       * @param    {Object}                 v 属性值
+       */
+      static set (o, k, v) {
+        let _o, _k;
+        _o = o;
+        _k = Array.isArray(k) ? k : k.split('.');
+        for (let i = 0; i < _k.length; _o = _o[_k[i]], i++) {
+          if (i === _k.length - 1)
+            Object.defineProperty(_o, _k[i], {
+              value: v,
+              writable: true,
+              enumerable: true,
+              configurable: true
+            });
+          else if (!ObjectAssistant['isEmpty'](_o[_k[i]]) || _o[_k[i]].constructor !== Object)
+            _o[_k[i]] = {};
+        }
+      }
+
+      /**
+       * 判断对象是否为空
+       * 若为以下值则为空:
+       * null, undefined
+       * 注意: 空值, 也就是'', 并不为空.
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-03T22:57:53+0800
+       * @return   {Boolean}                
+       */
+      static isEmpty (v) {
+        return v === null || v === undefined;
+      }
+
+      /**
+       * 判断对象是否为字符串
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-24T01:35:38+0800
+       * @param    {Mixed}                  v 
+       * @return   {Boolean}                  
+       */
+      static isString (v) {
+        return typeof v === 'string' || v instanceof String;
+      }
+
+      /**
+       * 判断当前对象是否仅仅只是一个Object
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-07T23:42:08+0800
+       * @param    {Mixed}                 o  对象
+       * @return   {Boolean}                  
+       */
+      static isOnlyObject (o) {
+        return o && (o.constructor === Object || o.constructor === undefined);
+      }
+
+      /**
+       * 根据当前实例往前找.
+       * 返回父类classObject的method方法.
+       * 若没有找到则返回null.
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-03T17:02:04+0800
+       * @param    {Object}                  instance     实例对象
+       * @param    {Object}                  classObject  类对象
+       * @param    {String}                  method       方法名称
+       * @return   {Function}                             找到的方法
+       */
+      static getMethod (instance, classObject, method) {
+        while(!ObjectAssistant['isEmpty'](instance)) {
+          if (Object.is(instance.constructor, classObject))
+            return instance[method];
+          instance = instance.__proto__;
+        }
+
+        return null;
+      }
+
+      /**
+       * 根据值获取对应的键值
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-03T15:30:38+0800
+       * @param    {Object}                 o 对象
+       * @param    {Mixed}                  v 值
+       * @return   {Mixed}                    键值
+       */
+      static getKeyByValue (o, v) {
+        let key, entries;
+
+        entries = Object.entries(o);
+        for (let i = 0; i < entries.length; i++)
+          if (entries[i][1] === v)
+            return entries[i][0];
+
+        return null;
+      }
+
+      /**
+       * 深度拷贝一个对象
+       * 待拷贝对象须支持枚举否则无法遍历
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-01T20:49:17+0800
+       * @param    {Object}                 object 原始对象
+       * @return   {Object}                        新的对象
+       */
+      static deepCopy (obj) {
+        let nObj, prevObj;
+        let stack, _stack;
+        let k, key, v, val;
+
+        if (ObjectAssistant['isEmpty'](obj)) return obj;
+
+        nObj = obj.constructor?.() ?? Object.create(null);
+        _stack = [nObj];
+        stack = [[Object.keys(obj), Object.values(obj)]];
+
+        do {
+          prevObj = _stack.shift();
+          [key, val] = stack.shift();
+
+          for (let i = 0; i < key.length; i++) {
+            k = key[i], v = val[i];
+            if (ObjectAssistant['isOnlyObject'](v) || Array.isArray(v)) {
+              prevObj[k] = v.constructor?.() ?? Object.create(null);
+              stack.push([Object.keys(v), Object.values(v)]);
+              _stack.push(prevObj[k]);
+            } else {
+              prevObj[k] = v;
+            }
+          }
+        } while (stack.length > 0);
+
+        return nObj;
+      }
+
+      /**
+       * 合并两个对象
+       * 用sub的属性覆盖obj的属性.
+       * 该合并为深度拷贝合并, 将会产生一个新的对象.
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-01T20:58:58+0800
+       * @param    {Object}                 sub  主体对象
+       * @param    {Object}                 obj  次要对象
+       * @param    {Number}                 mode 如果出现重复值采取的动作[0: 深入补全, 1: 完全覆盖]
+       * @return   {Object}                      合并后新的对象
+       */
+      static merge (sub, obj, mode = 0) {
+        let nObj, prevObj;
+        let stack, _stack;
+        let k, _k, key, _key, totalKey, v, _v, val, _val;
+
+        if (ObjectAssistant['isEmpty'](sub)) return obj;
+        if (ObjectAssistant['isEmpty'](obj)) return sub;
+
+        nObj = obj.constructor?.() ?? Object.create(null);
+        _stack = [nObj];
+        stack = [
+          [
+            [Object.keys(sub), Object.values(sub)],
+            [Object.keys(obj), Object.values(obj)]
+          ]
+        ];
+
+        do {
+          prevObj = _stack.shift();
+          [[key, val], [_key, _val]] = stack.shift();
+          _key = [...new Set(_key.concat(key))];
+
+          for (let i = 0; i < _key.length; i++) {
+            let nCover;
+            [_k, _v] = [_key[i], _val[i]];
+            v = val[key.indexOf(_k)];
+            nCover = ObjectAssistant['isEmpty'](v);
+            if (ObjectAssistant['isOnlyObject'](_v) || Array.isArray(_v)) {
+              let newEle = [];
+              prevObj[_k] = (nCover ? _v.constructor : v.constructor)?.() ?? Object.create(null);
+              newEle[1] = mode === 0 ? [Object.keys(_v), Object.values(_v)] : [Object.keys(v), []];
+              newEle[0] = nCover ? [[], []] : [Object.keys(v), Object.values(v)];
+              _stack.push(prevObj[_k]);
+              stack.push(newEle);
+            } else {
+              Object.defineProperty(prevObj, _k, {
+                'writable': true,
+                'enumerable': true,
+                'value': nCover ? _v : v
+              })
+            }
+          }
+        } while (stack.length > 0);
+
+        return nObj;
+      }
+    }
+
+    class EventAssistant {
+      static #_event = new Map;
+
+      static add (element, type, selector, callback, thisArg, parameter, options, wantsUntrusted = false) {
+        let eventSymbol;
+        let promise, usePromise;
+        
+        usePromise = false;
+        eventSymbol = Symbol();
+
+        if (!(element instanceof EventTarget)) {
+          if (!(element = document.querySelector(element)))
+            throw Error('Is not a valid element.');
+        }
+
+        if (!ObjectAssistant.isString(type))
+          throw Error('Event type not allowed to be empty');
+
+        if (selector instanceof EventTarget) {
+          element = selector;
+          selector = null;
+        }
+
+        if (!(callback instanceof Function))
+          usePromise = true;
+
+        if (ObjectAssistant.isEmpty(thisArg))
+          thisArg = selector ?? element;
+
+        if (!ObjectAssistant.isEmpty(parameter) && !Array.isArray(parameter))
+          parameter = [parameter];
+
+        if (ObjectAssistant.isEmpty(options))
+          options = false;
+          // options = {
+          //   'once': false,
+          //   'passive': false,
+          //   'capture': false,
+          //   'mozSystemGroup': false
+          // };
+
+        if (usePromise) {
+          parameter = [{
+            'target': thisArg,
+            'symbol': eventSymbol,
+            'parameter': parameter ?? []
+          }]
+        } else {
+          parameter = parameter ?? [];
+        }
+
+        if (selector) { // 事件委托
+          let delegate;
+          let target, findElements;
+
+          promise = new Promise(resolve => {
+            delegate = function (event) {
+              target = event.target;
+              findElements = element.querySelectorAll(selector);
+
+              // 忽略的情况
+              //   如果触发元素是绑定元素本身或者其父元素.
+              //   如果在父元素中没有找到触发元素.
+              if (target.contains(element) || findElements.length === 0) return false;
+
+              if (Reflect.apply(Array.prototype.includes, findElements, [target])) {
+                if (usePromise) {
+                  parameter[0]['event'] = event;
+                  parameter[0]['target'] = thisArg === selector ? event.target : thisArg;
+                } else {
+                  parameter.push(event);
+                }
+                (usePromise ? resolve : callback).apply(thisArg === selector ? event.target : thisArg, parameter);
+              }
+            };
+
+            EventAssistant.#_event.set(eventSymbol, {
+              'type': type,
+              'element': element,
+              'options': options,
+              'selector': selector,
+              'callback': callback,
+              'wantsUntrusted': wantsUntrusted            
+            });
+
+            element.addEventListener(type, delegate, options, wantsUntrusted);
+          });
+
+        } else { // 正常绑定
+          promise = new Promise(resolve => {
+            callback = (usePromise ? resolve : callback).bind(thisArg, ...parameter);
+            EventAssistant.#_event.set(eventSymbol, {
+              'type': type,
+              'element': element,
+              'options': options,
+              'selector': selector,
+              'callback': callback,
+              'wantsUntrusted': wantsUntrusted
+            });
+            element.addEventListener(type, callback, options, wantsUntrusted);
+          });
+        }
+
+        return usePromise ? promise : eventSymbol;
+      }
+
+      /**
+       * 移除事件
+       * 通过Symbol
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-24T03:12:47+0800
+       * @param    {Symbol}                 symbol 索引
+       */
+      static remove (symbol) {
+        let eventOptions = EventAssistant.#_event['get'](symbol);
+        if (eventOptions) {
+          eventOptions['element'].removeEventListener(eventOptions['type'], eventOptions['callback'], eventOptions['options'], eventOptions['wantsUntrusted']);
+          EventAssistant.#_event['delete'](symbol);
+        }
+      }
+
+      static removeBy (key, value) {
+        EventAssistant.#_event.forEach((v, k) => {
+          if (v[key] === value) {
+            v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
+            EventAssistant.#_event['delete'](k);
+          }
+        });
+      }
+
+      static removeAll () {
+        EventAssistant.#_event.forEach((v, k) => {
+          v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
+          EventAssistant.#_event['delete'](k);
+        });
+      }
+    }
+    
+  </script>
 </head>
 <body>
+  <canvas width="800" height="600" style="border: 1px solid black"></canvas>
+  <div id="test-event">
+    <p><a href="javascript: void(0)" class="test-a" index="1">1爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="2">2爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="3">3爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="4">4爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="5">5爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="6">6爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="7">7爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="8">8爱神的箭卡省的</a></p>
+    <p><a href="javascript: void(0)" class="test-a" index="9">9爱神的箭卡省的</a></p>
+  </div>
 </body>
 <script>
-  var merge_option = {
-    title: '测试',
-    mask: true,
-    popupTime: 0,
-    content: {
-      fullContainer: true
-    },
-    layer: {
-      image: ['./test.jpg'],
-      toolbar: {
-        enable: true,
-        config: {
-          'crop': {
-            'enable': true,
-            'title': '裁剪111'
-          },
-          'spin': true,
-          'filter': {
-            enable: true,
-            config: {
-              blur: {
-                enable: true,
-                title: 'blur',
-                icon: null,
-                text: '模'
-              },
-              gray: {
-                enable: true,
-                title: 'gray',
-                icon: null,
-                text: '灰'
-              },
-              mirror: {
-                enable: true,
-                title: 'mirror',
-                icon: null,
-                text: '镜'
-              }
-            }
-          },
-          'revert': true,
-          'download': true,
-        }
-      }
-    }
-  };
+  /*
+  var cas = document.querySelector('canvas');
+  var ctx = cas.getContext('2d');
 
-  var option = {
-    index: 0, // ID
-    ui: 'modal-layer-ui', // 统一的class
-    title: null, // 标题(传入false则不显示标题栏)
-    window: null, // 父窗口(父节点)
-    popupTime: 5, // 模态层默认显示时间
-    skin: 'default', // 皮肤样式
-    parentModalLayer: null, // 父模态层
-    areaProportion: [0.18, 0.21], // 浏览器窗口(可见区域)与模态层的比例 [width, height]
-    content: { // 内容容器设置
-      value: null, // 容器内容, 可以为文本或String Node
-      fullContainer: false // 是否将内容填充整个模态层
-    },
-    text: { // 文本描述
-      action: { // 响应按钮文本描述
-        'close': '关闭', // 关闭按钮文本描述
-        'expand': '全屏', // 全屏按钮文本描述
-        'minimize': '最小化' // 最小化按钮文本描述
-      },
-      interaction: { // 交互按钮文本描述
-        ok: '确定', // 确定按钮文本描述
-        no: '拒绝', // 拒绝按钮文本描述
-        cancel: '取消' // 取消按钮文本描述
-      }
-    },
-    transition: { // 过渡动画设置
-      time: 0.2, // 持续时间
-      opacity: 0, // 开始和结束时的透明度
-      scale: [0.45, 0.45] // 开始和结束时的缩放比例
-    },
-    mask: { // 遮罩层设置
-      enable: true, // 是否开启
-      clickRemove: true // 点击是否关闭
-    },
-    drag: { // 拖拽窗口设置
-      enable: true, // 是否开启
-      overflow: false, // 拖拽过程中是否允许超出父元素
-    },
-    resize: { // 改变窗口大小设置
-      enable: true // 是否开启
-    },
-    progress: { // 模态层时限进度条提醒设置
-      enable: false, // 是否开启
-      position: 'bottom', // 进度条显示位置
-      color: 'deepskyblue', // 进度条颜色
-      background: '#cecece', // 进度条背景颜色
-    },
-    layer: {
-      image: [], // 图片, 可以为file对象也可以为Image节点, 甚至可以为base64数据.当图片加载不成功时会迭代尝试.
-      size: { // 指定画布大小, 格式为[w, h], 可以为像素或是百分比、小数.
-        min: [0.15625, 0.160257], // 最小尺寸
-        max: [0.9, 0.9] // 最大尺寸, 可以为像素、百分比(浏览器可视区域比例, 最好不要超过90%), 不能使用auto(优先匹配高度, 缩放会保证不失真的情况下进行缩放, 如想强制缩放请设置min).
-      },
-      toolbar: { // 工具栏设置
-        enable: false, // 是否开启
-        config: { // 相关工具设置
-          crop: { // 是否开启裁剪
-            enable: false,
-            title: 'crop',
-            icon: 'fas fa-crop-alt'
-          },
-          spin: { // 是否开启旋转
-            enable: false,
-            title: 'spin',
-            icon: 'fas fa-redo-alt'
-          },
-          filter: { // 是否开启滤镜
-            enable: false,
-            config: {
-              blur: {
-                enable: false,
-                title: 'blur',
-                icon: null,
-                text: '模'
-              },
-              gray: {
-                enable: false,
-                title: 'gray',
-                icon: null,
-                text: '灰'
-              },
-              mirror: {
-                enable: false,
-                title: 'mirror',
-                icon: null,
-                text: '镜'
-              }
-            },
-            title: 'filter',
-            icon: 'fas fa-filter'
-          },
-          revert: { // 是否开启重载
-            enable: false,
-            title: 'revert',
-            icon: 'fas fa-sync-alt'
-          },
-          download: { // 是否开启下载
-            enable: false,
-            title: 'download',
-            icon: 'fas fa-download'
-          },
-        }
-      },
-    },
-    hook: { // 钩子
-      initStart: null, // 初始化之前执行
-      initEnded: null // 初始化之后执行
-    },
-    event: {
-      test: function () {},
-      child: {
-        one: function () {}
-      }
-    }
-  };
-
-  function get (o, k) {
-    let _o, _k;
-    _o = o;
-    _k = Array.isArray(k) ? k : k.split('.');
-    for (let i = 0; i < _k.length && _o !== null && _o !== undefined; i++)
-      _o = _o[_k[i]];
-    return _o;
+  function draw () {
+    ctx.clearRect(0, 0, cas.width, cas.height);
+    ctx.save();
+    ctx.fillStyle = 'red';
+    ctx.fillRect(0, 0, cas.width, cas.height);
+    ctx.translate(cas.width / 2, cas.height / 2);
+    debugger;
+    ctx.rotate(180 * Math.PI / 180);
+    ctx.translate(-cas.width / 2, -cas.height / 2);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, cas.width, cas.height);
+    ctx.restore();
   }
-
-  function set (o, k, v) {
-    let _o, _k;
-    _o = o;
-    _k = Array.isArray(k) ? k : k.split('.');
-    for (let i = 0; i < _k.length; _o = _o[_k[i]], i++) {
-      if (i === _k.length - 1)
-        Object.defineProperty(_o, _k[i], {
-          value: v,
-          writable: true,
-          enumerable: true,
-          configurable: true
-        });
-      else if (_o[_k[i]] === null || _o[_k[i]] === undefined || _o[_k[i]].constructor !== Object)
-        _o[_k[i]] = {};
-    }
-  }
-  function isEmpty (v) {
-    return v === null || v === undefined;
-  }
-
-  function isOnlyObject (o) {
-    return !isEmpty(o) && o.__proto__.constructor === Object;
-  }
-
-  function deepCopy (obj) {
-    let nObj, prevObj;
-    let stack, _stack;
-    let k, key, v, val;
-
-    nObj = obj.constructor();
-    _stack = [nObj];
-    stack = [[Object.keys(obj), Object.values(obj)]];
-
-    do {
-      prevObj = _stack.shift();
-      [key, val] = stack.shift();
-
-      for (let i = 0; i < key.length; i++) {
-        k = key[i], v = val[i];
-        if (v instanceof Function) {
-          prevObj[k] = v.bind();
-        } else if (isOnlyObject(v) || Array.isArray(v)) {
-          prevObj[k] = v.constructor();
-          stack.push([Object.keys(v), Object.values(v)]);
-          _stack.push(prevObj[k]);
-        } else {
-          prevObj[k] = v;
-        }
-      }
-    } while (stack.length > 0);
-
-    return nObj;
-  }
-
-  function merge (sub, obj) {
-    let nObj, prevObj;
-    let stack, _stack;
-    let key, v, _v, val, _val;
-
-    nObj = obj.constructor();
-    _stack = [nObj];
-    stack = [
-      [
-        [Object.keys(sub), Object.values(sub)],
-        [Object.keys(obj), Object.values(obj)]
-      ]
-    ];
-
-    do {
-      prevObj = _stack.shift();
-      [[key, val], [_key, _val]] = stack.shift();
-
-      for (let i = 0; i < _key.length; i++) {
-        [_k, _v] = [_key[i], _val[i]];
-        v = val[key.indexOf(_k)];
-        if (_v instanceof Function) {
-          prevObj[_k] = isEmpty(v) ? _v.bind() : v.bind();
-        } else if (isOnlyObject(_v) || Array.isArray(_v)) {
-          let newEle = [];
-          prevObj[_k] = _v.constructor();
-          _stack.push(prevObj[_k]);
-          if (isEmpty(v))
-            newEle[0] = [[], []];
-          else
-            newEle[0] = [Object.keys(v), Object.values(v)];
-          newEle[1] = [Object.keys(_v), Object.values(_v)];
-          stack.push(newEle);
-        } else {
-          prevObj[_k] = isEmpty(v) ? _v : v;
-        }
-      }
-    } while (stack.length > 0);
-
-    return nObj;
-  }
-
+  */
 </script>
 </html>

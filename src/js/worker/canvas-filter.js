@@ -4,9 +4,11 @@
 * @Date:               2020-09-19 00:52:59
 * @Description         专门用于处理画布图像层画布滤镜worker代码
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 05:11:41
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-25 00:40:30
 */
+
+// TODO 如果数据比较大需要更多Worker并行执行.
 if (window.Worker) {
   ModalLayer['_worker'].set('canvasFilter', function () {
 

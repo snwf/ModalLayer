@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 17:48:27
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 00:23:37
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-24 23:16:54
 */
 
 /**
@@ -35,7 +35,7 @@ Object.defineProperty(EVENT, 'interaction', {
   'value': {
     'ok': null,
     'no': null,
-    'cancel': function (self) {void self.remove();}
+    'cancel': function () {void this.remove();}
   }
 });
 
@@ -403,44 +403,45 @@ Object.defineProperty(EVENT, 'autoShutdown', {
 Object.defineProperty(EVENT, 'action', {
   'enumerable': true,
   'value': {
-    'close': function (self) {void self.remove()},
-    'expand': function (self) {
+    'close': function (e) {void this.remove()},
+    'expand': function (e) {
       let oldStatus;
       let nodes, pageNode;
       let fullscreenerrorListener, fullscreenchangeListener;
 
-      oldStatus = self.status;
-      nodes = self.variable.nodes;
-      pageNode = nodes.container.querySelector('iframe[name=' + self.option.layer.name + self.option.index + ']');
+      oldStatus = this.status;
+      nodes = this.variable.nodes;
+      pageNode = nodes.container.querySelector('iframe[name=' + this.option.layer.name + this.option.index + ']');
       fullscreenchangeListener = event => {
-        if (event.target === pageNode) {
-          self.setStatus(ModalLayer['_enum']['STATUS'].EXPAND);
-        } else if (event.target === false) {
-          window.removeEventListener('fullscreenchange', fullscreenchangeListener);
-          self.setStatus(oldStatus);
-        }
+        if (event.target === pageNode)
+          this.setStatus(ModalLayer['_enum']['STATUS']['EXPAND']);
+        else if (event.target === false)
+          this.setStatus(oldStatus);
+        window.removeEventListener('fullscreenerror', fullscreenerrorListener);
+        window.removeEventListener('fullscreenchange', fullscreenchangeListener);
       };
 
-      fullscreenerrorListener = e => {
+      fullscreenerrorListener = error => {
         ModalLayer.msg({
           mask: false,
           popupTime: 5,
           title: '错误',
           displayProgressBar: true,
           displayProgressBarPos: 'bottom',
-          content: '<i class="fas fa-window-close" style="color: red"></i> 全屏失败, 错误原因: ' + e
+          content: '<i class="fas fa-window-close" style="color: red"></i> 全屏失败, 错误原因: ' + error
         });
         window.removeEventListener('fullscreenerror', fullscreenerrorListener);
+        window.removeEventListener('fullscreenchange', fullscreenchangeListener);
       };
 
       window.addEventListener('fullscreenerror', fullscreenerrorListener);
       window.addEventListener('fullscreenchange', fullscreenchangeListener);
-      ModalLayer['_assistant']['element'].launchFullscreen(pageNode);
+      ModalLayer['_assistant']['element']['launchFullscreen'](pageNode);
     },
-    'minimize': function (self) {
-      let index = ModalLayer['_minimizeQueue'].indexOf(self);
+    'minimize': function (e) {
+      let index = ModalLayer['_minimizeQueue'].indexOf(this);
       if (index < 0)
-        ModalLayer['_minimizeQueue'].push(self);
+        ModalLayer['_minimizeQueue'].push(this);
       else
         ModalLayer['_minimizeQueue'].splice(index, 1);
     },
@@ -456,29 +457,29 @@ Object.defineProperty(EVENT, 'imageTools', {
   'enumerable': true,
   'value': {
     // 裁剪
-    'crop': function (self) {
-      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
-        self['crop']();
+    'crop': function () {
+      if (this['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
+        this['crop']();
     },
     // 旋转
-    'spin': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
-        self['spin']();
+    'spin': function () {
+      if (this['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
+        this['spin']();
     },
     // 滤镜
-    'filter': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
-        self['filter'](window.event.target);
+    'filter': function (e) {
+      if (this['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
+        this['filter']((e ?? window.event).target);
     },
     // 复位
-    'revert': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
-        self['revert']();
+    'revert': function () {
+      if (this['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
+        this['revert']();
     },
     // 下载
-    'download': (self) => {
-      if (self['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
-        self['download']();
+    'download': function () {
+      if (this['variable']['image']['status'] === ModalLayer['_enum']['LOAD_STATUS']['LOADED'])
+        this['download']();
     }
   }
 });

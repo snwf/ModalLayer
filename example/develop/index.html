@@ -23,6 +23,7 @@
   <script src="../../src/js/layer/message.js"></script>
   <script src="../../src/js/layer/loading.js"></script>
 
+  <script src="../../src/js/assistant/event.js"></script>
   <script src="../../src/js/assistant/formula.js"></script>
   <script src="../../src/js/assistant/performance.js"></script>
   <script src="../../src/js/assistant/object.js"></script>
@@ -67,6 +68,7 @@
     <button id="page-button-1" type="button">测试page</button>
     <button id="page-button-2" type="button">测试page</button>
     <button id="image-button" type="button">测试image</button>
+    <button id="delete-all-ModalLayer">删除所有模态层</button>
     <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
   </div>
   <div id="test-box" style="width: 500px; height: 500px; position: relative;"></div>
@@ -167,11 +169,11 @@
       }
     };
 
-    option.event.interaction.ok = function (layer) {
-      layer.hide();
+    option.event.interaction.ok = function () {
+      void this.hide();
       ModalLayer.alert({
         popupTime: 0,
-        parentModalLayer: layer,
+        parentModalLayer: this,
         text: {
           interaction: {
             ok: '确定'
@@ -179,8 +181,8 @@
         },
         event: {
           interaction: {
-            ok: function (layer) {
-              void layer.remove();
+            ok: function () {
+              void this.remove();
             }
           }
         },
@@ -225,11 +227,11 @@
       content: '<input type="text" style="width: calc(100% - 2px); height: 24px; font-size: 16px; color: red;" placeholder="输入内容进行测试">',
       event : {
         interaction: {
-          ok: function (layer) {
-            layer.hide();
+          ok: function () {
+            this.hide();
             ModalLayer.alert({
-              parentModalLayer: layer,
-              content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + layer.variable.nodes.container.querySelector('input').value
+              parentModalLayer: this,
+              content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + this.variable.nodes.container.querySelector('input').value
             });
           }
         }
@@ -286,14 +288,16 @@
         fullContainer: true
       },
       layer: {
-        // size: [800, 600],
-        image: ['./test.png'],
+        sizeRange: {
+          min: [316, 396]
+        },
+        image: ['asd.jpg', './test.png'],
         toolbar: {
           enable: true,
           config: {
             'crop': {
               'enable': true,
-              'title': '裁剪111'
+              'title': '裁剪'
             },
             'spin': true,
             'filter': {
@@ -303,19 +307,19 @@
                   enable: true,
                   title: 'blur',
                   icon: null,
-                  text: '模'
+                  textIcon: '模'
                 },
                 gray: {
                   enable: true,
                   title: 'gray',
                   icon: null,
-                  text: '灰'
+                  textIcon: '灰'
                 },
                 mirror: {
                   enable: true,
                   title: 'mirror',
                   icon: null,
-                  text: '镜'
+                  textIcon: '镜'
                 }
               }
             },
@@ -339,5 +343,8 @@
     }
     inputNode.click();
   });
+  document.querySelector('#delete-all-ModalLayer').onclick = function () {
+    ModalLayer._instance.forEach(v => void v.delete());
+  }
 </script>
 </html>

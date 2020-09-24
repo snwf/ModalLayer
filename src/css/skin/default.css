@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-19 00:25:22
+* @Last Modified time: 2020-09-23 01:56:39
 */
 
 .modal-layer-skin-default.modal-layer-ui,
@@ -111,6 +111,7 @@
   height: 100%;
   display: flex;
   font-size: 0px;
+  overflow: hidden;
   position: relative;
   align-items: center;
   justify-content: center;
@@ -126,9 +127,10 @@
 }
 
 .modal-layer-toolbar .modal-layer-toolbar-item {
+  flex: 1;
+  flex-grow: 0;
   font-size: 0px;
   position: relative;
-  display: inline-block;
 }
 
 .modal-layer-toolbar-item .modal-layer-toolbar-item-icon {

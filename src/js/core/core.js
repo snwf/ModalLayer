@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 01:18:08
 * @Description         一些常用的窗体的封装
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 05:13:06
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-25 00:35:23
 */
 
 class ModalLayer {
@@ -38,11 +38,11 @@ class ModalLayer {
   static _option = OPTION;
 
   /**
-   * 默认事件
+   * 静态临时变量存放点
    *
-   * @type {[type]}
+   * @type {Map}
    */
-  static _event = EVENT;
+  static _variable = new Map;
 
   /**
    * 缓存空间
@@ -58,6 +58,13 @@ class ModalLayer {
    * @type {Map}
    */
   static _worker = window.Worker ? new Map : undefined;
+
+  /**
+   * 默认事件
+   *
+   * @type {[type]}
+   */
+  static _event = EVENT;
 
   /**
    * 模态层版本
@@ -92,9 +99,6 @@ class ModalLayer {
         return true;
       }
       throw new TypeError('Must be of type ModalLayer');
-    },
-    deleteProperty: (obj, key) => {
-      throw new Error('Illegal operation');
     }
   });
 
@@ -148,6 +152,13 @@ class ModalLayer {
    * @type {ENUM.STATUS}
    */
   status = null;
+
+  /**
+   * 模态层相关事件
+   *
+   * @type {Object}
+   */
+  event = null;
 
   /**
    * 模态层选项
@@ -224,14 +235,13 @@ class ModalLayer {
    * @DateTime 2020-09-04T12:05:52+0800
    */
   initVariable () {
-    this['event'] = {};
-    this['variable']['timeout'] = {};
-    this['variable']['struct'] = {
-      '_build': {},
-      '_backup': {}
-    };
-    this['variable']['interval'] = {};
-    this['variable']['animationName'] = {};
+    this['variable']['struct'] = Object.create(null);
+    this['variable']['timeout'] = Object.create(null);
+    this['variable']['interval'] = Object.create(null);
+    this['variable']['eventSymbol'] = Object.create(null);
+    this['variable']['animationName'] = Object.create(null);
+    this['variable']['struct']['_build'] = Object.create(null);
+    this['variable']['struct']['_backup'] = Object.create(null);
   }
 
   /**
@@ -376,7 +386,7 @@ class ModalLayer {
     }, this);
 
     // 将设置完成的Node放入实例数组
-    ModalLayer['_instance'].push(this);
+    ModalLayer['_instance'][this.option.index] = this;
   }
 
   /**
@@ -396,46 +406,81 @@ class ModalLayer {
    * @DateTime 2020-09-21T00:15:00+0800
    */
   bindEvent () {
+    let options;
     let okButton, noButton, cancelButton;
+
+    options = {
+      'once': false,
+      'capture': false,
+      'passive': false,
+      'mozSystemGroup': false
+    };
 
     // 点击遮罩层移除模态层
     if (this['option']['mask']['enable'] && this['option']['mask']['clickRemove'])
-      this['variable']['nodes']['mask'].addEventListener('click', this['event']['clickMask'] = this['event']['clickMask'].bind(this));
+      this['variable']['eventSymbol']['maskClickRemove'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['mask'], 'click', null, this['event']['clickMask'], this, null, options);
 
     // 拖拽模态层
     if (this['option']['drag']['enable'])
-      this['variable']['nodes']['container'].querySelector('.modal-layer-title').addEventListener('mousedown', this['event']['drag'] = this['event']['drag'].bind(this));
+      this['variable']['eventSymbol']['drag'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'].querySelector('.modal-layer-title'), 'mousedown', null, this['event']['drag'], this, null, options);
 
     // 模态层伸缩
     if (this['option']['resize']['enable'])
-      ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-resize-bar', 'mousedown', this['event']['resize'] = this['event']['resize'].bind(this));
+      this['variable']['eventSymbol']['resize'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'mousedown', '.modal-layer-resize-bar', this['event']['resize'], this, null, options);
 
     // 当点击模态层时如果有多个模态层为显示状态则点击的对象置于最上层
-    this['variable']['nodes']['container'].addEventListener('mousedown', this['event']['active'] = this['event']['active'].bind(this));
-
-    // action 由于action使用了Font Awesome, 最好使用事件委托
-    if (this['event']['action']['close'])
-      ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-close', 'click', this['event']['action']['close'], this);
-    if (this['event']['action']['expand'])
-      ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-expand', 'click', this['event']['action']['expand'], this);
-    if (this['event']['action']['minimize'])
-      ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-minimize', 'click', this['event']['action']['minimize'], this);
+    this['variable']['eventSymbol']['active'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'mousedown', null, this['event']['active'], this, null, options);
     
-    // interaction 默认只绑定cancel
+    // action 由于action使用了Font Awesome, 最好使用事件委托
+    if (this['event']['action']['close'] instanceof Function)
+      this['variable']['eventSymbol']['actionClose'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-close', this['event']['action']['close'], this, null, options);
+    if (this['event']['action']['expand'] instanceof Function)
+      this['variable']['eventSymbol']['actionExpand'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-expand', this['event']['action']['expand'], this, null, options);
+    if (this['event']['action']['minimize'] instanceof Function)
+      this['variable']['eventSymbol']['actionMinimize'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-minimize', this['event']['action']['minimize'], this, null, options);
+    
+    // interaction 默认只绑定cancel    
     okButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-ok');
     noButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-no');
     cancelButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-cancel');
     
     if (this['event']['interaction']['ok'] && okButton)
-      okButton.addEventListener('click', this['event']['interaction_ok'] = this['event']['interaction']['ok'].bind(okButton, this));
+      this['variable']['eventSymbol']['interactionOk'] = ModalLayer['_assistant']['event']['add'](okButton, 'click', null, this['event']['interaction']['ok'], this, null, options);
     if (this['event']['interaction']['no'] && noButton)
-      noButton.addEventListener('click', this['event']['interaction_no'] = this['event']['interaction']['no'].bind(noButton, this));
+      this['variable']['eventSymbol']['interactionNo'] = ModalLayer['_assistant']['event']['add'](noButton, 'click', null, this['event']['interaction']['no'], this, null, options);
     if (cancelButton)
-      cancelButton.addEventListener('click', this['event']['interaction_cancel'] = this['event']['interaction']['cancel'].bind(cancelButton, this));
+      this['variable']['eventSymbol']['interactionCancel'] = ModalLayer['_assistant']['event']['add'](cancelButton, 'click', null, this['event']['interaction']['cancel'], this, null, options);
 
-    // 模态层最小化还原
-    ModalLayer['_assistant']['element']['eventTarget'](document, '#modal-layer-minimize-queue .modal-layer-minimize-queue-item', 'click', this['event']['minimizeRevert']);      
-  }  
+    // if (this['option']['mask']['enable'] && this['option']['mask']['clickRemove'])
+      // this['variable']['nodes']['mask'].addEventListener('click', this['event']['clickMask'] = this['event']['clickMask'].bind(this));
+
+    // if (this['option']['drag']['enable'])
+      // this['variable']['nodes']['container'].querySelector('.modal-layer-title').addEventListener('mousedown', this['event']['drag'] = this['event']['drag'].bind(this));
+
+    // if (this['option']['resize']['enable'])
+      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-resize-bar', 'mousedown', this['event']['resize'] = this['event']['resize'].bind(this));
+
+    // this['variable']['nodes']['container'].addEventListener('mousedown', this['event']['active'] = this['event']['active'].bind(this));
+
+    // if (this['event']['action']['close'] instanceof Function)
+      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-close', 'click', this['event']['action']['close'], this);
+
+    // if (this['event']['action']['expand'] instanceof Function)
+      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-expand', 'click', this['event']['action']['expand'], this);
+
+    // if (this['event']['action']['minimize'] instanceof Function)
+      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-minimize', 'click', this['event']['action']['minimize'], this);
+
+    // if (this['event']['interaction']['ok'] && okButton)
+      // okButton.addEventListener('click', this['event']['interaction_ok'] = this['event']['interaction']['ok'].bind(okButton, this));
+
+    // if (this['event']['interaction']['no'] && noButton)
+      // noButton.addEventListener('click', this['event']['interaction_no'] = this['event']['interaction']['no'].bind(noButton, this));
+
+    // if (this['event']['interaction']['cancel'] && cancelButton)
+      // cancelButton.addEventListener('click', this['event']['interaction_cancel'] = this['event']['interaction']['cancel'].bind(cancelButton, this));
+
+  }
 
   /**
    * 将节点插入this['option']['window']中
@@ -616,7 +661,7 @@ class ModalLayer {
     showCls = 'modal-layer-show';
     hideCls = 'modal-layer-hide';
     zIndex = ModalLayer['_assistant']['element']['maxZIndex']();
-    if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return false;
+    if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
 
     // 过渡动画
     opacityAnimation = this['variable']['animationName']['transition_opacity'] + ' ' + this['option']['transition']['time'] + 's ease forwards';
@@ -672,7 +717,7 @@ class ModalLayer {
     nodes = this['variable']['nodes'];
     hideCls = 'modal-layer-hide';
     showCls = 'modal-layer-show';
-    if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return false;
+    if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
 
     // 取消自动关闭
     if (Number.isInteger(this['variable']['timeout']['auto_shutdown']))
@@ -730,10 +775,11 @@ class ModalLayer {
     if (!queueNode) {
       queueNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue']])[0];
       queueNode.classList.add(this.option.ui, `modal-layer-skin-${this.option.skin}`);
+      // 模态层最小化还原
+      ModalLayer['_variable']['minimizeQueueEvent'] = ModalLayer['_assistant']['event']['add'](queueNode, 'click', '.modal-layer-minimize-queue-item', this['event']['minimizeRevert'], null, null, false);
       document.body.insertAdjacentElement('beforeend', queueNode);
     }
 
-    animationDur = 0.3;
     title = this['variable']['nodes']['container'].querySelector('.modal-layer-title-content').innerHTML;
     queueItemNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue_item']])[0];
 
@@ -781,8 +827,10 @@ class ModalLayer {
     promise = new Promise(resolve => {
       queueItemNode['onanimationend'] = e => {
         queueItemNode.remove();
-        if (ModalLayer['_minimizeQueue'].length <= 0)
+        if (ModalLayer['_minimizeQueue'].length <= 0) {
           queueNode.remove();
+          ModalLayer['_assistant']['event']['remove'](ModalLayer['_variable']['minimizeQueueEvent']);
+        }
         resolve();
       }
     });
@@ -794,12 +842,16 @@ class ModalLayer {
 
   /**
    * 移除模态层
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-24T23:42:52+0800
+   * @return   {Promise}                 Promise对象
    */
   remove () {
     let nodes;
     
     nodes = this['variable']['nodes'];
-    if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(this['status'])) return false;
+    if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(this['status'])) return Promise.resolve();
 
     // 如果当前层处于最小化状态则移出最小化任务栏.
     if (this['status'] === ModalLayer['_enum']['STATUS']['MINIMIZE']) {
@@ -811,7 +863,7 @@ class ModalLayer {
     this['setStatus']('removing');
 
     // 隐藏模态层
-    this['hide']().then(() => {
+    return this['hide']().then(() => {
       // 移除绑定事件
       this['removeAllEvent']();
 
@@ -822,6 +874,28 @@ class ModalLayer {
 
       // 将当前状态置为removed
       this['setStatus']('removed');
+    });
+  }
+
+  /**
+   * 彻底删除模态层
+   * 此方法用于释放当前实例占用内存.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-24T22:03:21+0800
+   */
+  delete () {
+    // 移除节点以及移除监听事件
+    this.remove()
+    .then(() => {
+      // 删除实例
+      ModalLayer._instance.splice(this.option.index, 1);
+
+      // 解除相关变量引用.
+      ModalLayer['_assistant']['object']['dereference'](this['event']);
+      ModalLayer['_assistant']['object']['dereference'](this['option']);
+      ModalLayer['_assistant']['object']['dereference'](this['variable']);
+      this['event'] = this['option'] = this['variable'] = null;
     });
   }
 
@@ -846,23 +920,26 @@ class ModalLayer {
     let nodes;
     let okButton, noButton, cancelButton;
 
-    if (Object.keys(nodes = this['variable']['nodes']).length === 0) return false;
+    if (Object.keys(nodes = this['variable']['nodes']).length === 0) return;
+
+    // 移除所有事件
+    Object.values(this['variable']['eventSymbol']).forEach(symbol => ModalLayer['_assistant']['event']['remove'](symbol));
 
     okButton = nodes['container'].querySelector('.modal-layer-interaction-btn-ok');
     noButton = nodes['container'].querySelector('.modal-layer-interaction-btn-no');
     cancelButton = nodes['container'].querySelector('.modal-layer-interaction-btn-cancel');
 
     // 移除遮罩层点击事件
-    if (this['option']['mask']['enable'] && this['option']['mask']['clickRemove'])
-      nodes['mask'].removeEventListener('click', this['event']['clickMask']);
+    // if (this['option']['mask']['enable'] && this['option']['mask']['clickRemove'])
+      // nodes['mask'].removeEventListener('click', this['event']['clickMask']);
 
     // 移除模态层拖拽事件
-    if (this['option']['drag']['enable'])
-      nodes['container'].querySelector('.modal-layer-title').removeEventListener('mousedown', this['event']['drag']);
+    // if (this['option']['drag']['enable'])
+      // nodes['container'].querySelector('.modal-layer-title').removeEventListener('mousedown', this['event']['drag']);
 
     // 移除模态层伸缩事件
-    if (this['option']['resize']['enable'])
-      nodes['container'].removeEventListener('mousedown', this['event']['resize']);
+    // if (this['option']['resize']['enable'])
+    //   nodes['container'].removeEventListener('mousedown', this['event']['resize']);
 
     // 移除活动层事件
     nodes['container'].removeEventListener('mousedown', this['event']['active']);
@@ -1073,9 +1150,6 @@ class ModalLayer {
     layer.show();
 
     return layer;
-  }
-  static console () {
-    console.log(ModalLayer._struct);
   }
 }
 
