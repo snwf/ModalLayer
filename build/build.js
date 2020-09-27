@@ -5,7 +5,7 @@
 * @Description         构建将要使用的js和css
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-24 17:19:27
+* @Last Modified time: 2020-09-25 23:39:24
 */
 
 const fs = require('fs');
@@ -42,6 +42,7 @@ buildList = {
     path.join(CORE_PATH, '/core.js'),
     path.join(ASSISTANT_PATH, '/css.js'),
     path.join(ASSISTANT_PATH, '/file.js'),
+    path.join(ASSISTANT_PATH, '/cache.js'),
     path.join(ASSISTANT_PATH, '/event.js'),
     path.join(ASSISTANT_PATH, '/worker.js'),
     path.join(ASSISTANT_PATH, '/object.js'),
@@ -50,7 +51,7 @@ buildList = {
     path.join(ASSISTANT_PATH, '/element.js'),
     path.join(ASSISTANT_PATH, '/formula.js'),
     path.join(ASSISTANT_PATH, '/canvas.js'),
-    path.join(ASSISTANT_PATH, '/performance.js'),
+    // path.join(ASSISTANT_PATH, '/performance.js'),
     path.join(ASSISTANT_PATH, '/canvas-filter.js'),
     path.join(ASSISTANT_PATH, '/canvas-animation.js'),
     path.join(LAYER_PATH, '/page.js'),

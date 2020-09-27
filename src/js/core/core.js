@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-25 00:35:23
+* @Last Modified time: 2020-09-28 02:01:47
 */
 
 class ModalLayer {
@@ -43,14 +43,6 @@ class ModalLayer {
    * @type {Map}
    */
   static _variable = new Map;
-
-  /**
-   * 缓存空间
-   * 主要用于的canvas animation性能优化.
-   *
-   * @type {Object}
-   */
-  static _cache = new Map;
 
   /**
    * 需要在worker中执行的方法.

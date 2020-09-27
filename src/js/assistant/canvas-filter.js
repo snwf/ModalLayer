@@ -4,8 +4,8 @@
 * @Date:               2020-09-05 01:59:42
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 22:43:15
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-09-28 02:37:21
 */
 
 class CanvasFilterAssistant {
@@ -100,7 +100,7 @@ class CanvasFilterAssistant {
    */
   static gaussianBlur (image, radius = 3, sigma = 1) {
     let width, height;
-    let divisor, imageData, newImgData, gaussianMask;
+    let divisor, imageData, newImgData, gaussianMask, gaussianMaskMap;
     let r, g, b, imgX, imgY, maskIndex, currIndex, tempIndex, imgDataIndex;
 
     try {
@@ -111,12 +111,15 @@ class CanvasFilterAssistant {
 
       // 根据半径计算高斯掩码
       divisor = 0;
-      if (CanvasFilterAssistant['__gaussianMask'][`${radius},${sigma}`]) {
-        gaussianMask = CanvasFilterAssistant['__gaussianMask'][`${radius},${sigma}`];
-      } else {
+      if (!(gaussianMaskMap = CacheAssistant['get']('gaussianMask', CanvasFilterAssistant))) {
+        gaussianMaskMap = new Map;
+        CacheAssistant['set']('gaussianMask', gaussianMaskMap, CanvasFilterAssistant);
+      }
+
+      if (!(gaussianMask = gaussianMaskMap.get(`${radius},${sigma}`))) {
         gaussianMask = [];
         for (maskIndex = -radius; maskIndex <= radius; maskIndex++) {
-          let distribution = FormulaAssistant['gaussian']['getDistribution'](maskIndex, sigma, 1);
+          let distribution = FormulaAssistant['getDistribution'](maskIndex, sigma, 1);
           gaussianMask.push(distribution);
           divisor += distribution;
         }
@@ -125,7 +128,7 @@ class CanvasFilterAssistant {
         for (let i = 0; i < gaussianMask.length; i++)
           gaussianMask[i] /= divisor;
 
-        CanvasFilterAssistant['__gaussianMask'][`${radius},${sigma}`] = gaussianMask;
+        gaussianMaskMap.set(`${radius},${sigma}`, gaussianMask);
       }
 
       // 初始化newImgData

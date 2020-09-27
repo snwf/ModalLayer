@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-24 23:57:57
+* @Last Modified time: 2020-09-28 01:13:11
 */
 
 class ObjectAssistant {
@@ -14,15 +14,21 @@ class ObjectAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-24T22:22:35+0800
-   * @param    {Mixed}                 v 需要释放引用的对象
+   * @param    {Mixed}                  v 需要释放引用的对象
    */
   static dereference (v) {
-    Object.keys(v).forEach(k => {
-      if (Array.isArray(v[k]) || ObjectAssistant['isOnlyObject'](v[k]))
-        ObjectAssistant['dereference'](v[k]);
-      v[k] = null;
+    Object.keys(v).forEach(_k => {
+      let _v = v[_k];
+      if (ObjectAssistant['isCollection'](_v)) {
+        ObjectAssistant['dereference'](_v);
+        if (_v instanceof Map)
+          v.delete(_k);
+        else if (_v instanceof Set)
+          v.delete(_v);
+        else
+          v[_k] = null;
+      }
     });
-    v = null;
   }
 
   /**
@@ -105,6 +111,32 @@ class ObjectAssistant {
   }
 
   /**
+   * 判断对象是否是一个集合
+   * 例如Array, Map, Set, Object等.
+   * 注意: 该方法中的集合不包括TypedArray.
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-28T00:23:19+0800
+   * @param    {Mixed}                  v  
+   * @return   {Boolean}                  
+   */
+  static isCollection (v) {
+    return !ObjectAssistant['isEmpty'](v) && (Array.isArray(v) || (v instanceof Map) || (v instanceof Set) || ObjectAssistant['isOnlyObject'](v));
+  }
+
+  /**
+   * 判断对象是否是一个可枚举的集合
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-28T00:25:02+0800
+   * @param    {Mixed}                  v 
+   * @return   {Boolean}                 
+   */
+  static isEnumerableCollection (v) {
+    return ObjectAssistant['isCollection'](v) && !(v instanceof WeakMap || v instanceof WeakSet);
+  }
+
+  /**
    * 判断当前对象是否仅仅只是一个Object
    *
    * @Author   Wolf
@@ -184,7 +216,7 @@ class ObjectAssistant {
 
       for (let i = 0; i < key.length; i++) {
         k = key[i], v = val[i];
-        if (ObjectAssistant['isOnlyObject'](v) || Array.isArray(v)) {
+        if (ObjectAssistant['isCollection'](v)) {
           prevObj[k] = v.constructor?.() ?? Object.create(null);
           stack.push([Object.keys(v), Object.values(v)]);
           _stack.push(prevObj[k]);
@@ -206,10 +238,9 @@ class ObjectAssistant {
    * @DateTime 2020-09-01T20:58:58+0800
    * @param    {Object}                 sub  主体对象
    * @param    {Object}                 obj  次要对象
-   * @param    {Number}                 mode 如果出现重复值采取的动作[0: 深入补全, 1: 完全覆盖]
    * @return   {Object}                      合并后新的对象
    */
-  static merge (sub, obj, mode = 0) {
+  static merge (sub, obj) {
     let nObj, prevObj;
     let stack, _stack;
     let k, _k, key, _key, totalKey, v, _v, val, _val;
@@ -236,13 +267,15 @@ class ObjectAssistant {
         [_k, _v] = [_key[i], _val[i]];
         v = val[key.indexOf(_k)];
         nCover = ObjectAssistant['isEmpty'](v);
-        if (ObjectAssistant['isOnlyObject'](_v) || Array.isArray(_v)) {
+        if ((ObjectAssistant['isEmpty'](v) || ObjectAssistant['isCollection'](v)) && ObjectAssistant['isCollection'](_v)) {
           let newEle = [];
           prevObj[_k] = (nCover ? _v.constructor : v.constructor)?.() ?? Object.create(null);
-          newEle[1] = mode === 0 ? [Object.keys(_v), Object.values(_v)] : [Object.keys(v), []];
+          newEle[1] = [Object.keys(_v), Object.values(_v)];
           newEle[0] = nCover ? [[], []] : [Object.keys(v), Object.values(v)];
           _stack.push(prevObj[_k]);
           stack.push(newEle);
+        } else if (!ObjectAssistant['isCollection'](v) && ObjectAssistant['isCollection'](_v)) {
+          prevObj[_k] = v;
         } else {
           Object.defineProperty(prevObj, _k, {
             'writable': true,

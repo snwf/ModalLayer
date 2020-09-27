@@ -23,6 +23,7 @@
   <script src="../../src/js/layer/message.js"></script>
   <script src="../../src/js/layer/loading.js"></script>
 
+  <script src="../../src/js/assistant/cache.js"></script>
   <script src="../../src/js/assistant/event.js"></script>
   <script src="../../src/js/assistant/formula.js"></script>
   <script src="../../src/js/assistant/performance.js"></script>
@@ -329,22 +330,75 @@
         }
       }
     };
-    // ModalLayer.image(option, function (e) {
-    //   console.error(e);
-    // });
+    ModalLayer.image(option, function (e) {
+      console.error(e);
+    });
 
     // 方式二
-    let inputNode = document.querySelector('#image-layer-test-input');
-    inputNode.onchange = function () {
-      option.layer.image = inputNode.files;
-      ModalLayer.image(option, function (e) {
-        console.error(e);
-      });
-    }
-    inputNode.click();
+    // let inputNode = document.querySelector('#image-layer-test-input');
+    // inputNode.onchange = function () {
+    //   option.layer.image = inputNode.files;
+    //   ModalLayer.image(option, function (e) {
+    //     console.error(e);
+    //   });
+    // }
+    // inputNode.click();
   });
+  
   document.querySelector('#delete-all-ModalLayer').onclick = function () {
     ModalLayer._instance.forEach(v => void v.delete());
   }
+
+// let testOption = {
+//   title: '测试',
+//   mask: true,
+//   popupTime: 0,
+//   content: {
+//     fullContainer: true
+//   },
+//   layer: {
+//     sizeRange: {
+//       min: [316, 396]
+//     },
+//     image: ['asd.jpg', './test.png'],
+//     toolbar: {
+//       enable: true,
+//       config: {
+//         'crop': {
+//           'enable': true,
+//           'title': '裁剪'
+//         },
+//         'spin': true,
+//         'filter': {
+//           enable: true,
+//           config: {
+//             blur: {
+//               enable: true,
+//               title: 'blur',
+//               icon: null,
+//               textIcon: '模'
+//             },
+//             gray: {
+//               enable: true,
+//               title: 'gray',
+//               icon: null,
+//               textIcon: '灰'
+//             },
+//             mirror: {
+//               enable: true,
+//               title: 'mirror',
+//               icon: null,
+//               textIcon: '镜'
+//             }
+//           }
+//         },
+//         'revert': true,
+//         'download': true,
+//       }
+//     }
+//   }
+// };
+// var per = PerformanceAssistant.functionMeasure(ModalLayer.image, [testOption], 30);
+// var report = PerformanceAssistant.getAnalysis(per);
 </script>
 </html>

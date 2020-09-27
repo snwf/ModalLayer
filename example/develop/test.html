@@ -5,6 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script>
+    class NumberAssistant {
+      /**
+       * 乘法
+       * 规避js处理浮点数不精确的问题.
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-22T03:07:57+0800
+       * @param    {Number}                 mul1 乘数
+       * @param    {Number}                 mul2 乘数
+       * @return   {Number}                      乘积
+       */
+      static mul (mul1, mul2) {
+        let mul, carry;
+
+        mul = [
+          mul1.toString().split('.'),
+          mul2.toString().split('.')
+        ];
+
+        carry = window.Math.pow(10, window.Math.max(
+          mul[0][1].length ?? 0,
+          mul[1][1].length ?? 0
+        ));
+
+        mul = [
+          [Number(mul[0][0]), Number('0.' + mul[0][1]) * carry],
+          [Number(mul[1][0]), Number('0.' + mul[1][1]) * carry]
+        ];
+
+        return (mul[0][0] !== 0 ? mul[0][0] : 1) * (mul[1][0] !== 0 ? mul[1][0] : 1) + (mul[0][1] * mul[1][1] / carry);
+      }
+    }
     class ObjectAssistant {
       /**
        * 获取对象上某个属性
@@ -187,10 +219,9 @@
        * @DateTime 2020-09-01T20:58:58+0800
        * @param    {Object}                 sub  主体对象
        * @param    {Object}                 obj  次要对象
-       * @param    {Number}                 mode 如果出现重复值采取的动作[0: 深入补全, 1: 完全覆盖]
        * @return   {Object}                      合并后新的对象
        */
-      static merge (sub, obj, mode = 0) {
+      static merge (sub, obj) {
         let nObj, prevObj;
         let stack, _stack;
         let k, _k, key, _key, totalKey, v, _v, val, _val;
@@ -220,7 +251,7 @@
             if (ObjectAssistant['isOnlyObject'](_v) || Array.isArray(_v)) {
               let newEle = [];
               prevObj[_k] = (nCover ? _v.constructor : v.constructor)?.() ?? Object.create(null);
-              newEle[1] = mode === 0 ? [Object.keys(_v), Object.values(_v)] : [Object.keys(v), []];
+              newEle[1] = [Object.keys(_v), Object.values(_v)];
               newEle[0] = nCover ? [[], []] : [Object.keys(v), Object.values(v)];
               _stack.push(prevObj[_k]);
               stack.push(newEle);
@@ -237,151 +268,388 @@
         return nObj;
       }
     }
+class CacheAssistant {
+  /**
+   * 缓存符号
+   *
+   * @type {Symbol}
+   */
+  static _symbol = new Map;
 
-    class EventAssistant {
-      static #_event = new Map;
+  /**
+   * 查询缓存是否存在
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-25T23:21:16+0800
+   * @param    {Mixed}                  k 缓存名称
+   * @param    {Object}                 o 专属对象
+   * @return   {Boolean}                  
+   */
+  static has (k, o = null) {
+    let symbol;
 
-      static add (element, type, selector, callback, thisArg, parameter, options, wantsUntrusted = false) {
-        let eventSymbol;
-        let promise, usePromise;
-        
-        usePromise = false;
-        eventSymbol = Symbol();
+    o = o ?? CacheAssistant;
+    symbol = CacheAssistant['_symbol'].get(o);
 
-        if (!(element instanceof EventTarget)) {
-          if (!(element = document.querySelector(element)))
-            throw Error('Is not a valid element.');
-        }
+    return symbol ? o[symbol].has(k) : false;
+  }
 
-        if (!ObjectAssistant.isString(type))
-          throw Error('Event type not allowed to be empty');
+  /**
+   * 获取缓存
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-25T23:01:44+0800
+   * @param    {Mixed}                  k 缓存名称
+   * @param    {Object}                 o 专属对象
+   * @return   {Mixed}                    缓存内容
+   */
+  static get (k, o = null) {
+    let symbol;
 
-        if (selector instanceof EventTarget) {
-          element = selector;
-          selector = null;
-        }
+    o = o ?? CacheAssistant;
+    symbol = CacheAssistant['_symbol'].get(o);
 
-        if (!(callback instanceof Function))
-          usePromise = true;
+    return symbol ? o[symbol].get(k) : undefined;
+  }
 
-        if (ObjectAssistant.isEmpty(thisArg))
-          thisArg = selector ?? element;
+  /**
+   * 设置缓存
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-25T22:30:41+0800
+   * @param    {Mixed}                  k 缓存名称
+   * @param    {Mixed}                  v 缓存内容
+   * @param    {Object}                 o 专属对象
+   */
+  static set (k, v, o = null) {
+    let symbol;
 
-        if (!ObjectAssistant.isEmpty(parameter) && !Array.isArray(parameter))
-          parameter = [parameter];
+    o = o ?? CacheAssistant;
 
-        if (ObjectAssistant.isEmpty(options))
-          options = false;
-          // options = {
-          //   'once': false,
-          //   'passive': false,
-          //   'capture': false,
-          //   'mozSystemGroup': false
-          // };
+    if (!CacheAssistant['_symbol'].has(o)) {
+      symbol = Symbol('cache');
+      CacheAssistant['_symbol'].set(o, symbol)
+    } else {
+      symbol = CacheAssistant['_symbol'].get(o);
+    }
 
-        if (usePromise) {
-          parameter = [{
-            'target': thisArg,
-            'symbol': eventSymbol,
-            'parameter': parameter ?? []
-          }]
-        } else {
-          parameter = parameter ?? [];
-        }
+    if (!o.hasOwnProperty(symbol))
+      Object.defineProperty(o, symbol, {
+        'value': new Map,
+        'writable': false,
+        'enumerable': false,
+        'configurable': false
+      });
 
-        if (selector) { // 事件委托
-          let delegate;
-          let target, findElements;
+    o[symbol].set(k, v);
+  }
 
-          promise = new Promise(resolve => {
-            delegate = function (event) {
-              target = event.target;
-              findElements = element.querySelectorAll(selector);
+  /**
+   * 删除缓存
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-25T23:10:56+0800
+   * @param    {Mixed}                  k 缓存名称, 如果为空则删除当前对象的所有缓存
+   * @param    {Object}                 o 专属对象
+   */
+  static delete (k = null, o = null) {
+    let _o, symbol;
 
-              // 忽略的情况
-              //   如果触发元素是绑定元素本身或者其父元素.
-              //   如果在父元素中没有找到触发元素.
-              if (target.contains(element) || findElements.length === 0) return false;
+    o = o ?? CacheAssistant;
+    symbol = CacheAssistant['_symbol'].get(o);
 
-              if (Reflect.apply(Array.prototype.includes, findElements, [target])) {
-                if (usePromise) {
-                  parameter[0]['event'] = event;
-                  parameter[0]['target'] = thisArg === selector ? event.target : thisArg;
-                } else {
-                  parameter.push(event);
-                }
-                (usePromise ? resolve : callback).apply(thisArg === selector ? event.target : thisArg, parameter);
-              }
-            };
+    if (k) {
+      o[symbol].delete(k);
+    } else {
+      o[symbol].forEach((v, k) => {
+        o[symbol].delete(k);
+      });
+    }
+  }
 
-            EventAssistant.#_event.set(eventSymbol, {
-              'type': type,
-              'element': element,
-              'options': options,
-              'selector': selector,
-              'callback': callback,
-              'wantsUntrusted': wantsUntrusted            
-            });
+  /**
+   * 清除所有缓存
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-25T23:12:31+0800
+   */
+  static clear () {
+    CacheAssistant['_symbol'].forEach((v, k) => {
+      CacheAssistant['delete'](null, k);
+    });
+  }
+}    
+    class CanvasAssistant {
+      /**
+       * 绘制文字
+       *
+       * @Author   Wolf
+       * @DateTime 2020-09-25T23:41:05+0800
+       * @param    {CanvasRenderingContext2D} ctx     画布对象
+       * @param    {Object}                   options 相关设置
+       */
+      static drawText (ctx, options) {
+        let _option, measureText;
 
-            element.addEventListener(type, delegate, options, wantsUntrusted);
-          });
+        _option = {
+          'text': null,
+          'fill': true,
+          'color': 'black',
+          'direction': 'ltr',
+          'textAlign': 'center',
+          'textBaseline': 'middle',
+          'font': 'normal 16px Microsoft YaHei, serif',
+          'point': [ctx.canvas.width / 2, ctx.canvas.height / 2]
+        };
 
-        } else { // 正常绑定
-          promise = new Promise(resolve => {
-            callback = (usePromise ? resolve : callback).bind(thisArg, ...parameter);
-            EventAssistant.#_event.set(eventSymbol, {
-              'type': type,
-              'element': element,
-              'options': options,
-              'selector': selector,
-              'callback': callback,
-              'wantsUntrusted': wantsUntrusted
-            });
-            element.addEventListener(type, callback, options, wantsUntrusted);
-          });
-        }
+        options = ObjectAssistant.merge(options, _option);
 
-        return usePromise ? promise : eventSymbol;
+        if (!options['text']) return;
+
+        ctx.save();
+
+        ctx.font = options['font'];
+        ctx.fillStyle = options['color'];
+        ctx.direction = options['direction'];
+        ctx.textAlign = options['textAlign'];
+        ctx.textBaseline = options['textBaseline'];
+
+        measureText = ctx.measureText(options['text']);
+        options['point'][1] += measureText.actualBoundingBoxDescent / 2;
+
+        if (options['fill'] === true)
+          ctx.fillText(options['text'], ...options['point'], options['maxWidth']);
+        else
+          ctx.strokeText(options['text'], ...options['point'], options['maxWidth']);
+
+        ctx.restore();
       }
 
       /**
-       * 移除事件
-       * 通过Symbol
+       * 绘制一个圆
        *
        * @Author   Wolf
-       * @DateTime 2020-09-24T03:12:47+0800
-       * @param    {Symbol}                 symbol 索引
+       * @DateTime 2020-09-25T23:26:29+0800
+       * @param    {CanvasRenderingContext2D} ctx     画布对象
+       * @param    {Object}                   options 相关设置
        */
-      static remove (symbol) {
-        let eventOptions = EventAssistant.#_event['get'](symbol);
-        if (eventOptions) {
-          eventOptions['element'].removeEventListener(eventOptions['type'], eventOptions['callback'], eventOptions['options'], eventOptions['wantsUntrusted']);
-          EventAssistant.#_event['delete'](symbol);
+      static drawRound (ctx, options) {
+        let _option;
+
+        _option = {
+          'step': [],
+          'radius': 5,
+          'fill': true,
+          'borderWidth': 5,
+          'borderColor': 'black',
+          'fillColor': 'transparent',
+          'point': [ctx.canvas.width / 2, ctx.canvas.height / 2]
+        }
+
+        options = ObjectAssistant.merge(options, _option);
+
+        ctx.save();
+
+        ctx.fillStyle = options['fillColor'];
+        ctx.lineWidth = options['borderWidth'];
+        ctx.strokeStyle = options['borderColor'];
+
+        ctx.beginPath();
+        ctx.setLineDash(options['step']);
+        ctx.arc(...options['point'], options['radius'], 0, 2 * window.Math.PI);
+        ctx.stroke();
+
+        if (options['fill'] === true) ctx.fill();
+
+        ctx.restore();
+
+      }
+ 
+      /**
+       * 绘制虚线圆形
+       *
+       * @Author   Wolf
+       * @DateTime 2020-08-27T01:59:16+0800
+       * @param    {Object}                 ctx    CanvasRenderingContext2D对象
+       * @param    {Number}                 x      圆心所在x轴位置
+       * @param    {Number}                 y      圆心所在y轴距离
+       * @param    {Number}                 radius 半径
+       * @param    {Number}                 step   每段圆弧之间的间距
+       */
+      static drawDashRound (ctx, x, y, radius, step = 5) {
+        let count = window.Math.floor(360 / step);
+        step = 5 / 180 * window.Math.PI * 2;
+        for (let b = 0, e = step / 2; e <= 360; b += step, e += step) {
+          ctx.beginPath()
+          ctx.arc(x, y, radius, b, e);
+          ctx.stroke();
         }
       }
 
-      static removeBy (key, value) {
-        EventAssistant.#_event.forEach((v, k) => {
-          if (v[key] === value) {
-            v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-            EventAssistant.#_event['delete'](k);
-          }
-        });
-      }
+      /**
+       * 下载canvas中展示的图片
+       *
+       * @Author   wolf
+       * @DateTime 2020-07-06T03:26:50+0800
+       * @param    {Element}                canvas   画布对象
+       * @param    {String}                 filename 图片名称
+       * @param    {String}                 type     图片类型
+       */
+      static download (canvas, filename = 'canvas', type) {
+        let node;
 
-      static removeAll () {
-        EventAssistant.#_event.forEach((v, k) => {
-          v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-          EventAssistant.#_event['delete'](k);
-        });
+        if (CacheAssistant['has']('downloadNode', CanvasAssistant)) {
+          node = CacheAssistant['get']('downloadNode', CanvasAssistant)
+        } else {
+          node = document.createElement('a');
+          CacheAssistant['set']('downloadNode', node, CanvasAssistant);
+        }
+
+        node.download = filename;
+        node.href = canvas.toDataURL(type);
+
+        node.click();
+      }
+    }    
+
+
+    class CanvasAnimationAssistant {
+
+      static loadFailedFade (ctx, options) {
+        let start, elapse, interval;
+        let _fps, _opacity, _repaint;
+        let iconKey, textKey, roundKey;
+        let _cache, _option, frameAnimation;
+        let speed, casIdx, opacity, direction;
+        let casCenter, textCenter, roundCenter;
+        let iconOption, textOption, roundOption, defaultOption;
+        let iconCas, iconCtx, textCas, textCtx, roundCas, roundCtx;
+
+        if (!(ctx instanceof CanvasRenderingContext2D))
+          throw Error('Requires a value of type "CanvasRenderingContext2D"');
+
+        if (ObjectAssistant.isEmpty(options))
+          options = Object.create(null);
+
+        _fps = 60;
+        _opacity = 1;
+        _repaint = 'animation-loadFailedFade-' + Date.now() + '-' + performance.now() + (options['sign'] ? ('-' + options['sign']) : '');
+
+        iconOption = {
+          'size': 72,
+          'char': ['!', '?'],
+          'color': 'rgba(220, 53, 69)',
+          'font': 'bold 72px Microsoft YaHei, serif',
+        };
+
+        textOption = {
+          'size': 16,
+          'color': 'black',
+          'text': 'Load Failed',
+          'font': 'normal 16px Microsoft YaHei, serif',
+        }
+
+        roundOption = {
+          'step': [5],
+          'radius': 48,
+          'fill': false,
+          'borderWidth': 5,
+          'fillColor': '#ddd',
+          'borderColor': '#ddd'
+        };
+
+        defaultOption = {
+          'duration': 4,
+          'speed': null,
+          'icon': iconOption,
+          'text': textOption,
+          'round': roundOption
+        }
+
+        _option = ObjectAssistant.merge(options, defaultOption);
+        iconKey = JSON.stringify(_option['icon']);
+        textKey = JSON.stringify(_option['text']);
+        roundKey = JSON.stringify(_option['round']);
+        _option['speed'] = _option['speed'] ?? _option['duration'] / (_option['icon']['char'].length * 2 * _opacity);
+
+        if (!(_cache = CacheAssistant['get']('loadFailedFade', CanvasAnimationAssistant))) {
+          _cache = new Map;
+          CacheAssistant['set']('loadFailedFade', _cache, CanvasAnimationAssistant);
+        }
+
+        if (!(iconCas = _cache.get(iconKey))) {
+          iconCas = [];
+          for (let i = 0; i < iconOption['char'].length; i++) {
+            iconCas[i] = document.createElement('canvas');
+            iconCtx = iconCas[i].getContext('2d');
+            iconOption['text'] = iconOption['char'][i];
+            iconCas[i].width = iconCas[i].height = iconOption['size'];
+            CanvasAssistant['drawText'](iconCtx, iconOption);
+          }
+          _cache.set(iconKey, iconCas);
+        }
+
+        if (!(textCas = _cache.get(textKey))) {
+          textCas = document.createElement('canvas');
+          textCtx = textCas.getContext('2d');
+          textCas.height = textOption['size'] * 2;
+          textCas.width = textOption['size'] * textOption['text'].length;
+          CanvasAssistant['drawText'](textCtx, textOption);
+          _cache.set(textKey, textCas);
+        }
+
+        if (!(roundCas = _cache.get(roundKey))) {
+          roundCas = document.createElement('canvas');
+          roundCtx = roundCas.getContext('2d');
+          roundCas.width = roundCas.height = (roundOption['radius'] + roundOption['borderWidth']) * 2;
+          CanvasAssistant['drawRound'](roundCtx, roundOption);
+          _cache.set(roundKey, roundCas);
+        }
+
+        direction = 1;
+        casIdx = opacity = 0;
+        interval = 1000 / _fps;
+        casCenter = [ctx.canvas.width / 2, ctx.canvas.height / 2];
+        roundCenter = [roundCas.width / 2, roundCas.height / 2];
+        textCenter = [textCas.width / 2, (textOption['size'] + roundCas.height) / 2];
+        speed = _opacity / (_option['duration'] / iconCas.length / 2 * 1000 / interval);
+
+        frameAnimation = function (timestamp) {
+          let plusNum = speed * direction;
+
+          ctx.clearRect(casCenter[0] - roundCenter[0], casCenter[1] - roundCenter[1], roundCas.width, roundCas.height);
+
+          if (opacity + plusNum > 1) {
+            opacity = 1;
+            direction = -direction;
+          } else if (opacity + plusNum < 0) {
+            opacity = 0;
+            direction = -direction;
+            casIdx = casIdx + 1 < iconCas.length ? casIdx + 1 : 0;
+          } else {
+            opacity += plusNum;
+          }
+
+          ctx.globalAlpha = opacity;
+          ctx.drawImage(iconCas[casIdx], casCenter[0] - iconCas[casIdx].width / 2, casCenter[1] - iconCas[casIdx].height / 2);
+          ctx.globalAlpha = 1;
+          ctx.drawImage(roundCas, casCenter[0] - roundCenter[0], casCenter[1] - roundCenter[1]);
+
+          window.requestAnimationFrame(frameAnimation);
+        }
+
+        ctx.drawImage(textCas, casCenter[0] - textCenter[0], casCenter[1] + textCenter[1]);
+        window.requestAnimationFrame(frameAnimation);
+
+        return _repaint;
       }
     }
-    
+
   </script>
 </head>
 <body>
-  <canvas width="800" height="600" style="border: 1px solid black"></canvas>
-  <div id="test-event">
+  <canvas id="test-canvas" width="800" height="600" style="border: 1px solid black"></canvas>
+<!--   <div id="test-event">
     <p><a href="javascript: void(0)" class="test-a" index="1">1爱神的箭卡省的</a></p>
     <p><a href="javascript: void(0)" class="test-a" index="2">2爱神的箭卡省的</a></p>
     <p><a href="javascript: void(0)" class="test-a" index="3">3爱神的箭卡省的</a></p>
@@ -392,7 +660,7 @@
     <p><a href="javascript: void(0)" class="test-a" index="8">8爱神的箭卡省的</a></p>
     <p><a href="javascript: void(0)" class="test-a" index="9">9爱神的箭卡省的</a></p>
   </div>
-</body>
+ --></body>
 <script>
   /*
   var cas = document.querySelector('canvas');

@@ -5,7 +5,7 @@
 * @Description         
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-25 01:06:46
+* @Last Modified time: 2020-09-28 02:21:48
 */
 
 class ImageLayer extends ModalLayer {
@@ -537,37 +537,49 @@ class ImageLayer extends ModalLayer {
     
     if (this['variable']['image']['reload'] < this['option']['layer']['image'].length)
       fadeOption = {
-        size: 72,
-        char: '!?',
-        canvas: cas,
-        sign: 'load-failed',
-        speed: [25, 20, 20, 25],
-        family: 'Microsoft YaHei',
-        text: '图片加载失败, 请点击重试.',
-        round: {
-          radius: 50,
-          lineWidth: 5,
-          color: 'rgb(230, 230, 230)'
+        'duration': 4,
+        'sign': 'load-failed',
+        'icon': {
+          'size': 72,
+          'char': '!?',
+          'color': 'rgba(220, 53, 69)',
+          'font': 'bold 72px Microsoft YaHei, serif',
+        },
+        'round': {
+          'step': [4],
+          'radius': 50,
+          'borderWidth': 5,
+          'borderColor': 'rgb(230, 230, 230)'
+        },
+        'text': {
+          'color': 'rgba(220, 53, 69)',
+          'text': '图片加载失败, 请点击重试',
+          'font': 'lighter 16px Microsoft YaHei, serif'
         }
-      };
+      }
     else
       fadeOption = {
-        size: 80,
-        char: '×',
-        canvas: cas,
-        speed: 10,
-        family: 'Microsoft YaHei',
-        sign: 'finally-load-failed',
-        text: '图片加载失败, 请联系管理员.',
-        round: {
-          radius: 50,
-          lineWidth: 5,
-          y: cas.height / 2 - 15,
-          color: 'rgb(230, 230, 230)'
+        'duration': 4,
+        'sign': 'finally-load-failed',
+        'icon': {
+          'size': 80,
+          'char': '×',
+          'font': 'bold 80px Microsoft YaHei, serif',
+        },
+        'round': {
+          'step': [5],
+          'radius': 50,
+          'borderWidth': 5,
+          'borderColor': 'rgb(230, 230, 230)'
+        },
+        'text': {
+          'color': 'rgba(220, 53, 69)',
+          'text': '图片加载失败, 请联系管理员',
+          'font': 'lighter 16px Microsoft YaHei, serif'
         }
-      };
+      }
 
-    this['variable']['image']['fadeAttr'] = ModalLayer['_assistant']['canvasAnimation']['fade'](fadeOption);
+    this['variable']['image']['fadeAttr'] = ModalLayer['_assistant']['canvasAnimation']['loadFailedFade'](cas.getContext('2d'), fadeOption);
 
     // 销毁加载失败的图像并且将link置空
     if (this['variable']['image']['link']?.startsWith('blob:'))
@@ -975,7 +987,6 @@ class ImageLayer extends ModalLayer {
 
         sigma = Number(target.getAttribute('data-sigma')) ?? 1;
         radius = Number(target.getAttribute('data-radius')) ?? 3;
-
         if (ModalLayer['_env']['feature']['worker']) {
           let divisor, maskIndex, gaussianMask;
 
@@ -986,7 +997,7 @@ class ImageLayer extends ModalLayer {
             divisor = 0;
             gaussianMask = [];
             for (maskIndex = -radius; maskIndex <= radius; maskIndex++) {
-              let distribution = ModalLayer['_assistant']['formula']['gaussian']['getDistribution'](maskIndex, sigma, 1);
+              let distribution = ModalLayer['_assistant']['formula']['getDistribution'](maskIndex, sigma, 1);
               gaussianMask.push(distribution);
               divisor += distribution;
             }
