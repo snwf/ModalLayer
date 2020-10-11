@@ -304,7 +304,7 @@ class ImageLayer extends ModalLayer {
       });
     }
 
-    this['load']()
+    this['variable']['image']['finish'] = this['load']()
 
     // 图片加载成功
     .then(img => this['loaded'](img))
@@ -331,7 +331,7 @@ class ImageLayer extends ModalLayer {
       'capture': false,
       'passive': false,
       'mozSystemGroup': false
-    };    
+    };
 
     container = this['variable']['nodes']['container'];
     failedText = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['FAILED']);
@@ -343,7 +343,6 @@ class ImageLayer extends ModalLayer {
     Object.keys(this['event']['imageTools']).forEach(k => {
       if (this['event']['imageTools'][k] && this['event']['imageTools'][k] instanceof Function)
         this['variable']['eventSymbol'][`imageTool${k}`] = ModalLayer['_assistant']['event']['add'](container, 'click', `.modal-layer-toolbar-item[tool-type="${k}"]`, this['event']['imageTools'][k], this, null, options);
-        // ModalLayer['_assistant']['element']['eventTarget'](container, '.modal-layer-toolbar-item[tool-type="' + k + '"]', 'click', this['event']['imageTools'][k], this);
     });
   }
 
@@ -419,6 +418,9 @@ class ImageLayer extends ModalLayer {
     this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['LOADING'];
     cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['LOADING']))
 
+    // 如果上次加载失败则移除失败动画.
+    this['variable']['image']['fadeAttr'] && cas.removeAttribute(this['variable']['image']['fadeAttr']);
+
     // 弹出加载层
     if (this['variable']['image']['layer'] instanceof LoadingLayer)
       this['variable']['image']['layer']['show']();
@@ -442,7 +444,6 @@ class ImageLayer extends ModalLayer {
           URL.revokeObjectURL(this['variable']['image']['link']);
         this['variable']['image']['link'] = ModalLayer['_assistant']['file']['getImage'](this['option']['layer']['image'][this['variable']['image']['reload']++]);
       }
-      // this['variable']['image']['link'] = ModalLayer['_assistant']['file']['getImage'](this['option']['layer']['image'][this['variable']['image']['reload']++]);
 
      // 绑定图片加载成功事件
       node['onload'] = () => resolve(node);
@@ -460,10 +461,9 @@ class ImageLayer extends ModalLayer {
    *
    * @Author   Wolf
    * @DateTime 2020-09-04T18:00:22+0800
-   * @return   {Promise}                 一个包含加载状态的Promise对象
    */
   reload () {
-    return this['load']()
+    this['variable']['image']['finish'] = this['load']()
 
     // 图片加载成功
     .then(img => this['loaded'](img))
@@ -472,7 +472,7 @@ class ImageLayer extends ModalLayer {
     .catch(() => this['failed']())
 
     // 重绘图片层大小
-    .then(() => this.resize());
+    .finally(() => this.resize());
   }
 
   /**
@@ -504,7 +504,6 @@ class ImageLayer extends ModalLayer {
     cas.width = this['variable']['image']['default']['size'][0];
     cas.height = this['variable']['image']['default']['size'][1];
 
-    this['variable']['image']['fadeAttr'] && cas.setAttribute(this['variable']['image']['fadeAttr'], 0);
     cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['LOADED']));
 
     window.requestAnimationFrame(() => {
@@ -744,7 +743,7 @@ class ImageLayer extends ModalLayer {
         else
           mousedownPoint[1] = cropVariable[3] + cropVariable[5];
       } else {
-        mousedownPoint[1] = downEvent.y;        
+        mousedownPoint[1] = downEvent.y;
       }
     };
 
@@ -1051,7 +1050,7 @@ class ImageLayer extends ModalLayer {
           this['variable']['image']['layer']['hide']();
         }
       }
-    }[filterType])?.();    
+    }[filterType])?.();
   }
 
   /**
@@ -1085,7 +1084,7 @@ class ImageLayer extends ModalLayer {
   download () {
     let cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
 
-    ModalLayer['_assistant']['canvas']['download'](cas, this['option']['title'], 'image/png');    
+    ModalLayer['_assistant']['canvas']['download'](cas, this['option']['title'], 'image/png');
   }
 }
 

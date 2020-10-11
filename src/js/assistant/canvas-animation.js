@@ -120,7 +120,7 @@ class CanvasAnimationAssistant {
       let repaint = Number(ctx.canvas.getAttribute(_repaint));
       let iconCenter = [iconCas[casIdx].width / 2, (iconCas[casIdx].height + textCas.height) / 2];
 
-      if (repaint === 0) return;
+      if (repaint === undefined || repaint === 0) return;
 
       ctx.clearRect(casCenter[0] - iconCenter[0], casCenter[1] - iconCenter[1], iconCas[casIdx].width, iconCas[casIdx].height);
 

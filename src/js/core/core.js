@@ -981,7 +981,7 @@ class ModalLayer {
     // 显示
     layer.show();
 
-    return layer;    
+    return layer;
   }
 
   /**
@@ -1033,7 +1033,7 @@ class ModalLayer {
     // 显示
     layer.show();
 
-    return layer;    
+    return layer;
   }
 
   /**
@@ -1059,7 +1059,7 @@ class ModalLayer {
     // 显示
     layer.show();
 
-    return layer;    
+    return layer;
   }
 
   /**
@@ -1085,7 +1085,7 @@ class ModalLayer {
     // 显示
     layer.show();
 
-    return layer;    
+    return layer;
   }
 
   /**
@@ -1107,15 +1107,13 @@ class ModalLayer {
 
     layer['variable']['image']['finish']
 
-    .catch(e => reject?.(e))
-
     // 重绘模态层大小
     .then(() => layer.resize())
 
     // 显示
     .then(() => layer.show());
 
-    return layer;    
+    return layer;
   }
 
   /**

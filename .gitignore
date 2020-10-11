@@ -1,0 +1,6 @@
+/node_modules
+/package-lock.json
+/example/develop/*
+/example/produce/*
+!/example/develop/index.html
+!/example/produce/index.html

@@ -330,19 +330,19 @@
         }
       }
     };
-    ModalLayer.image(option, function (e) {
-      console.error(e);
-    });
+    // ModalLayer.image(option, function (e) {
+    //   console.error(e);
+    // });
 
     // 方式二
-    // let inputNode = document.querySelector('#image-layer-test-input');
-    // inputNode.onchange = function () {
-    //   option.layer.image = inputNode.files;
-    //   ModalLayer.image(option, function (e) {
-    //     console.error(e);
-    //   });
-    // }
-    // inputNode.click();
+    let inputNode = document.querySelector('#image-layer-test-input');
+    inputNode.onchange = function () {
+      option.layer.image = inputNode.files;
+      ModalLayer.image(option, function (e) {
+        console.error(e);
+      });
+    }
+    inputNode.click();
   });
   
   document.querySelector('#delete-all-ModalLayer').onclick = function () {
