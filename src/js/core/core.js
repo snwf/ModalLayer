@@ -1142,6 +1142,8 @@ class ModalLayer {
     return layer;
   }
 }
+// 密封类
+Object.seal(ModalLayer);
 
 if (Object.is(window['ModalLayer'], ModalLayer)) {
   console.group('ModalLayer already exists');

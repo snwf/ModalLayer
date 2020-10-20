@@ -136,8 +136,12 @@ class ImageLayer extends ModalLayer {
         break;
       }
     }
+
     this['option']['layer']['toolbar']['enable'] = toolbarEnable;
 
+    // 如果裁剪未开启则将网格展示关闭.
+    if (this['option']['layer']['toolbar']['config']['crop']['enable'] === false)
+      this['option']['layer']['toolbar']['config']['crop']['grid'] = false;
   }
 
 
@@ -533,7 +537,7 @@ class ImageLayer extends ModalLayer {
     this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['FAILED'];
 
     cas.setAttribute('load-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['FAILED']));
-    
+
     if (this['variable']['image']['reload'] < this['option']['layer']['image'].length)
       fadeOption = {
         'duration': 4,
@@ -611,76 +615,98 @@ class ImageLayer extends ModalLayer {
   /**
    * 裁剪
    *
-   * @Author   Wolf
-   * @DateTime 2020-09-05T01:12:31+0800
+   * @Author    wolf
+   * @Datetime  2020-10-12T22:27:09+0800
    */
   crop () {
-    let cas;
-    let newImgData;
-    let raf, repaint;
-    let cropImgPoint;
-    let text, fontSize, cropTextPoint;
+    let sPic, cropCasCenter;
+    let operation, mousedown, direction;
+    let repaint, animationFrame, repaintVariable;
     let minWidth, minHeight, maxWidth, maxHeight;
-    let mousedown, mousedownPoint, mousedownRect;
-    let cropCas, cropCtx, cropVariable, cropCasStyle;
-    let cropBoxLeft, cropBoxTop, cropBoxWidth, cropBoxHeight;
-    let resizeX, resizeY, resizeBoxBorderSize, resizeBoxBorderHalfSize;
-    let stopEvent, cropEvent, keyupEvent, mouseupEvent, mousedownEvent, mousemoveEvent, repaintCropWindowEvent;
+    let cropCas, cropCtx, cropBoxCas, cropBoxCtx;
+    let cropBorderSize, cropBorderHalfSize, cropBorderSizeMul;
+    let cropEvent, moveEvent, cleanEvent, keyupEvent, repaintEvent;
 
+    // 是否重绘(调整截取区域)
     repaint = true;
+    // 帧请求
+    animationFrame = null;
+    // 截取框边框粗细
+    cropBorderSize = 5;
+    // 初始化截取框粗细缓存
+    cropBorderSizeMul = [];
+    cropBorderHalfSize = ModalLayer['_assistant']['number']['divide'](cropBorderSize, 2);
+    cropBorderSizeMul[2] = ModalLayer['_assistant']['number']['multiply'](cropBorderSize, 2);
+    cropBorderSizeMul[4] = ModalLayer['_assistant']['number']['multiply'](cropBorderSize, 4);
+    cropBorderSizeMul[6] = ModalLayer['_assistant']['number']['multiply'](cropBorderSize, 6);
 
-    resizeBoxBorderSize = 10;
-    resizeBoxBorderHalfSize = resizeBoxBorderSize / 2;
+    // 原图
+    sPic = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
 
-    fontSize = 22;
-    text = '双击鼠标左键或按回车截取, ESC退出.';
-    cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
-    maxWidth = cas.width;
-    maxHeight = cas.height;
-    cropCas = cas.cloneNode();
+    // 最大允许截取的区域
+    maxWidth = sPic.width;
+    maxHeight = sPic.height;
+    // 最小允许截取的区域
+    minWidth = ModalLayer['_assistant']['number']['floor'](maxWidth * 0.1);
+    minHeight = ModalLayer['_assistant']['number']['floor'](maxHeight * 0.1);
+
+    // 截取画布
+    cropCas = sPic.cloneNode();
     cropCtx = cropCas.getContext('2d');
-    minWidth = window.Math.floor(maxWidth * 0.1);
-    minHeight = window.Math.floor(maxHeight * 0.1);
-    cropCasStyle = 'display: block; position: fixed; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: visible; opacity: 1; border: 0px; margin: 0px; z-index: ' + ModalLayer['_assistant']['element']['maxZIndex']() + ';';
-
     cropCas.width = window.innerWidth;
     cropCas.height = window.innerHeight;
-    cropCas.style.cssText = cropCasStyle;
+    cropCas.style = 'display: block; position: fixed; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: visible; opacity: 1; border: 0px; margin: 0px; z-index: ' + ModalLayer['_assistant']['element']['maxZIndex']() + ';';
 
-    cropImgPoint = [(cropCas.width - maxWidth) / 2, (cropCas.height - maxHeight) / 2];
-    cropVariable = [0, 0, cas.width, cas.height, ...cropImgPoint, cas.width, cas.height];
-    cropTextPoint = [cropImgPoint[0], (cropCas.height + maxHeight) / 2 + fontSize];
+    // 原图居中坐标轴偏移量
+    cropCasCenter = [
+      ModalLayer['_assistant']['number']['chain'](cropCas.width)['subtract'](maxWidth)['divide'](2)['round']().done(),
+      ModalLayer['_assistant']['number']['chain'](cropCas.height)['subtract'](maxHeight)['divide'](2)['round']().done()
+    ];
+    repaintVariable = [...cropCasCenter, maxWidth, maxHeight];
 
-    repaintCropWindowEvent = () => {
+    repaintEvent = () => {
       cropCtx.save();
       cropCtx.clearRect(0, 0, cropCas.width, cropCas.height);
 
-      cropCtx.drawImage(cas, ...cropImgPoint);
-
-      cropCtx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      cropCtx.fillStyle = 'rgba(0, 0, 0, 0.4)';
       cropCtx.fillRect(0, 0, cropCas.width, cropCas.height);
 
-      cropCtx.fillStyle = 'white';
-      cropCtx.font = fontSize + 'px serif';
-      cropCtx.fillText(text, ...cropTextPoint);
+      cropCtx.globalCompositeOperation = 'destination-out';
 
-      cropCtx.drawImage(cas, ...cropVariable);
+      cropCtx.fillStyle = 'white';
+      cropCtx.fillRect(...repaintVariable);
+      cropCtx.globalCompositeOperation = 'source-over';
+      ModalLayer['_assistant']['canvas']['drawGrid'](cropCtx, ...repaintVariable, 2, 'white', 'quarter');
+      ModalLayer['_assistant']['canvas']['drawRect'](cropCtx, repaintVariable[0] - cropBorderHalfSize, repaintVariable[1] - cropBorderHalfSize, repaintVariable[2] + cropBorderSize, repaintVariable[3] + cropBorderSize, cropBorderSize, 'white', [0]);
+      ModalLayer['_assistant']['canvas']['drawLBorder'](cropCtx, repaintVariable[0] - cropBorderSizeMul[2], repaintVariable[1] - cropBorderSizeMul[2], repaintVariable[2] + cropBorderSizeMul[4], repaintVariable[3] + cropBorderSizeMul[4], cropBorderSizeMul[6], cropBorderSize, 'white');
+
+      cropCtx.globalCompositeOperation = 'destination-over';
+      cropCtx.drawImage(sPic, ...cropCasCenter);
+
+      // TODO:
+      // 提示用户相关操作展示注释, 后续使用Tips层处理.
+      // cropCtx.fillStyle = 'white';
+      // cropCtx.font = fontSize + 'px serif';
+      // cropCtx.fillText(text, ...cropTextPoint);
+
+      // cropCtx.drawImage(sPic, ...cropVariable);
 
       cropCtx.restore();
 
       if (repaint)
-        raf = window.requestAnimationFrame(repaintCropWindowEvent);
+        animationFrame = window.requestAnimationFrame(repaintEvent);
       else
-        window.cancelAnimationFrame(raf);
+        window.cancelAnimationFrame(animationFrame);
     }
 
-    stopEvent = () => {
+    cleanEvent = () => {
+      // 移除键盘监听
       document.removeEventListener('keyup', keyupEvent);
 
-      cropCas.removeEventListener('mousemove', mousemoveEvent);
-      cropCas.removeEventListener('mousedown', mousedownEvent);
-      cropCas.removeEventListener('mouseup', mouseupEvent);
-      // 移除截取事件
+      // 移除鼠标监听
+      cropCas.removeEventListener('mousemove', moveEvent);
+
+      // 移除双击截取事件
       cropCas.removeEventListener('dbclick', cropEvent);
 
       // 停止重绘截取画布
@@ -690,27 +716,16 @@ class ImageLayer extends ModalLayer {
       cropCas.remove();
     };
 
-    cropEvent = e => {
-      e = e ?? window.event;
-
-      stopEvent();
-
-      // 清理相关数据, 并将截取后图像绘制到原画布上.
-      cas.width = cropVariable[2];
-      cas.height = cropVariable[3];
-      cas.getContext('2d').drawImage(cropCas, cropVariable[4], cropVariable[5], cas.width, cas.height, 0, 0, cas.width, cas.height);
-
-      this.resize();
-    };
-
     keyupEvent = kEvent => {
+      kEvent = kEvent ?? window.event;
       switch (kEvent.code) {
         case 'Enter':
           cropEvent();
           kEvent.preventDefault();
           break;
         case 'Escape':
-          stopEvent();
+          this.show();
+          cleanEvent();
           kEvent.preventDefault();
           break;
         default:
@@ -718,177 +733,146 @@ class ImageLayer extends ModalLayer {
       }
     };
 
-    mouseupEvent = upEvent => {
-      mousedown = false
-      mousedownRect = null;
-      mousedownPoint = null;
-    };
-    mousedownEvent = downEvent => {
-      mousedownPoint = [downEvent.x, downEvent.y];
-      mousedown = (resizeX || resizeY) ? true : false;
-      mousedownRect = [cropVariable[4], cropVariable[5], cropVariable[2], cropVariable[3]];
+    cropEvent = e => {
+      let sPicBackup;
 
-      if (resizeX) {
-        if (downEvent.x >= cropVariable[4] - resizeBoxBorderSize && downEvent.x <= cropVariable[4] + resizeBoxBorderSize)
-          mousedownPoint[0] = cropVariable[4];
-        else
-          mousedownPoint[0] = cropVariable[2] + cropVariable[4];
-      } else {
-        mousedownPoint[0] = downEvent.x;
-      }
+      cleanEvent();
 
-      if (resizeY) {
-        if (downEvent.y >= cropVariable[5] - resizeBoxBorderSize && downEvent.y <= cropVariable[5] + resizeBoxBorderSize)
-          mousedownPoint[1] = cropVariable[5];
-        else
-          mousedownPoint[1] = cropVariable[3] + cropVariable[5];
-      } else {
-        mousedownPoint[1] = downEvent.y;
-      }
+      e = e ?? window.event;
+      sPicBackup = new OffscreenCanvas(sPic.width, sPic.height);
+      sPicBackup.getContext('2d').drawImage(sPic, 0, 0);
+
+      // 清理相关数据, 并将截取后图像绘制到原画布上.
+      sPic.width = repaintVariable[2];
+      sPic.height = repaintVariable[3];
+      sPic.getContext('2d').drawImage(sPicBackup, repaintVariable[0] - cropCasCenter[0], repaintVariable[1] - cropCasCenter[1], repaintVariable[2], repaintVariable[3], 0, 0, sPic.width, sPic.height);
+
+      this.show().then(() => this.resize());
     };
 
-    mousemoveEvent = moveEvent => {
-      let mousePoint;
-      let resizeEvent;
-      let cropPoint, resizeRect, insideRect;
-
-      moveEvent = moveEvent ?? window.event;
-      mousePoint = [moveEvent.x, moveEvent.y];
-
-      // 当允许调整截取区域大小时
-      if (mousedown && moveEvent.buttons === 1) {
-        let diffX, diffY;
-        let cropX, cropY, cropWidth, cropHeight;
-
-        if (resizeX) {
-          diffX = mousedownPoint[0] - mousePoint[0];
-          // 当按下鼠标时鼠标位于图像最左侧时.
-          if (mousedownPoint[0] === mousedownRect[0]) {
-            cropX = mousedownRect[0] - diffX;
-            cropWidth = mousedownRect[2] + diffX;
-            diffX = mousedownRect[0] - cropImgPoint[0] - diffX;
-
-            if (cropWidth < minWidth)
-              cropWidth = minWidth;
-            else if (cropWidth > maxWidth)
-              cropWidth = maxWidth;
-
-            if (cropX < cropImgPoint[0]) {
-              diffX = 0;
-              cropX = cropImgPoint[0];
-            } else if (cropX > cropImgPoint[0] + maxWidth - minWidth) {
-              diffX = maxWidth - minWidth;
-              cropX = cropImgPoint[0] + maxWidth - minWidth;
-            }
-            
-            cropVariable[4] = cropX;
-            cropVariable[0] = diffX;
-
-            cropVariable[2] = cropVariable[6] = cropWidth;
-          } else {
-            cropWidth = mousedownRect[2] - diffX;
-            if (cropWidth < minWidth)
-              cropWidth = minWidth;
-            else if (cropWidth > maxWidth)
-              cropWidth = maxWidth;
-
-            cropVariable[2] = cropVariable[6] = cropWidth;
+    moveEvent = mEvent => {
+      let mPoint;
+      let cursor, backup;
+      let cropRect, resizeRect;
+      mEvent = mEvent ?? window.event;
+      // 鼠标左键点击后执行相应操作
+      if (operation && mEvent.buttons === 1) {
+        if (operation === 'drag') {
+          if (
+            repaintVariable[0] + mEvent.movementX > cropCasCenter[0] &&
+            repaintVariable[0] + repaintVariable[2] + mEvent.movementX < cropCasCenter[0] + maxWidth
+          )
+            repaintVariable[0] += mEvent.movementX;
+          if (
+            repaintVariable[1] + mEvent.movementY > cropCasCenter[1] &&
+            repaintVariable[1] + repaintVariable[3] + mEvent.movementY < cropCasCenter[1] + maxHeight
+          )
+            repaintVariable[1] += mEvent.movementY;
+        } else if (operation === 'resize') {
+          backup = [...repaintVariable];
+          // 调整起始坐标位置与大小
+          if (direction.includes(ModalLayer['_enum']['POSITION']['WEST'])) {
+            repaintVariable[0] += mEvent.movementX;
+            repaintVariable[2] -= mEvent.movementX;
           }
-        }
 
-        if (resizeY) {
-          diffY = mousedownPoint[1] - mousePoint[1];
-          // 当按下鼠标时鼠标位于图像上方时.
-          if (mousedownPoint[1] === mousedownRect[1]) {
-            cropY = mousedownRect[1] - diffY;
-            cropHeight = mousedownRect[3] + diffY;
-            diffY = mousedownRect[1] - cropImgPoint[1] - diffY;
+          if (direction.includes(ModalLayer['_enum']['POSITION']['EAST'])) {
+            repaintVariable[2] += mEvent.movementX;
+          }
 
-            if (cropHeight < minHeight)
-              cropHeight = minHeight;
-            else if (cropHeight > maxHeight)
-              cropHeight = maxHeight;
+          if (direction.includes(ModalLayer['_enum']['POSITION']['NORTH'])) {
+            repaintVariable[1] += mEvent.movementY;
+            repaintVariable[3] -= mEvent.movementY;
+          }
 
-            if (cropY < cropImgPoint[1]) {
-              diffY = 0;
-              cropY = cropImgPoint[1];
-            } else if (cropY > cropImgPoint[1] + maxHeight - minHeight) {
-              diffY = maxHeight - minHeight;
-              cropY = cropImgPoint[1] + maxHeight - minHeight;
-            }
-            
-            cropVariable[5] = cropY;
-            cropVariable[1] = diffY;
+          if (direction.includes(ModalLayer['_enum']['POSITION']['SOUTH'])) {
+            repaintVariable[3] += mEvent.movementY;
+          }
 
-            cropVariable[3] = cropVariable[7] = cropHeight;
-          } else {
-            cropHeight = mousedownRect[3] - diffY;
-            if (cropHeight < minHeight)
-              cropHeight = minHeight;
-            else if (cropHeight > maxHeight)
-              cropHeight = maxHeight;
+          // 限制resize后的截取框大小不能超过最大和最小值
+          // 并且起始坐标位于整张图片之内
+          if (
+            repaintVariable[0] < cropCasCenter[0] ||
+            repaintVariable[0] + repaintVariable[2] > cropCasCenter[0] + maxWidth
+          ) {
+            repaintVariable[0] = backup[0];
+            repaintVariable[2] = backup[2];
+          }
 
-            cropVariable[3] = cropVariable[7] = cropHeight;
+          if (
+            repaintVariable[1] < cropCasCenter[1] ||
+            repaintVariable[1] + repaintVariable[3] > cropCasCenter[1] + maxHeight
+          ) {
+            repaintVariable[1] = backup[1];
+            repaintVariable[3] = backup[3];
+          }
+
+          if (repaintVariable[2] < minWidth) {
+            repaintVariable[2] = backup[2];
+            if (repaintVariable[0] + repaintVariable[2] > cropCasCenter[0] + maxWidth)
+              repaintVariable[0] = cropCasCenter[0] + maxWidth - repaintVariable[2];
+          }
+
+          if (repaintVariable[3] < minHeight) {
+            repaintVariable[3] = backup[3];
+            if (repaintVariable[1] + repaintVariable[3] > cropCasCenter[1] + maxHeight)
+              repaintVariable[1] = cropCasCenter[1] + maxHeight - repaintVariable[3];
           }
         }
       } else {
-        resizeX = resizeY = false;
-        cropPoint = [cropVariable[4], cropVariable[5]];
-        resizeRect = {
-          'top': [
-            [cropPoint[0] - resizeBoxBorderHalfSize, cropPoint[1] - resizeBoxBorderHalfSize],
-            [cropPoint[0] + cropVariable[2] + resizeBoxBorderHalfSize, cropPoint[1] + resizeBoxBorderHalfSize]
-          ],
-          'left': [
-            [cropPoint[0] - resizeBoxBorderHalfSize, cropPoint[1] - resizeBoxBorderHalfSize],
-            [cropPoint[0] + resizeBoxBorderHalfSize, cropPoint[1] + cropVariable[3] + resizeBoxBorderHalfSize]
-          ],
-          'right': [
-            [cropPoint[0] + cropVariable[2] - resizeBoxBorderHalfSize, cropPoint[1] - resizeBoxBorderHalfSize],
-            [cropPoint[0] + cropVariable[2] + resizeBoxBorderHalfSize, cropPoint[1] + cropVariable[3] + resizeBoxBorderHalfSize]
-          ],
-          'bottom': [
-            [cropPoint[0] - resizeBoxBorderHalfSize, cropPoint[1] + cropVariable[3] - resizeBoxBorderHalfSize],
-            [cropPoint[0] + cropVariable[2] + resizeBoxBorderHalfSize, cropPoint[1] + cropVariable[3] + resizeBoxBorderHalfSize]
-          ]
-        };
-
-        insideRect = {
-          top: ModalLayer['_assistant']['number']['insideRect'](mousePoint, resizeRect.top),
-          left: ModalLayer['_assistant']['number']['insideRect'](mousePoint, resizeRect.left),
-          right: ModalLayer['_assistant']['number']['insideRect'](mousePoint, resizeRect.right),
-          bottom: ModalLayer['_assistant']['number']['insideRect'](mousePoint, resizeRect.bottom),
-        }
-
-        if ((insideRect.left && insideRect.top) || (insideRect.right && insideRect.bottom)) {
-          resizeX = resizeY = true;
-          cropCas.style.cssText += 'cursor: nwse-resize';
-        } else if ((insideRect.right && insideRect.top) || (insideRect.left && insideRect.bottom)) {
-          resizeX = resizeY = true;
-          cropCas.style.cssText += 'cursor: nesw-resize';
-        } else if (insideRect.left || insideRect.right) {
-          resizeX = true;
-          resizeY = false;
-          cropCas.style.cssText += 'cursor: ew-resize';
-        } else if (insideRect.top || insideRect.bottom) {
-          resizeY = true;
-          resizeX = false;
-          cropCas.style.cssText += 'cursor: ns-resize';
+        mPoint = [mEvent.x, mEvent.y];
+        resizeRect = [repaintVariable[0] - cropBorderSizeMul[2], repaintVariable[1] - cropBorderSizeMul[2], repaintVariable[2] + cropBorderSizeMul[4], repaintVariable[3] + cropBorderSizeMul[4]];
+        cropRect = [repaintVariable[0] - cropBorderHalfSize, repaintVariable[1] - cropBorderHalfSize, repaintVariable[2] + cropBorderSize, repaintVariable[3] + cropBorderSize];
+        // 鼠标左键未点击前判断当前鼠标位置, 设置当前允许操作.
+        if (
+          mPoint[0] > cropRect[0] &&
+          mPoint[0] < cropRect[0] + cropRect[2] &&
+          mPoint[1] > cropRect[1] &&
+          mPoint[1] < cropRect[1] + cropRect[3]
+        ) {
+          cursor = 'move';
+          operation = 'drag';
+        } else if (
+          mPoint[0] > resizeRect[0] &&
+          mPoint[0] < resizeRect[0] + resizeRect[2] &&
+          mPoint[1] > resizeRect[1] &&
+          mPoint[1] < resizeRect[1] + resizeRect[3]
+        ) {
+          operation = 'resize';
+          cursor = direction = '';
+          // 上边
+          if (mPoint[1] > resizeRect[1] && mPoint[1] < cropRect[1]) {
+            cursor = direction += ModalLayer['_enum']['POSITION']['NORTH'];
+          }
+          // 下边
+          if (mPoint[1] > cropRect[1] + cropRect[3] && mPoint[1] < resizeRect[1] + resizeRect[3]) {
+            cursor = direction += ModalLayer['_enum']['POSITION']['SOUTH'];
+          }
+          // 左边
+          if (mPoint[0] > resizeRect[0] && mPoint[0] < cropRect[0]) {
+            cursor = direction += ModalLayer['_enum']['POSITION']['WEST'];
+          }
+          // 右边
+          if (mPoint[0] > cropRect[0] + cropRect[2] && mPoint[0] < resizeRect[0] + resizeRect[2]) {
+            cursor = direction += ModalLayer['_enum']['POSITION']['EAST'];
+          }
+          cursor += '-resize';
         } else {
-          resizeX = resizeY = false;
-          cropCas.style.cssText += 'cursor: default';
+          operation = null;
+          cursor = 'default';
         }
+        cropCas.style.cssText += 'cursor: ' + cursor;
       }
 
     }
 
-    repaintCropWindowEvent();
+    // 隐藏图片层.
+    this.hide();
+    repaintEvent();
 
     document.addEventListener('keyup', keyupEvent);
 
-    cropCas.addEventListener('mousemove', mousemoveEvent);
-    cropCas.addEventListener('mousedown', mousedownEvent);
-    cropCas.addEventListener('mouseup', mouseupEvent);
+    cropCas.addEventListener('mousemove', moveEvent);
     cropCas.addEventListener('dblclick', cropEvent);
 
     document.body.appendChild(cropCas);
@@ -910,7 +894,7 @@ class ImageLayer extends ModalLayer {
     ctx = cas.getContext('2d');
 
     backup = new OffscreenCanvas(cas.width, cas.height);
-    backup.getContext('2d').drawImage(cas, 0, 0, cas.width, cas.height);
+    getContext('2d').drawImage(cas, 0, 0, cas.width, cas.height);
 
     this['variable']['image']['finish'].then(img => {
       angle = angle ?? this['variable']['image']['spin']['angle'];
@@ -934,7 +918,7 @@ class ImageLayer extends ModalLayer {
       ctx.save();
       ctx.translate(cas.width / 2, cas.height / 2);
       ctx.rotate(radian);
-      ctx.drawImage(backup, -backup.width / 2, -backup.height / 2);
+      ctx.drawImage(backup, -width / 2, -height / 2);
       ctx.restore();
 
       this.resize();

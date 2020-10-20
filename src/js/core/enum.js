@@ -26,6 +26,21 @@ Object.defineProperty(ENUM, 'ARROW', {
 });
 
 /**
+ * 方位
+ *
+ * @type {Object}
+ */
+Object.defineProperty(ENUM, 'POSITION', {
+  'enumerable': true,
+  'value': {
+    'EAST': 'e', // 东
+    'WEST': 'w', // 西
+    'SOUTH': 's', // 南
+    'NORTH': 'n' // 北
+  }
+})
+
+/**
  * 模态层类型
  *
  * @type {Object}
@@ -78,3 +93,5 @@ Object.defineProperty(ENUM, 'LOAD_STATUS', {
     'LOADING': 2
   }
 });
+
+Object.freeze(ENUM);

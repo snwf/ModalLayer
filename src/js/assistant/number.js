@@ -2,7 +2,7 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 00:16:13
-* @Description         
+* @Description
 *
 * @Last Modified by:   wolf
 * @Last Modified time: 2020-09-25 01:01:37
@@ -122,8 +122,8 @@ class NumberAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-06T23:24:41+0800
-   * @param    {Mixed}                  value 
-   * @return   {Boolean}                      
+   * @param    {Mixed}                  value
+   * @return   {Boolean}
    */
   static isFloat (value) {
     let number;
@@ -222,7 +222,7 @@ class NumberAssistant {
    * @DateTime 2020-08-08T00:26:25+0800
    * @param    {Number}                 number        数字
    * @param    {String}                 interregional 区间(小括号不包含, 中括号包含)
-   * @return   {Boolean}                               
+   * @return   {Boolean}
    */
   static intervalJudgment (number, interregional) {
     let expression;
@@ -271,9 +271,11 @@ class NumberAssistant {
       (point[0] > rectRB[0] || point[1] > rectRB[1])
     )
       return false;
-    
+
     return true;
   }
 }
+
+window.math && (NumberAssistant['__proto__'] = window.math);
 
 Object.defineProperty(ModalLayer['_assistant'], 'number', {value: NumberAssistant});

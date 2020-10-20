@@ -18,3 +18,5 @@ ENV['feature'] = Object.create(null);
   name = name[0].toUpperCase() + name.substring(1);
   ENV['feature'][name] = window[name] ? true : false;
 });
+
+Object.freeze(ENV);

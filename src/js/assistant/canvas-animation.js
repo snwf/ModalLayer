@@ -82,28 +82,26 @@ class CanvasAnimationAssistant {
     if (!(iconCas = _cache.get(iconKey))) {
       iconCas = [];
       for (let i = 0; i < _option['icon']['char'].length; i++) {
-        iconCas[i] = document.createElement('canvas');
+        iconCas[i] = new OffscreenCanvas(_option['icon']['size'], _option['icon']['size']);
         iconCtx = iconCas[i].getContext('2d');
         _option['icon']['text'] = _option['icon']['char'][i];
-        iconCas[i].width = iconCas[i].height = _option['icon']['size'];
         CanvasAssistant['drawText'](iconCtx, _option['icon']);
       }
       _cache.set(iconKey, iconCas);
     }
 
     if (!(textCas = _cache.get(textKey))) {
-      textCas = document.createElement('canvas');
+      textCas = new OffscreenCanvas(_option['text']['size'] * _option['text']['text'].length, _option['text']['size'] * 2);
       textCtx = textCas.getContext('2d');
-      textCas.height = _option['text']['size'] * 2;
-      textCas.width = _option['text']['size'] * _option['text']['text'].length;
       CanvasAssistant['drawText'](textCtx, _option['text']);
       _cache.set(textKey, textCas);
     }
 
     if (!(roundCas = _cache.get(roundKey))) {
-      roundCas = document.createElement('canvas');
+      let w, h;
+      w = h = (_option['round']['radius'] + _option['round']['borderWidth']) * 2;
+      roundCas = new OffscreenCanvas(w, h);
       roundCtx = roundCas.getContext('2d');
-      roundCas.width = roundCas.height = (_option['round']['radius'] + _option['round']['borderWidth']) * 2;
       CanvasAssistant['drawRound'](roundCtx, _option['round']);
       _cache.set(roundKey, roundCas);
     }

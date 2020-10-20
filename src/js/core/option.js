@@ -64,6 +64,7 @@ Object.defineProperty(OPTION, 'image', {
         'crop': { // 是否开启裁剪
           'enable': false,
           'title': 'crop',
+          'grid': 'quarter', // 为null或false则不开启
           'icon': 'fas fa-crop-alt'
         },
         'spin': { // 是否开启旋转
@@ -172,3 +173,5 @@ Object.defineProperty(OPTION, 'common', {
     }
   }
 });
+
+Object.freeze(OPTION);

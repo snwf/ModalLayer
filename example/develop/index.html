@@ -8,13 +8,14 @@
   <link rel="stylesheet" href="../../src/css/core.css">
   <link rel="stylesheet" href="../../src/css/skin/default.css">
   <script src="../../static/fontawesome-free-5.14.0/js/all.min.js"></script>
+  <script src="../../static/mathjs-7.5.1/math.js"></script>
   <script src="../../src/js/core/env.js"></script>
   <script src="../../src/js/core/event.js"></script>
   <script src="../../src/js/core/option.js"></script>
   <script src="../../src/js/core/enum.js"></script>
   <script src="../../src/js/core/struct.js"></script>
   <script src="../../src/js/core/core.js"></script>
- 
+
   <script src="../../src/js/layer/page.js"></script>
   <script src="../../src/js/layer/alert.js"></script>
   <script src="../../src/js/layer/image.js"></script>
@@ -44,7 +45,7 @@
     #test-button-container {
       position: absolute;
       top: 50%;
-      left: 0px;  
+      left: 0px;
       right: 0px;
       width: 145px;
       margin: 0px auto;
@@ -60,6 +61,8 @@
   </style>
 </head>
 <body>
+  <!-- <img id="img" src="./01.jpg" width="500" alt="" style="display: none;"> -->
+  <!-- <canvas id="border" width="480" height="360" style="margin: 50px"></canvas> -->
   <div id="test-button-container">
     <button id="loading-button" type="button">测试loading</button>
     <button id="msg-button" type="button">测试msg</button>
@@ -74,6 +77,16 @@
   </div>
   <div id="test-box" style="width: 500px; height: 500px; position: relative;"></div>
 </body>
+<script>
+  // 绘制边框
+  // let oCas = document.querySelector('#border');
+  // let oCtx = oCas.getContext('2d');
+  // let cropBorderSize = 5;
+
+  // ModalLayer['_assistant']['canvas']['drawCropBorder'](oCtx, cropBorderSize * 6, cropBorderSize, 'white');
+  // ModalLayer['_assistant']['canvas']['drawRect'](oCtx, cropBorderSize * 2 - cropBorderSize / 2, cropBorderSize * 2 - cropBorderSize / 2, oCas.width - cropBorderSize * 3, oCas.height - cropBorderSize * 3, cropBorderSize, 'white', [0]);
+  // ModalLayer['_assistant']['canvas']['drawCropGrid'](oCtx, cropBorderSize * 2, cropBorderSize * 2, oCas.width - cropBorderSize * 2, oCas.height - cropBorderSize * 2, 2, 'white', 'quarter');
+</script>
 <script>
   // 测试loading
   document.querySelector('#loading-button').onclick = function () {

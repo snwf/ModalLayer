@@ -513,3 +513,5 @@ Object.defineProperty(STRUCT, 'image_tools_child', {
   'enumerable' : true,
   'configurable' : false
 });
+
+Object.freeze(STRUCT);

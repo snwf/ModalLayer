@@ -36,6 +36,18 @@ class StringAssistant {
   }
 
   /**
+   * 将字符串首字母转换为大写并返回
+   *
+   * @Author    wolf
+   * @Datetime  2020-10-13T17:32:42+0800
+   * @param     {String}                  str  带转换的字符串
+   * @return    {String}                       转换后的字符串
+   */
+  static ucfirst (str) {
+    return str[0].toUpperCase() + str.substring(1);
+  }
+
+  /**
    * 在str中搜索search并替换为replace
    * 注意: 该方法的从头部开始查找.
    *

@@ -483,3 +483,5 @@ Object.defineProperty(EVENT, 'imageTools', {
     }
   }
 });
+
+Object.freeze(EVENT);
