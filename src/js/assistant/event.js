@@ -29,18 +29,18 @@ class EventAssistant {
    * @param    {Mixed}                   thisArg        在回调函数中绑定的this值, 若为null则this值为对应的触发元素.
    *                                                    注意: 如果是Promise对象则无法绑定this.
    * @param    {Array}                   parameter      传入回调函数的参数
-   * @param    {Object|Boolean}          options        
-   * @param    {Boolean}                 wantsUntrusted 如果为 true , 则事件处理程序会接收网页自定义的事件。此参数只适用于 
+   * @param    {Object|Boolean}          options
+   * @param    {Boolean}                 wantsUntrusted 如果为 true , 则事件处理程序会接收网页自定义的事件。此参数只适用于
    *                                                    Gecko（chrome的默认值为true，其他常规网页的默认值为false）
    *                                                    主要用于附加组件的代码和浏览器本身。
-   *                                                    
+   *
    * @return   {Mixed}                                  若传入callback则返回一个全局唯一的Symbol对象
    *                                                    否则返回一个Promise对象.
    */
   static add (element, type, selector, callback, thisArg, parameter, options, wantsUntrusted = false) {
     let eventSymbol;
     let promise, usePromise;
-    
+
     usePromise = false;
     eventSymbol = Symbol();
 
@@ -49,7 +49,7 @@ class EventAssistant {
         throw Error('Is not a valid element.');
     }
 
-    if (!ObjectAssistant.isString(type))
+    if (!ObjectAssistant['isString'](type))
       throw Error('Event type not allowed to be empty');
 
     if (selector instanceof EventTarget) {
@@ -60,13 +60,13 @@ class EventAssistant {
     if (!(callback instanceof Function))
       usePromise = true;
 
-    if (ObjectAssistant.isEmpty(thisArg))
+    if (ObjectAssistant['isEmpty'](thisArg))
       thisArg = selector ?? element;
 
-    if (!ObjectAssistant.isEmpty(parameter) && !Array.isArray(parameter))
+    if (!ObjectAssistant['isEmpty'](parameter) && !Array.isArray(parameter))
       parameter = [parameter];
 
-    if (ObjectAssistant.isEmpty(options))
+    if (ObjectAssistant['isEmpty'](options))
       options = false;
       // options = {
       //   'once': false,
@@ -118,13 +118,13 @@ class EventAssistant {
           }
         };
 
-        EventAssistant._event.set(eventSymbol, {
+        EventAssistant['_event'].set(eventSymbol, {
           'type': type,
           'element': element,
           'options': options,
           'selector': selector,
           'callback': delegate,
-          'wantsUntrusted': wantsUntrusted            
+          'wantsUntrusted': wantsUntrusted
         });
 
         element.addEventListener(type, delegate, options, wantsUntrusted);
@@ -133,7 +133,7 @@ class EventAssistant {
     } else { // 正常绑定
       promise = new Promise(resolve => {
         callback = (usePromise ? resolve : callback).bind(thisArg, ...parameter);
-        EventAssistant._event.set(eventSymbol, {
+        EventAssistant['_event'].set(eventSymbol, {
           'type': type,
           'element': element,
           'options': options,
@@ -157,10 +157,10 @@ class EventAssistant {
    * @param    {Symbol}                 symbol 符号
    */
   static remove (symbol) {
-    let eventOptions = EventAssistant._event['get'](symbol);
+    let eventOptions = EventAssistant['_event']['get'](symbol);
     if (eventOptions) {
       eventOptions['element'].removeEventListener(eventOptions['type'], eventOptions['callback'], eventOptions['options']);
-      EventAssistant._event['delete'](symbol);
+      EventAssistant['_event']['delete'](symbol);
       ObjectAssistant['dereference'](eventOptions);
     }
   }
@@ -176,10 +176,10 @@ class EventAssistant {
   static removeBy (key, value) {
     if (!['element', 'selector', 'callback'].includes)
       throw Error('key value is invalid');
-    EventAssistant._event.forEach((v, k) => {
+    EventAssistant['_event'].forEach((v, k) => {
       if (v[key] === value) {
         v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-        EventAssistant._event['delete'](k);
+        EventAssistant['_event']['delete'](k);
       }
     });
   }
@@ -191,9 +191,9 @@ class EventAssistant {
    * @DateTime 2020-09-24T05:15:38+0800
    */
   static removeAll () {
-    EventAssistant._event.forEach((v, k) => {
+    EventAssistant['_event'].forEach((v, k) => {
       v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-      EventAssistant._event['delete'](k);
+      EventAssistant['_event']['delete'](k);
     });
   }
 }

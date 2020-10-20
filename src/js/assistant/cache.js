@@ -23,7 +23,7 @@ class CacheAssistant {
    * @DateTime 2020-09-25T23:21:16+0800
    * @param    {Mixed}                  k 缓存名称
    * @param    {Object}                 o 专属对象
-   * @return   {Boolean}                  
+   * @return   {Boolean}
    */
   static has (k, o = null) {
     let symbol;

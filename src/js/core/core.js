@@ -269,7 +269,7 @@ class ModalLayer {
     // interaction_button
     okButton = container.querySelector('.modal-layer-interaction-btn-ok');
     noButton = container.querySelector('.modal-layer-interaction-btn-no');
-    cancelButton = container.querySelector('.modal-layer-interaction-btn-cancel');    
+    cancelButton = container.querySelector('.modal-layer-interaction-btn-cancel');
 
     // 设置属性
     container.setAttribute('modal-layer-popup-time', this['option']['popupTime']);
@@ -282,7 +282,7 @@ class ModalLayer {
     // 展示进度条
     if (this['option']['progress']['enable']) {
       let posAry, progressNode;
-      
+
       posAry = ['top', 'left', 'right', 'bottom'];
       progressNode = container.querySelector('.modal-layer-progress-bar');
       if (!posAry.includes(this['option']['progress']['position']))
@@ -344,7 +344,7 @@ class ModalLayer {
       opacityAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](opacityAnimationName, opacityAnimationChange);
       // 将css代码插入到style中
       ModalLayer['_assistant']['css']['addCss'](opacityAnimationName, opacityAnimationCss);
-      ModalLayer['_assistant']['css']['addCss'](opacityAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](opacityAnimationName + '-reverse', {'from': opacityAnimationChange.to, 'to': opacityAnimationChange.from}));
+      ModalLayer['_assistant']['css']['addCss'](opacityAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](opacityAnimationName + '-reverse', {'from': opacityAnimationChange['to'], 'to': opacityAnimationChange['from']}));
     }
 
     if (!ModalLayer['_assistant']['css']['hasCss'](transformAnimationName)) {
@@ -362,7 +362,7 @@ class ModalLayer {
     // 统一设置
     Object.keys(this['variable']['nodes']).forEach(function (key) {
       let allNodes = ModalLayer['_assistant']['element']['getAllElement'](this['variable']['nodes'][key]);
-      
+
       // 设置样式类
       for (let i = 0; i < allNodes.length; i++) {
         let classList = allNodes[i].classList;
@@ -378,7 +378,7 @@ class ModalLayer {
     }, this);
 
     // 将设置完成的Node放入实例数组
-    ModalLayer['_instance'][this.option.index] = this;
+    ModalLayer['_instance'][this['option']['index']] = this;
   }
 
   /**
@@ -759,14 +759,14 @@ class ModalLayer {
     let title;
     let tmpClock, animationDur;
     let queueNode, queueItemNode;
-    
+
     if (this['status'] === ModalLayer['_enum']['STATUS']['MINIMIZE']) return;
 
     animationDur = 0.3;
     queueNode = document.querySelector('#modal-layer-minimize-queue');
     if (!queueNode) {
       queueNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue']])[0];
-      queueNode.classList.add(this.option.ui, `modal-layer-skin-${this.option.skin}`);
+      queueNode.classList.add(this['option']['ui'], `modal-layer-skin-${this['option']['skin']}`);
       // 模态层最小化还原
       ModalLayer['_variable']['minimizeQueueEvent'] = ModalLayer['_assistant']['event']['add'](queueNode, 'click', '.modal-layer-minimize-queue-item', this['event']['minimizeRevert'], null, null, false);
       document.body.insertAdjacentElement('beforeend', queueNode);
@@ -775,7 +775,7 @@ class ModalLayer {
     title = this['variable']['nodes']['container'].querySelector('.modal-layer-title-content').innerHTML;
     queueItemNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue_item']])[0];
 
-    queueItemNode.classList.add(this.option.ui);
+    queueItemNode.classList.add(this['option']['ui']);
     queueItemNode.setAttribute('modal-layer-index', this['option']['index']);
     queueItemNode.querySelector('.modal-layer-minimize-queue-item-title').innerHTML = title;
     queueNode.insertAdjacentElement('beforeend', queueItemNode);
@@ -789,7 +789,7 @@ class ModalLayer {
 
     this['hide']().then(() => void this['setStatus']('minimize'));
    }
-  
+
   /**
    * 将模态层状态还原
    *
@@ -881,7 +881,7 @@ class ModalLayer {
     this.remove()
     .then(() => {
       // 删除实例
-      ModalLayer._instance.splice(this.option.index, 1);
+      ModalLayer._instance.splice(this['option']['index'], 1);
 
       // 解除相关变量引用.
       ModalLayer['_assistant']['object']['dereference'](this['event']);

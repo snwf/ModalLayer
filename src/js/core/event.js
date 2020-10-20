@@ -2,7 +2,7 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 17:48:27
-* @Description         
+* @Description
 *
 * @Last Modified by:   wolf
 * @Last Modified time: 2020-09-24 23:16:54
@@ -406,17 +406,17 @@ Object.defineProperty(EVENT, 'action', {
     'close': function (e) {void this.remove()},
     'expand': function (e) {
       let oldStatus;
-      let nodes, pageNode;
+      let pageNode, container;
       let fullscreenerrorListener, fullscreenchangeListener;
 
       oldStatus = this.status;
-      nodes = this.variable.nodes;
-      pageNode = nodes.container.querySelector('iframe[name=' + this.option.layer.name + this.option.index + ']');
+      container = this['variable']['nodes']['container'];
+      pageNode = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
       fullscreenchangeListener = event => {
         if (event.target === pageNode)
-          this.setStatus(ModalLayer['_enum']['STATUS']['EXPAND']);
+          this['setStatus'](ModalLayer['_enum']['STATUS']['EXPAND']);
         else if (event.target === false)
-          this.setStatus(oldStatus);
+          this['setStatus'](oldStatus);
         window.removeEventListener('fullscreenerror', fullscreenerrorListener);
         window.removeEventListener('fullscreenchange', fullscreenchangeListener);
       };

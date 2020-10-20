@@ -2,7 +2,7 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 00:20:26
-* @Description         
+* @Description
 *
 * @Last Modified by:   wolf
 * @Last Modified time: 2020-09-28 01:47:04
@@ -30,7 +30,7 @@ class CanvasAnimationAssistant {
     if (!(ctx instanceof CanvasRenderingContext2D))
       throw Error('Requires a value of type "CanvasRenderingContext2D"');
 
-    if (ObjectAssistant.isEmpty(options))
+    if (ObjectAssistant['isEmpty'](options))
       options = Object.create(null);
 
     _fps = 60;

@@ -2,7 +2,7 @@
 * @Author:             Wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-04 00:13:10
-* @Description         
+* @Description
 *
 * @Last Modified by:   wolf
 * @Last Modified time: 2020-09-28 02:21:48
@@ -747,7 +747,7 @@ class ImageLayer extends ModalLayer {
       sPic.height = repaintVariable[3];
       sPic.getContext('2d').drawImage(sPicBackup, repaintVariable[0] - cropCasCenter[0], repaintVariable[1] - cropCasCenter[1], repaintVariable[2], repaintVariable[3], 0, 0, sPic.width, sPic.height);
 
-      this.show().then(() => this.resize());
+      this['show']().then(() => this['resize']());
     };
 
     moveEvent = mEvent => {
@@ -867,7 +867,7 @@ class ImageLayer extends ModalLayer {
     }
 
     // 隐藏图片层.
-    this.hide();
+    this['hide']();
     repaintEvent();
 
     document.addEventListener('keyup', keyupEvent);
@@ -894,7 +894,7 @@ class ImageLayer extends ModalLayer {
     ctx = cas.getContext('2d');
 
     backup = new OffscreenCanvas(cas.width, cas.height);
-    getContext('2d').drawImage(cas, 0, 0, cas.width, cas.height);
+    backup.getContext('2d').drawImage(cas, 0, 0, cas.width, cas.height);
 
     this['variable']['image']['finish'].then(img => {
       angle = angle ?? this['variable']['image']['spin']['angle'];
@@ -918,7 +918,7 @@ class ImageLayer extends ModalLayer {
       ctx.save();
       ctx.translate(cas.width / 2, cas.height / 2);
       ctx.rotate(radian);
-      ctx.drawImage(backup, -width / 2, -height / 2);
+      ctx.drawImage(backup, -backup.width / 2, -backup.height / 2);
       ctx.restore();
 
       this.resize();

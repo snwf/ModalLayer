@@ -138,11 +138,11 @@
       }
     };
 
-    option.event.interaction.ok = function (layer) {
-      layer.hide();
+    option.event.interaction.ok = function () {
+      this.hide();
       ModalLayer.alert({
         popupTime: 0,
-        parentModalLayer: layer,
+        parentModalLayer: this,
         text: {
           interaction: {
             ok: '确定'
@@ -150,8 +150,8 @@
         },
         event: {
           interaction: {
-            ok: function (layer) {
-              void layer.remove();
+            ok: function () {
+              void this.remove();
             }
           }
         },
@@ -196,11 +196,11 @@
       content: '<input type="text" style="width: calc(100% - 2px); height: 24px; font-size: 16px; color: red;" placeholder="输入内容进行测试">',
       event : {
         interaction: {
-          ok: function (layer) {
-            layer.hide();
+          ok: function () {
+            this.hide();
             ModalLayer.alert({
-              parentModalLayer: layer,
-              content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + layer.variable.nodes.container.querySelector('input').value
+              parentModalLayer: this,
+              content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + this.variable.nodes.container.querySelector('input').value
             });
           }
         }

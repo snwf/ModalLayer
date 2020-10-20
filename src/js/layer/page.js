@@ -2,7 +2,7 @@
 * @Author:             Wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-03 16:56:54
-* @Description         
+* @Description
 *
 * @Last Modified by:   Wolf
 * @Last Modified time: 2020-09-21 00:55:22
@@ -30,7 +30,7 @@ class PageLayer extends ModalLayer {
    */
   linkageOption () {
     super.linkageOption();
-    
+
     // 如果src与srcdoc属性一起存在则使用src属性
     if (this['option']['layer'].src !== null && this['option']['layer'].srcdoc !== null)
       this['option']['layer'].srcdoc = null;
@@ -103,7 +103,7 @@ class PageLayer extends ModalLayer {
         pageNode.setAttribute(key, this['option']['layer'][key]);
     });
     pageNode.style = pageStyle;
-    
+
     // 构造css代码准备工作
     scaleAnimationName = 'transition-scale-50-50-animation';
 
@@ -118,7 +118,7 @@ class PageLayer extends ModalLayer {
       scaleAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](scaleAnimationName, scaleAnimationChange);
       // 将css代码插入到style中
       ModalLayer['_assistant']['css']['addCss'](scaleAnimationName, scaleAnimationCss);
-      ModalLayer['_assistant']['css']['addCss'](scaleAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](scaleAnimationName + '-reverse', {from: scaleAnimationChange.to, to: scaleAnimationChange.from}));
+      ModalLayer['_assistant']['css']['addCss'](scaleAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](scaleAnimationName + '-reverse', {'from': scaleAnimationChange['to'], 'to': scaleAnimationChange['from']}));
     }
   }
 

@@ -276,6 +276,6 @@ class NumberAssistant {
   }
 }
 
-window.math && (NumberAssistant['__proto__'] = window.math);
+window['math'] && (NumberAssistant['__proto__'] = window['math']);
 
 Object.defineProperty(ModalLayer['_assistant'], 'number', {value: NumberAssistant});
