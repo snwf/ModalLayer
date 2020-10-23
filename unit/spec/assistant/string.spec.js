@@ -5,7 +5,7 @@
 * @Description         字符串助手单元测试
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-24 04:24:15
+* @Last Modified time: 2020-10-24 05:02:20
 */
 
 'use strict';
@@ -74,6 +74,10 @@ describe('StringAssistant —— 字符串助手', function () {
       ],
       [
         ['rgba(255, 255, 255, 1)', ['rgba', 'rgb'], '',],
+        '(255, 255, 255, 1)'
+      ],
+      [
+        ['(255, 255, 255, 1)', ['rgba', 'rgb'], ['', 'asd']],
         '(255, 255, 255, 1)'
       ]
     ];
