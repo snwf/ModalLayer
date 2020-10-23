@@ -73,6 +73,7 @@
     <button id="page-button-2" type="button">测试page</button>
     <button id="image-button" type="button">测试image</button>
     <button id="delete-all-ModalLayer">删除所有模态层</button>
+    <button id="delete-all-cache">清空所有缓存(ModalLayer产生的)</button>
     <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
   </div>
   <div id="test-box" style="width: 500px; height: 500px; position: relative;"></div>
@@ -357,9 +358,15 @@
     }
     inputNode.click();
   });
-  
+
+  // 移除所有ModalLayer实例
   document.querySelector('#delete-all-ModalLayer').onclick = function () {
     ModalLayer._instance.forEach(v => void v.delete());
+  }
+
+  // 清空所有缓存数据
+  document.querySelector('#delete-all-cache').onclick = function () {
+    ModalLayer._assistant.cache.clear();
   }
 
 // let testOption = {

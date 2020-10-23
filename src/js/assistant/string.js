@@ -4,8 +4,8 @@
 * @Date:               2020-09-02 00:17:31
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 04:23:09
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-10-24 03:26:37
 */
 
 class StringAssistant {
@@ -49,73 +49,80 @@ class StringAssistant {
 
   /**
    * 在str中搜索search并替换为replace
-   * 注意: 该方法的从头部开始查找.
+   * 小数据情况下直接使用javascript原生replace性能会略微好一点儿.
+   * 注意:
+   *   检索目标是有顺序的.
+   *   该方法的从头部开始查找
    *
-   * @Author   Wolf
-   * @DateTime 2020-09-03T00:43:18+0800
+   * @Author    wolf
+   * @Datetime  2020-10-24T02:45:00+0800
    * @param    {Mixed}                  str     若传入的是一个数组则返回也是一个数组
    * @param    {Mixed}                  search  检索值, 可以为数组
    * @param    {Mixed}                  replace 替换值, 可以为数组, 若为数组则长度必须与search长度一致
-   * @param    {Number}                 count   替换次数, 如果为0则不限制
-   * @return   {Mixed}                         新的字符串
+   * @param    {Number}                 count   替换次数, 如果为0则不限制(多检索条件请务必注意, 并不是所有条件都替换一次)
+   * @return   {Mixed}                          新的字符串
    */
   static replace (str, search, replace, count = 0) {
-    let nStr, times;
-    let offset, strOffset, searchOffset;
-    let dealStr, dealSearch, dealReplace;
-    let strArray, searchArray, replaceArray;
+    let findIndex;
+    let returnArray;
+    let start, ended, times, rTime, offset;
+    let nStr, dealStr, dealSearch, dealReplace;
 
-    strArray = Array.isArray(str);
-    searchArray = Array.isArray(search);
-    replaceArray = Array.isArray(replace);
+    search = Array.isArray(search) ? search : [search];
+    replace = Array.isArray(replace) ? replace : [replace];
+    Array.isArray(str) ? (returnArray = true) : (str = [str], returnArray = false);
 
-    if (searchArray && replaceArray && search.length !== replace.length)
+    if (replace.length > 1 && (search.length !== replace.length))
       throw Error('The number of search strings does not match the number of replacement strings.');
 
-    nStr = [];
-    str = strArray ? str : [str];
-    search = searchArray ? search : [search];
-    replace = replaceArray ? replace : [replace];
-    times = offset = strOffset = searchOffset = 0;
+    offset = {
+      start: 0,
+      ended: 0,
+      search: 0,
+      replace: 0,
+    };
 
-    do {
-      let start, ended;
-
-      dealSearch = search[searchOffset];
-      dealReplace = replace[replaceArray ? searchOffset : 0];
-      dealStr = searchOffset === 0 ? str[strOffset] : nStr[strOffset];
-
-      start = offset;
-      ended = dealStr.indexOf(dealSearch, offset);
-
-      if (ended === -1) {
-        if (searchArray && searchOffset < search.length - 1) {
-          offset = 0;
-          searchOffset++;
-          continue;
-        } else if (strArray && strOffset < str.length - 1) {
-          strOffset++;
-          offset = searchOffset = 0;
-          continue;
+    for (nStr = [], offset.str = 0; offset.str < str.length; offset.str++) {
+      nStr[offset.str] = '';
+      dealStr = str[offset.str];
+      rTime = offset.start = offset.ended = offset.search = offset.replace = 0;
+      for (; offset.search < search.length; offset.search++, offset.replace += (replace.length > 1) ? 1 : 0) {
+        findIndex = [];
+        dealSearch = search[offset.search];
+        dealReplace = replace[offset.replace];
+        for (let start = 0; start >= 0 && (count === 0 || (count > 0 && rTime < count));) {
+          start = dealStr.indexOf(dealSearch, (start === 0 && rTime === 0) ? 0 : start + 1);
+          rTime += start >= 0 ? 1 : 0;
+          findIndex.push(start);
         }
-        offset = false;
-      } else {
-        offset = ended + dealSearch.length;
-        nStr[strOffset] = dealStr.substring(start, ended) + dealReplace + dealStr.substring(offset);
+
+        if (findIndex[findIndex.length - 1] !== -1)
+          findIndex.push(-1);
+
+        for (let i = 0; findIndex.length > 0; i++) {
+          offset.ended = findIndex.shift();
+          nStr[offset.str] += offset.ended >= 0 ?
+                              dealStr.substring(offset.start, offset.ended) + dealReplace :
+                              dealStr.substring(offset.start);
+          offset.start = offset.ended + dealSearch.length;
+        }
+        offset.start = offset.ended = 0;
+        dealStr = nStr[offset.str];
+        nStr[offset.str] = '';
       }
+      nStr[offset.str] = dealStr;
+    }
 
-    } while (offset !== false || (count !== 0 && times < count));
-
-    return strArray ? nStr : nStr.shift();
+    return returnArray ? nStr : nStr.shift();
   }
 
   /**
    * 将16进制颜色字符串转换为十进制颜色字符串或相反
    *
-   * @Author   Wolf
-   * @DateTime 2020-08-27T00:31:34+0800
-   * @param    {String} str 颜色字符串
-   * @return   {String}     转换之后的颜色字符串
+   * @Author    wolf
+   * @Datetime  2020-10-24T02:49:04+0800
+   * @param     {String}                  str  颜色字符串
+   * @return    {String}                       转换之后的颜色字符串
    */
   static colorConvert (str) {
     let hex;
@@ -124,7 +131,7 @@ class StringAssistant {
     str = str.toLowerCase();
     error = new Error('Not a legal color.');
 
-    // 16进制转十进制
+    // 十六进制转十进制
     if (str.indexOf('#') === 0) {
       color = 'rgba(';
       str = str.substring(1);
@@ -142,6 +149,7 @@ class StringAssistant {
       }
 
       color += '255)';
+    // 十进制转十六进制
     } else if (str.indexOf('rgb') === 0) {
       color = '#';
       str = str.replace(/(rgb\(|rgba\(|\)| )/g, '').split(',');

@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 21:30:18
 * @Description         
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-22 05:03:15
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-10-24 03:14:28
 */
 
 class PerformanceAssistant {
@@ -17,9 +17,10 @@ class PerformanceAssistant {
    * @param    {Function}                 f 函数对象
    * @param    {Array}                    v 函数参数
    * @param    {Number}                   c 执行次数
+   * @param    {Mixed}                    t this对象
    * @return   {Array}                    PerformanceMeasure对象数组
    */
-  static functionMeasure (f, v, c = 1) {
+  static functionMeasure (f, v, c = 1, t = null) {
     let measure, measureList;
     let markStart, markEnded;
 
@@ -30,7 +31,7 @@ class PerformanceAssistant {
 
     for (let i = 0; i < c; i++) {
       performance.mark(markStart);
-      f.apply(null, v);
+      f.apply(t, v);
       performance.mark(markEnded);
       performance.measure(measure, markStart, markEnded);
       measureList.push(performance.getEntriesByName(measure)[0]);
