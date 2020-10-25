@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 23:25:15
-* @Description         
+* @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-25 00:36:43
+* @Last Modified time: 2020-10-25 00:23:01
 */
 
 class ElementAssistant {
@@ -16,7 +16,7 @@ class ElementAssistant {
    * @DateTime 2020-07-27T01:32:44+0800
    * @param    {Element}                 child  子元素
    * @param    {Element}                 parent 父元素
-   * @return   {Boolean}                       
+   * @return   {Boolean}
    */
   static isOverflow (child, parent) {
     let childRect, parentRect;
@@ -67,7 +67,7 @@ class ElementAssistant {
    */
   static getNodeHeight (node) {
     let computedStyle, marginBottom;
-    
+
     computedStyle = getComputedStyle(node, null);
     marginBottom = parseInt(computedStyle.marginBottom);
 
@@ -85,7 +85,7 @@ class ElementAssistant {
    */
   static getBeforeElementHeight (node) {
     let h, prevNode;
-    
+
     h = 0;
     prevNode = node;
     while ((prevNode = prevNode.previousElementSibling) && !['absolute', 'fixed'].includes(getComputedStyle(prevNode, null).position))
@@ -105,7 +105,7 @@ class ElementAssistant {
    */
   static getNodeOriginalSize (node) {
     let area, childNodes;
-    
+
     area = [0, 0];
     childNodes = ElementAssistant['getAllElement'](node);
     childNodes.forEach((n) => {
@@ -133,7 +133,7 @@ class ElementAssistant {
       return window.Math.max(prev, !isNaN(currNodeZIndex) ? currNodeZIndex : 0);
     }, 0));
   }
-  
+
   /**
    * 根据对象构造节点
    *
@@ -169,7 +169,7 @@ class ElementAssistant {
 
   /**
    * 将某个节点全屏显示
-   * 
+   *
    * 全屏出错可能是以下几种原因:
    *   文档中包含的元素未完全激活，也就是说不是当前活动的元素。
    *   元素不在文档之内。

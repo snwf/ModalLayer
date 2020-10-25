@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 00:02:01
-* @Description         
+* @Description         文件助手
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-16 17:26:30
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-10-26 02:21:55
 */
 
 class FileAssistant {
@@ -17,16 +17,18 @@ class FileAssistant {
    * @param    {String}                 url 文件链接
    * @return   {Fetch}                      Fetch对象
    */
-  static getFileBinary (url) {
-    return fetch (url, {
+  static getFileBinary (url, options) {
+    options = options ?? {};
+    options = ObjectAssistant['merge'](options, {
       mode: 'cors',
       method: 'get',
       cache: 'no-cache',
       redirect: 'follow',
+      credentials: 'include',
       referrer: 'no-referrer',
-      credentials: 'same-origin',
       headers: {'content-type': 'text/plain'}
     });
+    return fetch(url, options);
   }
 
   /**
@@ -78,31 +80,8 @@ class FileAssistant {
     } else {
       image = false;
     }
-    
+
     return image;
-  }
-
-
-  /**
-   * 图片加载完毕后获取尺寸
-   *
-   * @Author   Wolf
-   * @DateTime 2020-09-02T00:07:30+0800
-   * @param    {String}                 url 图片url
-   * @return   {Promise}                    Promise对象
-   */
-  static getImageSize (url) {
-    let i = new Image();
-    let p = new Promise((resolve, reject) => {
-      i.onload = () => {
-        resolve([i.width, i.height]);
-      }
-      i.onerror = () => {
-        reject(false);
-      }
-    });
-    i.src = url;
-    return p;
   }
 }
 

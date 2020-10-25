@@ -2,24 +2,17 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-24 01:02:52
-* @Description         
+* @Description         事件助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-25 00:28:30
+* @Last Modified time: 2020-10-25 22:40:14
 */
 
 class EventAssistant {
   /**
-   * 通过add方法绑定事件的记录
-   *
-   * @type {Map}
-   */
-  static _event = new Map;
-
-  /**
    * 绑定事件[委托]
    * 更多详细信息请参考 https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener#参数
-   * 
+   *
    * @Author   Wolf
    * @DateTime 2020-09-24T05:16:39+0800
    * @param    {Element}                 element        绑定事件的元素
@@ -38,11 +31,15 @@ class EventAssistant {
    *                                                    否则返回一个Promise对象.
    */
   static add (element, type, selector, callback, thisArg, parameter, options, wantsUntrusted = false) {
-    let eventSymbol;
+    let cache, eventSymbol;
     let promise, usePromise;
 
     usePromise = false;
     eventSymbol = Symbol();
+    if(!(cache = CacheAssistant['get']('cache', EventAssistant))) {
+      cache = new Map;
+      CacheAssistant['set']('cache', cache, EventAssistant);
+    }
 
     if (!(element instanceof EventTarget)) {
       if (!(element = document.querySelector(element)))
@@ -118,7 +115,7 @@ class EventAssistant {
           }
         };
 
-        EventAssistant['_event'].set(eventSymbol, {
+        cache.set(eventSymbol, {
           'type': type,
           'element': element,
           'options': options,
@@ -133,7 +130,7 @@ class EventAssistant {
     } else { // 正常绑定
       promise = new Promise(resolve => {
         callback = (usePromise ? resolve : callback).bind(thisArg, ...parameter);
-        EventAssistant['_event'].set(eventSymbol, {
+        cache.set(eventSymbol, {
           'type': type,
           'element': element,
           'options': options,
@@ -157,10 +154,12 @@ class EventAssistant {
    * @param    {Symbol}                 symbol 符号
    */
   static remove (symbol) {
-    let eventOptions = EventAssistant['_event']['get'](symbol);
+    let cache, eventOptions;
+    cache = CacheAssistant['get']('cache', EventAssistant);
+    eventOptions = cache?.['get'](symbol);
     if (eventOptions) {
       eventOptions['element'].removeEventListener(eventOptions['type'], eventOptions['callback'], eventOptions['options']);
-      EventAssistant['_event']['delete'](symbol);
+      cache['delete'](symbol);
       ObjectAssistant['dereference'](eventOptions);
     }
   }
@@ -174,12 +173,13 @@ class EventAssistant {
    * @param    {Mixed}                  value 值
    */
   static removeBy (key, value) {
-    if (!['element', 'selector', 'callback'].includes)
+    let cache = CacheAssistant['get']('cache', EventAssistant);
+    if (!['element', 'selector', 'callback'].includes(key))
       throw Error('key value is invalid');
-    EventAssistant['_event'].forEach((v, k) => {
+    cache?.forEach((v, k) => {
       if (v[key] === value) {
         v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-        EventAssistant['_event']['delete'](k);
+        cache['delete'](k);
       }
     });
   }
@@ -191,9 +191,10 @@ class EventAssistant {
    * @DateTime 2020-09-24T05:15:38+0800
    */
   static removeAll () {
-    EventAssistant['_event'].forEach((v, k) => {
+    let cache = CacheAssistant['get']('cache', EventAssistant);
+    cache?.forEach((v, k) => {
       v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-      EventAssistant['_event']['delete'](k);
+      cache['delete'](k);
     });
   }
 }

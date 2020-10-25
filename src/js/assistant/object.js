@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 20:47:10
-* @Description         
+* @Description         对象助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-28 01:13:11
+* @Last Modified time: 2020-10-25 00:10:41
 */
 
 class ObjectAssistant {
@@ -14,7 +14,7 @@ class ObjectAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-24T22:22:35+0800
-   * @param    {Mixed}                  v 需要释放引用的对象
+   * @param    {Object}                  v 需要释放引用的对象
    */
   static dereference (v) {
     Object.keys(v).forEach(_k => {
@@ -27,6 +27,8 @@ class ObjectAssistant {
           v.delete(_v);
         else
           v[_k] = null;
+      } else {
+        v[_k] = null;
       }
     });
   }
@@ -59,7 +61,7 @@ class ObjectAssistant {
    * 
    * 注意:
    * 如果属性的父值不为Object则会将其重新赋值为Object.
-   * 语义上该方法并不适用于数组.
+   * 语义上该方法并不适用于数组与Set.
    *
    * @Author   Wolf
    * @DateTime 2020-09-08T17:38:10+0800
@@ -72,15 +74,20 @@ class ObjectAssistant {
     _o = o;
     _k = Array.isArray(k) ? k : k.split('.');
     for (let i = 0; i < _k.length; _o = _o[_k[i]], i++) {
-      if (i === _k.length - 1)
-        Object.defineProperty(_o, _k[i], {
-          value: v,
-          writable: true,
-          enumerable: true,
-          configurable: true
-        });
-      else if (!ObjectAssistant['isEmpty'](_o[_k[i]]) || _o[_k[i]].constructor !== Object)
+      if (ObjectAssistant['isEmpty'](_o[_k[i]]))
         _o[_k[i]] = {};
+
+      if (i === _k.length - 1) {
+        if (_o instanceof Map)
+          _o.set(_k[i], v);
+        else
+          Object.defineProperty(_o, _k[i], {
+            value: v,
+            writable: true,
+            enumerable: true,
+            configurable: true
+          });
+      }
     }
   }
 
@@ -113,65 +120,35 @@ class ObjectAssistant {
   /**
    * 判断对象是否是一个集合
    * 例如Array, Map, Set, Object等.
-   * 注意: 该方法中的集合不包括TypedArray.
+   * 注意:
+   *   该方法中的集合不包括TypedArray以及Weak集合
    *
    * @Author   Wolf
    * @DateTime 2020-09-28T00:23:19+0800
-   * @param    {Mixed}                  v  
-   * @return   {Boolean}                  
+   * @param    {Mixed}                  v
+   * @return   {Boolean}
    */
   static isCollection (v) {
-    return !ObjectAssistant['isEmpty'](v) && (Array.isArray(v) || (v instanceof Map) || (v instanceof Set) || ObjectAssistant['isOnlyObject'](v));
+    let types = [Map, Set, Array, WeakMap, WeakSet, Int8Array, Uint8Array, Int16Array, Int32Array, Uint16Array, Uint32Array, Float32Array, Float64Array, Uint8ClampedArray];
+    return !ObjectAssistant['isEmpty'](v) &&
+    (ObjectAssistant['isOnlyObject'](v) || types.includes(v.constructor));
   }
 
   /**
-   * 判断对象是否是一个可枚举的集合
-   *
-   * @Author   Wolf
-   * @DateTime 2020-09-28T00:25:02+0800
-   * @param    {Mixed}                  v 
-   * @return   {Boolean}                 
-   */
-  static isEnumerableCollection (v) {
-    return ObjectAssistant['isCollection'](v) && !(v instanceof WeakMap || v instanceof WeakSet);
-  }
-
-  /**
-   * 判断当前对象是否仅仅只是一个Object
+   * 判断对象是否仅仅只是一个Object
    *
    * @Author   Wolf
    * @DateTime 2020-09-07T23:42:08+0800
-   * @param    {Mixed}                 o  对象
-   * @return   {Boolean}                  
+   * @param    {Mixed}                  o  对象
+   * @return   {Boolean}
    */
   static isOnlyObject (o) {
     return o && (o.constructor === Object || o.constructor === undefined);
   }
 
   /**
-   * 根据当前实例往前找.
-   * 返回父类classObject的method方法.
-   * 若没有找到则返回null.
-   *
-   * @Author   Wolf
-   * @DateTime 2020-09-03T17:02:04+0800
-   * @param    {Object}                  instance     实例对象
-   * @param    {Object}                  classObject  类对象
-   * @param    {String}                  method       方法名称
-   * @return   {Function}                             找到的方法
-   */
-  static getMethod (instance, classObject, method) {
-    while(!ObjectAssistant['isEmpty'](instance)) {
-      if (Object.is(instance.constructor, classObject))
-        return instance[method];
-      instance = instance.__proto__;
-    }
-
-    return null;
-  }
-
-  /**
-   * 根据值获取对应的键值
+   * 根据值获取对应的键
+   * 主要用于枚举, 重复值只会返回第一个
    *
    * @Author   Wolf
    * @DateTime 2020-09-03T15:30:38+0800
@@ -192,6 +169,7 @@ class ObjectAssistant {
 
   /**
    * 深度拷贝一个对象
+   * 如果为方法则直接引用赋值.
    * 待拷贝对象须支持枚举否则无法遍历
    *
    * @Author   Wolf
