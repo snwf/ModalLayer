@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 00:12:01
-* @Description         
+* @Description         画布助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-27 23:59:29
+* @Last Modified time: 2020-10-27 01:18:18
 */
 
 class CanvasAssistant {

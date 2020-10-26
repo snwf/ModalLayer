@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-05 02:02:19
-* @Description         
+* @Description         公式助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-28 02:33:21
+* @Last Modified time: 2020-10-27 00:59:19
 */
 
 class FormulaAssistant {
@@ -26,6 +26,11 @@ class FormulaAssistant {
    */
   static getDistribution (position, sigma, dimension = 2) {
     let exp, cache, _cache;
+
+    if (dimension === 1 && Array.isArray(position))
+      throw Error('One-dimensional operation position value cannot be an array');
+    if (dimension === 2 && !Array.isArray(position))
+      throw Error('Two-dimensional operation position value must be an array');
 
     if (!(_cache = CacheAssistant['get']('gaussian', FormulaAssistant))) {
       _cache = new Map;

@@ -2,30 +2,23 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-18 21:23:00
-* @Description         worker助手
+* @Description         Worker助手
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 23:19:17
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-10-27 01:37:58
 */
 
 class WorkerAssistant {
-  /**
-   * worker 列表
-   *
-   * @type {WeakMap}
-   */
-  static list = new Map;
-
   /**
    * 检查worker是否存在
    *
    * @Author   Wolf
    * @DateTime 2020-09-18T22:01:31+0800
    * @param    {String}                 k 名称
-   * @return   {Boolean}                  
+   * @return   {Boolean}
    */
   static has (k) {
-    return WorkerAssistant['list'].has(k);
+    return CacheAssistant['get']('list', WorkerAssistant)?.has(k) ?? false;
   }
 
   /**
@@ -37,12 +30,13 @@ class WorkerAssistant {
    * @param    {Worker}                 w Worker实例
    */
   static add (k, w) {
+    let cache = CacheAssistant['get']('list', WorkerAssistant);
     if (!(w instanceof Worker))
       throw new TypeError('Not a Worker instance.');
     if (WorkerAssistant['has'](k))
       throw new Error('The key already exists.');
-
-    WorkerAssistant['list'].set(k, w);
+    if (!cache) cache = new Map;
+    cache.set(k, w);
   }
 
   /**
@@ -54,7 +48,7 @@ class WorkerAssistant {
    * @return   {Worker}                   Worker实例, 若不存在则返回undefined
    */
   static get (k) {
-    return WorkerAssistant['list'].get(k);
+    return CacheAssistant['get']('list', WorkerAssistant)?.get(k);
   }
 
   /**
@@ -67,10 +61,12 @@ class WorkerAssistant {
    * @return   {Worker}                     成功返回一个Worker对象
    */
   static create (k, url) {
-    let worker;
+    let worker, cache;
+    cache = CacheAssistant['get']('list', WorkerAssistant);
+    if (!cache) cache = new Map;
     try {
       worker = new Worker(url);
-      WorkerAssistant['list'].set(k, worker);
+      cache.set(k, worker);
     } catch (e) {
       throw e;
     }

@@ -5,7 +5,7 @@
 * @Description         缓存助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-26 02:44:50
+* @Last Modified time: 2020-10-28 00:03:26
 */
 
 class CacheAssistant {
@@ -22,7 +22,7 @@ class CacheAssistant {
    * @Author   Wolf
    * @DateTime 2020-09-25T23:21:16+0800
    * @param    {Mixed}                  k 缓存名称
-   * @param    {Object}                 o 专属对象
+   * @param    {Object}                 o 寄存对象
    * @return   {Boolean}
    */
   static has (k, o = null) {
@@ -40,7 +40,7 @@ class CacheAssistant {
    * @Author   Wolf
    * @DateTime 2020-09-25T23:01:44+0800
    * @param    {Mixed}                  k 缓存名称
-   * @param    {Object}                 o 专属对象
+   * @param    {Object}                 o 寄存对象
    * @return   {Mixed}                    缓存内容
    */
   static get (k, o = null) {
@@ -59,7 +59,7 @@ class CacheAssistant {
    * @DateTime 2020-09-25T22:30:41+0800
    * @param    {Mixed}                  k 缓存名称
    * @param    {Mixed}                  v 缓存内容
-   * @param    {Object}                 o 专属对象
+   * @param    {Object}                 o 寄存对象
    */
   static set (k, v, o = null) {
     let symbol;
@@ -73,7 +73,7 @@ class CacheAssistant {
       symbol = CacheAssistant['_symbol'].get(o);
     }
 
-    if (!o.hasOwnProperty(symbol))
+    if (!Object.hasOwnProperty.call(o, symbol))
       Object.defineProperty(o, symbol, {
         'value': new Map,
         'writable': false,
@@ -90,7 +90,7 @@ class CacheAssistant {
    * @Author   Wolf
    * @DateTime 2020-09-25T23:10:56+0800
    * @param    {Mixed}                  k 缓存名称, 如果为空则删除当前对象的所有缓存
-   * @param    {Object}                 o 专属对象
+   * @param    {Object}                 o 寄存对象
    */
   static delete (k = null, o = null) {
     let _o, symbol;

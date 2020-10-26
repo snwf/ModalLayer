@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 00:17:31
-* @Description         
+* @Description         字符串助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-24 03:26:37
+* @Last Modified time: 2020-10-27 01:17:26
 */
 
 class StringAssistant {

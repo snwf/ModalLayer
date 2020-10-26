@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 14:40:21
-* @Description         
+* @Description         枚举
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-20 21:54:07
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-10-27 02:17:36
 */
 
 const ENUM = Object.create(null);
@@ -91,6 +91,21 @@ Object.defineProperty(ENUM, 'LOAD_STATUS', {
     'FAILED': 0,
     'LOADED': 1,
     'LOADING': 2
+  }
+});
+
+/**
+ * 浏览器数据库
+ *
+ * @type {Object}
+ */
+Object.defineProperty(ENUM, 'BROWSER_STORAGE', {
+  'enumerable': true,
+  'value': {
+    'WEBSQL': 'webSQL',
+    'INDEXDB': 'indexedDB',
+    'LOCALSTORAGE': 'localStorage',
+    'SESSIONSTORAGE': 'sessionStorage'
   }
 });
 

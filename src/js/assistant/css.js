@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 21:20:11
-* @Description         
+* @Description         CSS助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-18 21:51:41
+* @Last Modified time: 2020-10-27 01:18:22
 */
 
 class CssAssistant {

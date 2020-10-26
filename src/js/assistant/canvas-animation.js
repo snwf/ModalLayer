@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 00:20:26
-* @Description
+* @Description         画布动画助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-28 01:47:04
+* @Last Modified time: 2020-10-27 01:18:03
 */
 class CanvasAnimationAssistant {
   /**

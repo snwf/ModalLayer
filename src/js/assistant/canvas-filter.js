@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-05 01:59:42
-* @Description         
+* @Description         画布滤镜助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-28 02:37:21
+* @Last Modified time: 2020-10-27 01:18:13
 */
 
 class CanvasFilterAssistant {
