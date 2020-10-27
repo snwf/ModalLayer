@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-28 02:01:47
+* @Last Modified time: 2020-10-28 01:07:00
 */
 
 class ModalLayer {
@@ -77,7 +77,7 @@ class ModalLayer {
    *
    * @type {Object}
    */
-  static _assistant = new Map;
+  static _assistant = Object.create(null);
 
   /**
    * 实例化的对象
@@ -431,7 +431,7 @@ class ModalLayer {
     if (this['event']['action']['minimize'] instanceof Function)
       this['variable']['eventSymbol']['actionMinimize'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-minimize', this['event']['action']['minimize'], this, null, options);
     
-    // interaction 默认只绑定cancel    
+    // interaction 默认只绑定cancel
     okButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-ok');
     noButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-no');
     cancelButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-cancel');
@@ -952,10 +952,10 @@ class ModalLayer {
 
   /**
    * 消息层
-   * 
+   *
    * @param  {Mixed}      options 模态层设置
    * @param  {Function}   reject  当出现错误时调用方法
-   * 
+   *
    * @return {ModalLayer}         模态层实例
    */
   static msg (options, reject) {
@@ -969,7 +969,7 @@ class ModalLayer {
         'content': options,
         'type': ModalLayer['_enum']['TYPE']['MESSAGE']
       }
-    else 
+    else
       options.type = ModalLayer['_enum']['TYPE']['MESSAGE'];
 
     // 实例化
@@ -986,10 +986,10 @@ class ModalLayer {
 
   /**
    * 警报层
-   * 
+   *
    * @param  {Mixed}      options 模态层设置
    * @param  {Function}   reject  当出现错误时调用方法
-   * 
+   *
    * @return {ModalLayer}         模态层实例
    */
   static alert (options, reject) {
@@ -1012,10 +1012,10 @@ class ModalLayer {
 
   /**
    * 确认层
-   * 
+   *
    * @param  {Mixed}      options 模态层设置
    * @param  {Function}   reject  当出现错误时调用方法
-   * 
+   *
    * @return {ModalLayer}         模态层实例
    */
   static confirm (options, reject) {
@@ -1038,10 +1038,10 @@ class ModalLayer {
 
   /**
    * 提示层
-   * 
+   *
    * @param  {Mixed}      options 模态层设置
    * @param  {Function}   reject  当出现错误时调用方法
-   * 
+   *
    * @return {ModalLayer}         模态层实例
    */
   static prompt (options, reject) {
@@ -1064,10 +1064,10 @@ class ModalLayer {
 
   /**
    * 页面层
-   * 
+   *
    * @param  {Mixed}      options 模态层设置
    * @param  {Function}   reject  当出现错误时调用方法
-   * 
+   *
    * @return {ModalLayer}         模态层实例
    */
   static page (options, reject) {
@@ -1090,10 +1090,10 @@ class ModalLayer {
 
   /**
    * 图片层
-   * 
+   *
    * @param  {Mixed}      options 模态层设置
    * @param  {Function}   reject  当出现错误时调用方法
-   * 
+   *
    * @return {ModalLayer}         模态层实例
    */
   static image (options, reject) {
@@ -1118,10 +1118,10 @@ class ModalLayer {
 
   /**
    * 加载层
-   * 
+   *
    * @param  {Mixed}      options 模态层设置
    * @param  {Function}   reject  当出现错误时调用方法
-   * 
+   *
    * @return {ModalLayer}         模态层实例
    */
   static loading (options, reject) {

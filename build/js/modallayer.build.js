@@ -8,17 +8,19 @@ function _superPropBase(object, property) { while (!Object.prototype.hasOwnPrope
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -977,6 +979,15 @@ Object.defineProperty(ENUM, 'LOAD_STATUS', {
     'LOADING': 2
   }
 });
+Object.defineProperty(ENUM, 'BROWSER_STORAGE', {
+  'enumerable': true,
+  'value': {
+    'WEBSQL': 'webSQL',
+    'INDEXDB': 'indexedDB',
+    'LOCALSTORAGE': 'localStorage',
+    'SESSIONSTORAGE': 'sessionStorage'
+  }
+});
 Object.freeze(ENUM);
 
 var ModalLayer = function () {
@@ -1581,7 +1592,7 @@ _defineProperty(ModalLayer, "_version", 1.0);
 
 _defineProperty(ModalLayer, "_achieve", new Map());
 
-_defineProperty(ModalLayer, "_assistant", new Map());
+_defineProperty(ModalLayer, "_assistant", Object.create(null));
 
 _defineProperty(ModalLayer, "_instance", new Proxy([], {
   set: function set(obj, attr, val) {
@@ -1706,18 +1717,22 @@ var FileAssistant = function () {
 
   _createClass(FileAssistant, null, [{
     key: "getFileBinary",
-    value: function getFileBinary(url) {
-      return fetch(url, {
+    value: function getFileBinary(url, options) {
+      var _options;
+
+      options = (_options = options) !== null && _options !== void 0 ? _options : {};
+      options = ObjectAssistant['merge'](options, {
         mode: 'cors',
         method: 'get',
         cache: 'no-cache',
         redirect: 'follow',
+        credentials: 'include',
         referrer: 'no-referrer',
-        credentials: 'same-origin',
         headers: {
           'content-type': 'text/plain'
         }
       });
+      return fetch(url, options);
     }
   }, {
     key: "getFileBlob",
@@ -1746,22 +1761,6 @@ var FileAssistant = function () {
       }
 
       return image;
-    }
-  }, {
-    key: "getImageSize",
-    value: function getImageSize(url) {
-      var i = new Image();
-      var p = new Promise(function (resolve, reject) {
-        i.onload = function () {
-          resolve([i.width, i.height]);
-        };
-
-        i.onerror = function () {
-          reject(false);
-        };
-      });
-      i.src = url;
-      return p;
     }
   }]);
 
@@ -1815,7 +1814,7 @@ var CacheAssistant = function () {
         symbol = CacheAssistant['_symbol'].get(o);
       }
 
-      if (!o.hasOwnProperty(symbol)) Object.defineProperty(o, symbol, {
+      if (!Object.hasOwnProperty.call(o, symbol)) Object.defineProperty(o, symbol, {
         'value': new Map(),
         'writable': false,
         'enumerable': false,
@@ -1873,10 +1872,15 @@ var EventAssistant = function () {
       var _selector;
 
       var wantsUntrusted = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : false;
-      var eventSymbol;
+      var cache, eventSymbol;
       var promise, usePromise;
       usePromise = false;
       eventSymbol = Symbol();
+
+      if (!(cache = CacheAssistant['get']('cache', EventAssistant))) {
+        cache = new Map();
+        CacheAssistant['set']('cache', cache, EventAssistant);
+      }
 
       if (!(element instanceof EventTarget)) {
         if (!(element = document.querySelector(element))) throw Error('Is not a valid element.');
@@ -1936,7 +1940,7 @@ var EventAssistant = function () {
             }
           };
 
-          EventAssistant['_event'].set(eventSymbol, {
+          cache.set(eventSymbol, {
             'type': type,
             'element': element,
             'options': options,
@@ -1951,7 +1955,7 @@ var EventAssistant = function () {
           var _ref;
 
           callback = (_ref = usePromise ? resolve : callback).bind.apply(_ref, [thisArg].concat(_toConsumableArray(parameter)));
-          EventAssistant['_event'].set(eventSymbol, {
+          cache.set(eventSymbol, {
             'type': type,
             'element': element,
             'options': options,
@@ -1968,39 +1972,43 @@ var EventAssistant = function () {
   }, {
     key: "remove",
     value: function remove(symbol) {
-      var eventOptions = EventAssistant['_event']['get'](symbol);
+      var _cache2;
+
+      var cache, eventOptions;
+      cache = CacheAssistant['get']('cache', EventAssistant);
+      eventOptions = (_cache2 = cache) === null || _cache2 === void 0 ? void 0 : _cache2['get'](symbol);
 
       if (eventOptions) {
         eventOptions['element'].removeEventListener(eventOptions['type'], eventOptions['callback'], eventOptions['options']);
-        EventAssistant['_event']['delete'](symbol);
+        cache['delete'](symbol);
         ObjectAssistant['dereference'](eventOptions);
       }
     }
   }, {
     key: "removeBy",
     value: function removeBy(key, value) {
-      if (!['element', 'selector', 'callback'].includes) throw Error('key value is invalid');
-      EventAssistant['_event'].forEach(function (v, k) {
+      var cache = CacheAssistant['get']('cache', EventAssistant);
+      if (!['element', 'selector', 'callback'].includes(key)) throw Error('key value is invalid');
+      cache === null || cache === void 0 ? void 0 : cache.forEach(function (v, k) {
         if (v[key] === value) {
           v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-          EventAssistant['_event']['delete'](k);
+          cache['delete'](k);
         }
       });
     }
   }, {
     key: "removeAll",
     value: function removeAll() {
-      EventAssistant['_event'].forEach(function (v, k) {
+      var cache = CacheAssistant['get']('cache', EventAssistant);
+      cache === null || cache === void 0 ? void 0 : cache.forEach(function (v, k) {
         v['element'].removeEventListener(v['type'], v['callback'], v['options'], v['wantsUntrusted']);
-        EventAssistant['_event']['delete'](k);
+        cache['delete'](k);
       });
     }
   }]);
 
   return EventAssistant;
 }();
-
-_defineProperty(EventAssistant, "_event", new Map());
 
 Object.defineProperty(ModalLayer['_assistant'], 'event', {
   value: EventAssistant
@@ -2014,28 +2022,36 @@ var WorkerAssistant = function () {
   _createClass(WorkerAssistant, null, [{
     key: "has",
     value: function has(k) {
-      return WorkerAssistant['list'].has(k);
+      var _CacheAssistant$get$h, _CacheAssistant$get;
+
+      return (_CacheAssistant$get$h = (_CacheAssistant$get = CacheAssistant['get']('list', WorkerAssistant)) === null || _CacheAssistant$get === void 0 ? void 0 : _CacheAssistant$get.has(k)) !== null && _CacheAssistant$get$h !== void 0 ? _CacheAssistant$get$h : false;
     }
   }, {
     key: "add",
     value: function add(k, w) {
+      var cache = CacheAssistant['get']('list', WorkerAssistant);
       if (!(w instanceof Worker)) throw new TypeError('Not a Worker instance.');
       if (WorkerAssistant['has'](k)) throw new Error('The key already exists.');
-      WorkerAssistant['list'].set(k, w);
+      if (!cache) cache = new Map();
+      cache.set(k, w);
     }
   }, {
     key: "get",
     value: function get(k) {
-      return WorkerAssistant['list'].get(k);
+      var _CacheAssistant$get2;
+
+      return (_CacheAssistant$get2 = CacheAssistant['get']('list', WorkerAssistant)) === null || _CacheAssistant$get2 === void 0 ? void 0 : _CacheAssistant$get2.get(k);
     }
   }, {
     key: "create",
     value: function create(k, url) {
-      var worker;
+      var worker, cache;
+      cache = CacheAssistant['get']('list', WorkerAssistant);
+      if (!cache) cache = new Map();
 
       try {
         worker = new Worker(url);
-        WorkerAssistant['list'].set(k, worker);
+        cache.set(k, worker);
       } catch (e) {
         throw e;
       }
@@ -2100,8 +2116,6 @@ var WorkerAssistant = function () {
   return WorkerAssistant;
 }();
 
-_defineProperty(WorkerAssistant, "list", new Map());
-
 Object.defineProperty(ModalLayer['_assistant'], 'worker', {
   value: WorkerAssistant
 });
@@ -2120,6 +2134,8 @@ var ObjectAssistant = function () {
         if (ObjectAssistant['isCollection'](_v)) {
           ObjectAssistant['dereference'](_v);
           if (_v instanceof Map) v["delete"](_k);else if (_v instanceof Set) v["delete"](_v);else v[_k] = null;
+        } else {
+          v[_k] = null;
         }
       });
     }
@@ -2146,12 +2162,16 @@ var ObjectAssistant = function () {
       _k = Array.isArray(k) ? k : k.split('.');
 
       for (var i = 0; i < _k.length; _o = _o[_k[i]], i++) {
-        if (i === _k.length - 1) Object.defineProperty(_o, _k[i], {
-          value: v,
-          writable: true,
-          enumerable: true,
-          configurable: true
-        });else if (!ObjectAssistant['isEmpty'](_o[_k[i]]) || _o[_k[i]].constructor !== Object) _o[_k[i]] = {};
+        if (ObjectAssistant['isEmpty'](_o[_k[i]])) _o[_k[i]] = {};
+
+        if (i === _k.length - 1) {
+          if (_o instanceof Map) _o.set(_k[i], v);else Object.defineProperty(_o, _k[i], {
+            value: v,
+            writable: true,
+            enumerable: true,
+            configurable: true
+          });
+        }
       }
     }
   }, {
@@ -2167,27 +2187,13 @@ var ObjectAssistant = function () {
   }, {
     key: "isCollection",
     value: function isCollection(v) {
-      return !ObjectAssistant['isEmpty'](v) && (Array.isArray(v) || v instanceof Map || v instanceof Set || ObjectAssistant['isOnlyObject'](v));
-    }
-  }, {
-    key: "isEnumerableCollection",
-    value: function isEnumerableCollection(v) {
-      return ObjectAssistant['isCollection'](v) && !(v instanceof WeakMap || v instanceof WeakSet);
+      var types = [Map, Set, Array, WeakMap, WeakSet, Int8Array, Uint8Array, Int16Array, Int32Array, Uint16Array, Uint32Array, Float32Array, Float64Array, Uint8ClampedArray];
+      return !ObjectAssistant['isEmpty'](v) && (ObjectAssistant['isOnlyObject'](v) || types.includes(v.constructor));
     }
   }, {
     key: "isOnlyObject",
     value: function isOnlyObject(o) {
       return o && (o.constructor === Object || o.constructor === undefined);
-    }
-  }, {
-    key: "getMethod",
-    value: function getMethod(instance, classObject, method) {
-      while (!ObjectAssistant['isEmpty'](instance)) {
-        if (Object.is(instance.constructor, classObject)) return instance[method];
-        instance = instance.__proto__;
-      }
-
-      return null;
     }
   }, {
     key: "getKeyByValue",
@@ -2513,48 +2519,54 @@ var StringAssistant = function () {
     key: "replace",
     value: function replace(str, search, _replace) {
       var count = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-      var nStr, times;
-      var offset, strOffset, searchOffset;
-      var dealStr, dealSearch, dealReplace;
-      var strArray, searchArray, replaceArray;
-      strArray = Array.isArray(str);
-      searchArray = Array.isArray(search);
-      replaceArray = Array.isArray(_replace);
-      if (searchArray && replaceArray && search.length !== _replace.length) throw Error('The number of search strings does not match the number of replacement strings.');
-      nStr = [];
-      str = strArray ? str : [str];
-      search = searchArray ? search : [search];
-      _replace = replaceArray ? _replace : [_replace];
-      times = offset = strOffset = searchOffset = 0;
+      var findIndex;
+      var returnArray;
+      var start, ended, times, rTime, offset;
+      var nStr, dealStr, dealSearch, dealReplace;
+      search = Array.isArray(search) ? search : [search];
+      _replace = Array.isArray(_replace) ? _replace : [_replace];
+      Array.isArray(str) ? returnArray = true : (str = [str], returnArray = false);
+      if (_replace.length > 1 && search.length !== _replace.length) throw Error('The number of search strings does not match the number of replacement strings.');
+      offset = {
+        start: 0,
+        ended: 0,
+        search: 0,
+        replace: 0
+      };
 
-      do {
-        var start = void 0,
-            ended = void 0;
-        dealSearch = search[searchOffset];
-        dealReplace = _replace[replaceArray ? searchOffset : 0];
-        dealStr = searchOffset === 0 ? str[strOffset] : nStr[strOffset];
-        start = offset;
-        ended = dealStr.indexOf(dealSearch, offset);
+      for (nStr = [], offset.str = 0; offset.str < str.length; offset.str++) {
+        nStr[offset.str] = '';
+        dealStr = str[offset.str];
+        rTime = offset.start = offset.ended = offset.search = offset.replace = 0;
 
-        if (ended === -1) {
-          if (searchArray && searchOffset < search.length - 1) {
-            offset = 0;
-            searchOffset++;
-            continue;
-          } else if (strArray && strOffset < str.length - 1) {
-            strOffset++;
-            offset = searchOffset = 0;
-            continue;
+        for (; offset.search < search.length; offset.search++, offset.replace += _replace.length > 1 ? 1 : 0) {
+          findIndex = [];
+          dealSearch = search[offset.search];
+          dealReplace = _replace[offset.replace];
+
+          for (var _start = 0; _start >= 0 && (count === 0 || count > 0 && rTime < count);) {
+            _start = dealStr.indexOf(dealSearch, _start === 0 && rTime === 0 ? 0 : _start + 1);
+            rTime += _start >= 0 ? 1 : 0;
+            findIndex.push(_start);
           }
 
-          offset = false;
-        } else {
-          offset = ended + dealSearch.length;
-          nStr[strOffset] = dealStr.substring(start, ended) + dealReplace + dealStr.substring(offset);
-        }
-      } while (offset !== false || count !== 0 && times < count);
+          if (findIndex[findIndex.length - 1] !== -1) findIndex.push(-1);
 
-      return strArray ? nStr : nStr.shift();
+          for (var i = 0; findIndex.length > 0; i++) {
+            offset.ended = findIndex.shift();
+            nStr[offset.str] += offset.ended >= 0 ? dealStr.substring(offset.start, offset.ended) + dealReplace : dealStr.substring(offset.start);
+            offset.start = offset.ended + dealSearch.length;
+          }
+
+          offset.start = offset.ended = 0;
+          dealStr = nStr[offset.str];
+          nStr[offset.str] = '';
+        }
+
+        nStr[offset.str] = dealStr;
+      }
+
+      return returnArray ? nStr : nStr.shift();
     }
   }, {
     key: "colorConvert",
@@ -2762,6 +2774,9 @@ var FormulaAssistant = function () {
 
       var exp, cache, _cache;
 
+      if (dimension === 1 && Array.isArray(position)) throw Error('One-dimensional operation position value cannot be an array');
+      if (dimension === 2 && !Array.isArray(position)) throw Error('Two-dimensional operation position value must be an array');
+
       if (!(_cache = CacheAssistant['get']('gaussian', FormulaAssistant))) {
         _cache = new Map();
         CacheAssistant['set']('gaussian', _cache, FormulaAssistant);
@@ -2799,6 +2814,29 @@ var FormulaAssistant = function () {
 
 Object.defineProperty(ModalLayer['_assistant'], 'formula', {
   value: FormulaAssistant
+});
+
+var StorageAssistant = function () {
+  function StorageAssistant() {
+    _classCallCheck(this, StorageAssistant);
+  }
+
+  _createClass(StorageAssistant, null, [{
+    key: "getStorage",
+    value: function getStorage(type) {
+      var param = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+      if (!StorageAssistant['_achieve'][type]) throw Error("The specified storage ".concat(type, " was not found."));
+      return _construct(StorageAssistant['_achieve'][type], _toConsumableArray(param));
+    }
+  }]);
+
+  return StorageAssistant;
+}();
+
+_defineProperty(StorageAssistant, "_achieve", Object.create(null));
+
+Object.defineProperty(ModalLayer['_assistant'], 'storage', {
+  value: StorageAssistant
 });
 
 var CanvasAssistant = function () {
@@ -4713,5 +4751,113 @@ if (window.Worker) {
         'message': 'Failed to send message.'
       });
     };
+  });
+}
+
+var StorageAbstract = function () {
+  function StorageAbstract() {
+    _classCallCheck(this, StorageAbstract);
+
+    _defineProperty(this, "_type", null);
+
+    _defineProperty(this, "_record", null);
+
+    _defineProperty(this, "_storage", null);
+  }
+
+  _createClass(StorageAbstract, [{
+    key: "has",
+    value: function has(k) {}
+  }, {
+    key: "get",
+    value: function get(k) {}
+  }, {
+    key: "set",
+    value: function set(k) {
+      var v = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    }
+  }, {
+    key: "del",
+    value: function del(k) {
+      var f = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {}
+  }]);
+
+  return StorageAbstract;
+}();
+
+var SyncStorage = function (_StorageAbstract) {
+  _inherits(SyncStorage, _StorageAbstract);
+
+  var _super8 = _createSuper(SyncStorage);
+
+  function SyncStorage() {
+    var _this24;
+
+    var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ModalLayer['_enum']['BROWSER_STORAGE']['SESSIONSTORAGE'];
+
+    _classCallCheck(this, SyncStorage);
+
+    if (!window[type]) throw Error("The current browser does not support ".concat(type, " function"));
+    _this24 = _super8.call(this);
+    _this24['_record'] = [];
+    _this24['_type'] = type;
+    _this24['_storage'] = window[type];
+    return _this24;
+  }
+
+  _createClass(SyncStorage, [{
+    key: "has",
+    value: function has(k) {
+      return this['_storage'].getItem(k) !== null ? true : false;
+    }
+  }, {
+    key: "get",
+    value: function get(k) {
+      var _this$_storage$getIte;
+
+      return (_this$_storage$getIte = this['_storage'].getItem(k)) !== null && _this$_storage$getIte !== void 0 ? _this$_storage$getIte : false;
+    }
+  }, {
+    key: "set",
+    value: function set(k) {
+      var v = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      this['_storage'].setItem(k, v);
+      this['_record'].push(k);
+      return true;
+    }
+  }, {
+    key: "del",
+    value: function del(k) {
+      var f = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var recordIndex = this['_record'].indexOf(k);
+      if (!f && recordIndex < 0) return false;
+      if (recordIndex >= 0) this['_record'].splice(recordIndex, 1);
+      this['_storage'].removeItem(k);
+      return true;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      while (this['_record'].length > 0) {
+        this['_storage'].removeItem(this['_record'].shift());
+      }
+
+      return true;
+    }
+  }]);
+
+  return SyncStorage;
+}(StorageAbstract);
+
+if (StorageAssistant) {
+  Object.defineProperty(StorageAssistant['_achieve'], ModalLayer['_enum']['BROWSER_STORAGE']['LOCALSTORAGE'], {
+    value: SyncStorage
+  });
+  Object.defineProperty(StorageAssistant['_achieve'], ModalLayer['_enum']['BROWSER_STORAGE']['SESSIONSTORAGE'], {
+    value: SyncStorage
   });
 }

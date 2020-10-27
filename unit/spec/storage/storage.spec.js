@@ -5,7 +5,7 @@
 * @Description         Storage封装类单元测试
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-28 00:13:24
+* @Last Modified time: 2020-10-28 01:34:44
 */
 
 'use strict';
@@ -13,15 +13,6 @@
 describe('SyncStorage —— Storage封装类', function () {
 
   beforeAll(function () {
-    expect(this.storage = new SyncStorage(ModalLayer['_enum']['BROWSER_STORAGE']['LOCALSTORAGE'])).nothing();
-    expect(this.storage).toBeInstanceOf(SyncStorage);
-    expect(this.storage._type).toBe(ModalLayer['_enum']['BROWSER_STORAGE']['LOCALSTORAGE']);
-    expect(this.storage._record).toBeInstanceOf(Array);
-    expect(this.storage._storage).toBeInstanceOf(Storage);
-    this.storage.clear();
-  });
-
-  beforeEach(function () {
     this.test = [
       ['1', '2'],
       ['object', JSON.stringify({a: 1})],
@@ -30,6 +21,14 @@ describe('SyncStorage —— Storage封装类', function () {
       ['qq', ''],
       ['kyokyo_age', '24']
     ];
+    expect(this.storage = new SyncStorage(ModalLayer['_enum']['BROWSER_STORAGE']['LOCALSTORAGE'])).nothing();
+    expect(this.storage).toBeInstanceOf(SyncStorage);
+    expect(this.storage._type).toBe(ModalLayer['_enum']['BROWSER_STORAGE']['LOCALSTORAGE']);
+    expect(this.storage._record).toBeInstanceOf(Array);
+    expect(this.storage._storage).toBeInstanceOf(Storage);
+  });
+
+  beforeEach(function () {
     for (let i = 0; i < this.test.length; i++)
       this.storage._storage.setItem(...this.test[i]);
   });
@@ -75,4 +74,10 @@ describe('SyncStorage —— Storage封装类', function () {
     expect(this.storage._record.length).toBe(0);
   });
 
+  afterAll(function () {
+    this.storage.clear();
+    while (this.test.length > 0)
+      this.storage.del(this.test.shift()[0], true);
+  });
+  
 });

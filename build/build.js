@@ -5,7 +5,7 @@
 * @Description         构建将要使用的js和css
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-27 02:30:38
+* @Last Modified time: 2020-10-28 01:07:17
 */
 
 const fs = require('fs');
@@ -20,6 +20,7 @@ const BUILD_PATH = path.join(BASE_PATH, '/build');
 const CORE_PATH = path.join(SOURCE_PATH, '/js/core');
 const LAYER_PATH = path.join(SOURCE_PATH, '/js/layer');
 const WORKER_PATH = path.join(SOURCE_PATH, '/js/worker');
+const STORAGE_PATH = path.join(SOURCE_PATH, '/js/storage');
 const ASSISTANT_PATH = path.join(SOURCE_PATH, '/js/assistant');
 
 // css
@@ -63,6 +64,8 @@ buildList = {
     path.join(LAYER_PATH, '/loading.js'),
     path.join(LAYER_PATH, '/message.js'),
     path.join(WORKER_PATH, '/canvas-filter.js'),
+    path.join(STORAGE_PATH, '/abstract.js'),
+    path.join(STORAGE_PATH, '/sync-storage.js'),
   ],
   'css': [
     path.join(SOURCE_PATH, '/css/core.css'),

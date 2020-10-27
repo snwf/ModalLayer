@@ -7,11 +7,11 @@
 *                      若想存储对象请先将其进行序列化再存储.
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-27 23:37:55
+* @Last Modified time: 2020-10-28 01:28:14
 */
 
 class SyncStorage extends StorageAbstract {
-  constructor (type) {
+  constructor (type = ModalLayer['_enum']['BROWSER_STORAGE']['SESSIONSTORAGE']) {
     if (!window[type])
       throw Error(`The current browser does not support ${type} function`);
     super();
@@ -47,4 +47,9 @@ class SyncStorage extends StorageAbstract {
       this['_storage'].removeItem(this['_record'].shift());
     return true;
   }
+}
+
+if (StorageAssistant) {
+  Object.defineProperty(StorageAssistant['_achieve'], ModalLayer['_enum']['BROWSER_STORAGE']['LOCALSTORAGE'], {value: SyncStorage});
+  Object.defineProperty(StorageAssistant['_achieve'], ModalLayer['_enum']['BROWSER_STORAGE']['SESSIONSTORAGE'], {value: SyncStorage});
 }
