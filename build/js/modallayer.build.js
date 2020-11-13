@@ -1232,14 +1232,12 @@ var ModalLayer = function () {
   }, {
     key: "resize",
     value: function resize() {
-      var _ModalLayer$_assistan;
-
       var defaultArea;
       var container, modalChildNodes;
       defaultArea = [0, 0];
       container = this['variable']['nodes']['container'];
       modalChildNodes = container.children;
-      defaultArea[0] = ((_ModalLayer$_assistan = ModalLayer['_assistant']['number']['multiply']) !== null && _ModalLayer$_assistan !== void 0 ? _ModalLayer$_assistan : ModalLayer['_assistant']['number']['mul'])(window.innerWidth, this['option']['areaProportion'][0]);
+      defaultArea[0] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, this['option']['areaProportion'][0]);
       container.style.width = defaultArea[0] + 'px';
 
       for (var i = 0; i < modalChildNodes.length; i++) {
@@ -2331,19 +2329,22 @@ var NumberAssistant = function () {
   }
 
   _createClass(NumberAssistant, null, [{
-    key: "mul",
-    value: function mul(mul1, mul2) {
-      var _mul$0$1$length, _mul$1$1$length;
+    key: "multiply",
+    value: function multiply(mul1, mul2) {
+      var _mul1$split$1$length, _mul1$split$, _mul2$split$1$length, _mul2$split$;
 
-      var mul, carry;
-      mul = [mul1.toString().split('.'), mul2.toString().split('.')];
-      carry = window.Math.pow(10, window.Math.max((_mul$0$1$length = mul[0][1].length) !== null && _mul$0$1$length !== void 0 ? _mul$0$1$length : 0, (_mul$1$1$length = mul[1][1].length) !== null && _mul$1$1$length !== void 0 ? _mul$1$1$length : 0));
-      mul = [[Number(mul[0][0]), Number('0.' + mul[0][1]) * carry], [Number(mul[1][0]), Number('0.' + mul[1][1]) * carry]];
-      return (mul[0][0] !== 0 ? mul[0][0] : 1) * (mul[1][0] !== 0 ? mul[1][0] : 1) + mul[0][1] * mul[1][1] / carry;
+      var carry, floatLen;
+      floatLen = 0;
+      mul1 = mul1.toString();
+      mul2 = mul2.toString();
+      floatLen += (_mul1$split$1$length = (_mul1$split$ = mul1.split('.')[1]) === null || _mul1$split$ === void 0 ? void 0 : _mul1$split$.length) !== null && _mul1$split$1$length !== void 0 ? _mul1$split$1$length : 0;
+      floatLen = (_mul2$split$1$length = (_mul2$split$ = mul2.split('.')[1]) === null || _mul2$split$ === void 0 ? void 0 : _mul2$split$.length) !== null && _mul2$split$1$length !== void 0 ? _mul2$split$1$length : 0;
+      carry = window.Math.pow(10, floatLen);
+      return Number(mul1.replace('.', '')) * Number(mul2.replace('.', '')) / carry;
     }
   }, {
-    key: "div",
-    value: function div(dividend, divisor) {
+    key: "divide",
+    value: function divide(dividend, divisor) {
       var _dividend$toString$sp, _dividend$toString$sp2, _divisor$toString$spl, _divisor$toString$spl2;
 
       var carry;
@@ -2488,7 +2489,7 @@ var NumberAssistant = function () {
   return NumberAssistant;
 }();
 
-window['math'] && (NumberAssistant['__proto__'] = window['math']);
+window['math'] && (NumberAssistant = Object.assign(NumberAssistant, window['math']));
 Object.defineProperty(ModalLayer['_assistant'], 'number', {
   value: NumberAssistant
 });
@@ -3630,7 +3631,7 @@ var ImageLayer = function (_ModalLayer3) {
   }, {
     key: "compatibleOption",
     value: function compatibleOption(options) {
-      var _ModalLayer$_assistan2, _ModalLayer$_assistan3;
+      var _ModalLayer$_assistan, _ModalLayer$_assistan2;
 
       var imageList;
       var base, wSize;
@@ -3641,13 +3642,13 @@ var ImageLayer = function (_ModalLayer3) {
       imageList = ModalLayer['_assistant']['object'].get(options, 'layer.image');
       if (imageList instanceof FileList) options['layer']['image'] = Object.values(imageList);
       if (!Array.isArray(options['layer']['image'])) options['layer']['image'] = [options['layer']['image']];
-      toolbarConfig = (_ModalLayer$_assistan2 = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config')) !== null && _ModalLayer$_assistan2 !== void 0 ? _ModalLayer$_assistan2 : [];
+      toolbarConfig = (_ModalLayer$_assistan = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config')) !== null && _ModalLayer$_assistan !== void 0 ? _ModalLayer$_assistan : [];
       Object.keys(toolbarConfig).forEach(function (k) {
         toolbarConfig[k] = typeof toolbarConfig[k] === 'boolean' ? {
           enable: toolbarConfig[k]
         } : toolbarConfig[k];
       });
-      filterConfig = (_ModalLayer$_assistan3 = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config.filter.config')) !== null && _ModalLayer$_assistan3 !== void 0 ? _ModalLayer$_assistan3 : [];
+      filterConfig = (_ModalLayer$_assistan2 = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config.filter.config')) !== null && _ModalLayer$_assistan2 !== void 0 ? _ModalLayer$_assistan2 : [];
       Object.keys(filterConfig).forEach(function (k) {
         filterConfig[k] = typeof filterConfig[k] === 'boolean' ? {
           enable: filterConfig[k]
@@ -4056,7 +4057,7 @@ var ImageLayer = function (_ModalLayer3) {
       repaintVariable = [].concat(_toConsumableArray(cropCasCenter), [maxWidth, maxHeight]);
 
       _repaintEvent = function repaintEvent() {
-        var _cropCtx, _ModalLayer$_assistan4, _cropCtx2;
+        var _cropCtx, _ModalLayer$_assistan3, _cropCtx2;
 
         cropCtx.save();
         cropCtx.clearRect(0, 0, cropCas.width, cropCas.height);
@@ -4069,7 +4070,7 @@ var ImageLayer = function (_ModalLayer3) {
 
         cropCtx.globalCompositeOperation = 'source-over';
 
-        (_ModalLayer$_assistan4 = ModalLayer['_assistant']['canvas'])['drawGrid'].apply(_ModalLayer$_assistan4, [cropCtx].concat(_toConsumableArray(repaintVariable), [2, 'white', 'quarter']));
+        (_ModalLayer$_assistan3 = ModalLayer['_assistant']['canvas'])['drawGrid'].apply(_ModalLayer$_assistan3, [cropCtx].concat(_toConsumableArray(repaintVariable), [2, 'white', 'quarter']));
 
         ModalLayer['_assistant']['canvas']['drawRect'](cropCtx, repaintVariable[0] - cropBorderHalfSize, repaintVariable[1] - cropBorderHalfSize, repaintVariable[2] + cropBorderSize, repaintVariable[3] + cropBorderSize, cropBorderSize, 'white', [0]);
         ModalLayer['_assistant']['canvas']['drawLBorder'](cropCtx, repaintVariable[0] - cropBorderSizeMul[2], repaintVariable[1] - cropBorderSizeMul[2], repaintVariable[2] + cropBorderSizeMul[4], repaintVariable[3] + cropBorderSizeMul[4], cropBorderSizeMul[6], cropBorderSize, 'white');

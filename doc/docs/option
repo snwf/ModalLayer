@@ -1,0 +1,910 @@
+<div class="intro">
+  <h1 id="option" class="intro-title bd-title" i18n-message="option"></h1>
+  <p class="intro-content bd-lead" i18n-message="View all the parameter configuration of ModalLayer."></p>
+</div>
+<div class="content bd-content">
+  <h2 id="common" i18n-message="common"></h2>
+  <hr>
+  <h3 id="content-option">option</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>index</td>
+        <td>number</td>
+        <td><code>ModalLayer._instance.length</code></td>
+        <td i18n-message="Automatically set index for recording modal layer."></td>
+      </tr>
+      <tr>
+        <td>ui</td>
+        <td>string</td>
+        <td><code>modal-layer-ui</code></td>
+        <td i18n-message="Modal layer identification class."></td>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>string</td>
+        <td><code>null</code></td>
+        <td i18n-message="Modal layer title.<br>When this property is set to <code>false</code>, the title bar is not displayed."></td>
+      </tr>
+      <tr>
+        <td>window</td>
+        <td>element</td>
+        <td><code>null</code></td>
+        <td i18n-message="Modal parent container."></td>
+      </tr>
+      <tr>
+        <td>popupTime</td>
+        <td>number</td>
+        <td><code>5</code></td>
+        <td i18n-message="The modal layer displays the time by default, if it is <code>0</code>, it will never disappear."></td>
+      </tr>
+      <tr>
+        <td>skin</td>
+        <td>string</td>
+        <td><code>default</code></td>
+        <td i18n-message="Modal layer skin style."></td>
+      </tr>
+      <tr>
+        <td>parentModalLayer</td>
+        <td>ModalLayer</td>
+        <td><code>null</code></td>
+        <td i18n-message="If this property is set, the parent modal layer will be automatically called out after the current modal layer is hidden."></td>
+      </tr>
+      <tr>
+        <td>areaProportion</td>
+        <td>array</td>
+        <td><a href="#content-option-areaProportion" class="text-decoration-none">option.areaProportion</a></td>
+        <td i18n-message="This attribute controls the width and height of the modal layer."></td>
+      </tr>
+      <tr>
+        <td>content</td>
+        <td>object</td>
+        <td><a href="#content-option-content" class="text-decoration-none">option.content</a></td>
+        <td i18n-message="What's displayed in the modal layer."></td>
+      </tr>
+      <tr>
+        <td>text</td>
+        <td>object</td>
+        <td><a href="#content-option-text" class="text-decoration-none">option.text</a></td>
+        <td i18n-message="Text in the modal layer."></td>
+      </tr>
+      <tr>
+        <td>transition</td>
+        <td>object</td>
+        <td><a href="#content-option-transition" class="text-decoration-none">option.transition</a></td>
+        <td i18n-message="Transition animation related settings."></td>
+      </tr>
+      <tr>
+        <td>mask</td>
+        <td>object</td>
+        <td><a href="#content-option-mask" class="text-decoration-none">option.mask</a></td>
+        <td i18n-message="Mask layer related settings."></td>
+      </tr>
+      <tr>
+        <td>drag</td>
+        <td>object</td>
+        <td><a href="#content-option-drag" class="text-decoration-none">option.drag</a></td>
+        <td i18n-message="Modal layer drag event settings."></td>
+      </tr>
+      <tr>
+        <td>resize</td>
+        <td>object</td>
+        <td><a href="#content-option-resize" class="text-decoration-none">option.resize</a></td>
+        <td i18n-message="Adjust the modal layer size event settings."></td>
+      </tr>
+      <tr>
+        <td>progress</td>
+        <td>object</td>
+        <td><a href="#content-option-transition" class="text-decoration-none">option.progress</a></td>
+        <td i18n-message="The modal layer displays the relevant settings of the countdown progress bar."></td>
+      </tr>
+      <tr>
+        <td>layer</td>
+        <td>object</td>
+        <td>
+          <a href="#pagelayer-option-layer" class="text-decoration-none" i18n-message="pagelayer"></a><br>
+          <a href="#imagelayer-option-layer" class="text-decoration-none" i18n-message="imagelayer"></a><br>
+          <a href="#loadinglayer-option-layer" class="text-decoration-none" i18n-message="loadinglayer"></a><br>
+        </td>
+        <td i18n-message="Unique configuration of different modal layers."></td>
+      </tr>
+      <tr>
+        <td>hook</td>
+        <td>object</td>
+        <td><a href="#content-option-hook" class="text-decoration-none">option.hook</a></td>
+        <td i18n-message="Hook function in the initialization process of the modal layer."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-content">option.content</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>value</td>
+        <td>string</td>
+        <td><code>null</code></td>
+        <td i18n-message='You can use HTML code and the objects required by the <a href="#" class="link-secondary">ElementAssistant.objectToNode</a> method.'></td>
+      </tr>
+      <tr>
+        <td>fullContainer</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Whether the content container of the modal layer is left blank."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-text">option.text</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>action</td>
+        <td>object</td>
+        <td><a href="#content-option-text-action" class="text-decoration-none">option.text.action</a></td>
+        <td i18n-message="Automatically set index for recording modal layer."></td>
+      </tr>
+      <tr>
+        <td>interaction</td>
+        <td>object</td>
+        <td><a href="#content-option-text-interaction" class="text-decoration-none">option.text.interaction</a></td>
+        <td i18n-message="Modal layer identification class."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-text-action">option.text.action</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>close</td>
+        <td>string</td>
+        <td><code>关闭</code></td>
+        <td i18n-message="Close button text description."></td>
+      </tr>
+      <tr>
+        <td>expand</td>
+        <td>string</td>
+        <td><code>全屏</code></td>
+        <td i18n-message="Expand button text description."></td>
+      </tr>
+      <tr>
+        <td>minimize</td>
+        <td>string</td>
+        <td><code>最小化</code></td>
+        <td i18n-message="Minimize button text description."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-text-interaction">option.text.interaction</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ok</td>
+        <td>string</td>
+        <td><code>确定</code></td>
+        <td i18n-message="Ok button text description."></td>
+      </tr>
+      <tr>
+        <td>no</td>
+        <td>string</td>
+        <td><code>拒绝</code></td>
+        <td i18n-message="No button text description."></td>
+      </tr>
+      <tr>
+        <td>cancel</td>
+        <td>string</td>
+        <td><code>取消</code></td>
+        <td i18n-message="Cancel button text description."></td>
+      </tr>
+
+    </tbody>
+  </table>
+  <h3 id="content-option-transition">option.transition</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>time</td>
+        <td>number</td>
+        <td><code>0.2</code></td>
+        <td i18n-message="Transition animation duration."></td>
+      </tr>
+      <tr>
+        <td>opacity</td>
+        <td>number</td>
+        <td><code>0</code></td>
+        <td i18n-message="Transparency at the beginning and end of transition animation."></td>
+      </tr>
+      <tr>
+        <td>scale</td>
+        <td>array</td>
+        <td><code>[0.45, 0.45]</code></td>
+        <td i18n-message="The zoom ratio at the beginning and end of the transition animation."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-mask">option.mask</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>true</code></td>
+        <td i18n-message="Whether to open the mask layer."></td>
+      </tr>
+      <tr>
+        <td>clickRemove</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Click the mask layer to remove the modal layer."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-drag">option.drag</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>true</code></td>
+        <td i18n-message="Whether to open the drag event."></td>
+      </tr>
+      <tr>
+        <td>overflow</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Whether to allow overflow of the parent container."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-resize">option.resize</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>true</code></td>
+        <td i18n-message="Whether to open the resize event."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-progress">option.progress</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Whether to open the progress bar display."></td>
+      </tr>
+      <tr>
+        <td>position</td>
+        <td>string</td>
+        <td><code>bottom</code></td>
+        <td i18n-message="Progress bar display position."></td>
+      </tr>
+      <tr>
+        <td>color</td>
+        <td>string</td>
+        <td><code style="color: deepskyblue">deepskyblue</code></td>
+        <td i18n-message="Progress bar color."></td>
+      </tr>
+      <tr>
+        <td>background</td>
+        <td>string</td>
+        <td><code style="color: #cecece">#cecece</code></td>
+        <td i18n-message="Progress bar background color."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="content-option-hook">option.hook</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>initStart</td>
+        <td>function</td>
+        <td><code>null</code></td>
+        <td i18n-message="Call this method before configuration initialization."></td>
+      </tr>
+      <tr>
+        <td>initEnded</td>
+        <td>function</td>
+        <td><code>null</code></td>
+        <td i18n-message="Call this method after configuration initialization before inserting the node."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h2 id="pagelayer" i18n-message="pagelayer"></h2>
+  <hr>
+  <h3 id="pagelayer-option-layer">option.layer</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>area</td>
+        <td>array</td>
+        <td><code>[800, 600]</code></td>
+        <td i18n-message="Page layer size."></td>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string</td>
+        <td><code>modal-layer-page-</code></td>
+        <td i18n-message="Name prefix."></td>
+      </tr>
+      <tr>
+        <td>src</td>
+        <td>string</td>
+        <td><code>null</code></td>
+        <td i18n-message="Page layer url."></td>
+      </tr>
+      <tr>
+        <td>srcdoc</td>
+        <td>string</td>
+        <td><code>null</code></td>
+        <td i18n-message="Page layer html."></td>
+      </tr>
+      <tr>
+        <td>frameborder</td>
+        <td>string</td>
+        <td><code>0</code></td>
+        <td i18n-message="Specifies whether to display the border around the iframe."></td>
+      </tr>
+      <tr>
+        <td>scrolling</td>
+        <td>string</td>
+        <td><code>no</code></td>
+        <td i18n-message="Specifies whether to display scroll bars in the iframe."></td>
+      </tr>
+      <tr>
+        <td>allowfullscreen</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Specifies whether to allow iframe full screen."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h2 id="loadinglayer" i18n-message="loadinglayer"></h2>
+  <hr>
+  <h3 id="loadinglayer-option-layer">option.layer</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>icon</td>
+        <td>number</td>
+        <td><code>0</code></td>
+        <td i18n-message="Loading animated icons."></td>
+      </tr>
+      <tr>
+        <td>size</td>
+        <td>number</td>
+        <td><code>48</code></td>
+        <td i18n-message="Icon size, mainly used to set <code>font-size</code>."></td>
+      </tr>
+      <tr>
+        <td>rate</td>
+        <td>string</td>
+        <td><code>null</code></td>
+        <td i18n-message='Specifies the speed change in a loop, refer to the <a href="//developer.mozilla.org/docs/Web/CSS/animation-timing-function" target="_blank">animation-timing-function</a>'></td>
+      </tr>
+      <tr>
+        <td>duration</td>
+        <td>string</td>
+        <td><code>2</code></td>
+        <td i18n-message='Specify the duration of an animation cycle. refer to the <a href="//developer.mozilla.org/docs/Web/CSS/animation-duration" target="_blank">animation-duration</a>'></td>
+      </tr>
+      <tr>
+        <td>area</td>
+        <td>array</td>
+        <td><code>[48, 48]</code></td>
+        <td i18n-message="Size, corresponding to width and height in css."></td>
+      </tr>
+      <tr>
+        <td>color</td>
+        <td>string</td>
+        <td><code>white</code></td>
+        <td i18n-message="Text/icon color."></td>
+      </tr>
+      <tr>
+        <td>background</td>
+        <td>string</td>
+        <td><code>transparent</code></td>
+        <td i18n-message="Text/icon background color."></td>
+      </tr>
+      <tr>
+        <td>position</td>
+        <td>array</td>
+        <td><code>['center', 'center']</code></td>
+        <td i18n-message="The position of the text/icon, can be left, center, right or specific pixel value."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h2 id="imagelayer" i18n-message="imagelayer"></h2>
+  <hr>
+  <h3 id="imagelayer-option-layer">option.layer</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>image</td>
+        <td>array</td>
+        <td><code>null</code></td>
+        <td>
+          <span i18n-message="Specifies the picture to be displayed."></span>
+          <div i18n-message="This property receives an array, which can be put into the following objects:"></div>
+          <ul>
+            <li><a href="//developer.mozilla.org/docs/Web/API/Blob" class="code" target="_blank">Blob</a></li>
+            <li><a href="//developer.mozilla.org/docs/Web/API/File" class="code" target="_blank">File</a></li>
+            <li><a href="//developer.mozilla.org/docs/Web/API/HTMLImageElement/Image" class="code" target="_blank">Image</a></li>
+            <li><a href="//developer.mozilla.org/docs/Web/API/HTMLImageElement" class="code" target="_blank">HTMLImageElement</a></li>
+            <li>
+              <code>string</code>
+              <span class="code">(url <span i18n-message="or"></span> base64)</span>
+            </li>
+          </ul>
+          <div i18n-message='Or a <a href="//developer.mozilla.org/docs/Web/API/FileList" class="code" target="_blank">FileList</a> object.'></div>
+          <div i18n-message="If the image cannot be loaded, it will be loaded later."></div>
+        </td>
+      </tr>
+      <tr>
+        <td>size</td>
+        <td>array</td>
+        <td><code>null</code></td>
+        <td i18n-message="Specify the image size, the format is [width, height], can only be a specific value, and the unit is pixel. If <code>size</code> is set, <code>sizeRange</code> will no longer work."></td>
+      </tr>
+      <tr>
+        <td>sizeRange</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-sizeRange" class="text-decoration-none">option.layer.sizeRange</a></td>
+        <td>
+          <span i18n-message="Specify the image size range, the format is [width, height], which can be pixels, percentages, or decimals."></span><br>
+          <span i18n-message="Please note that this attribute does not change the original image scale, and will select width or height for calculation."></span>
+        </td>
+      </tr>
+      <tr>
+        <td>toolbar</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar" class="text-decoration-none">option.layer.toolbar</a></td>
+        <td i18n-message="Toolbar related settings."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-sizeRange">option.layer.sizeRange</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>min</td>
+        <td>array</td>
+        <td><code>[0.15625, 0.160257]</code></td>
+        <td i18n-message="Image minimum size."></td>
+      </tr>
+      <tr>
+        <td>max</td>
+        <td>array</td>
+        <td><code>[0.9, 0.9]</code></td>
+        <td i18n-message="Maximum image size."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar">option.layer.toolbar</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td>
+          <div i18n-message="Specifies whether to enable the toolbar."></div>
+          <div i18n-message="It will be automatically set to <code>false</code> when no tools are open"></div>
+        </td>
+      </tr>
+      <tr>
+        <td>config</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar-config" class="text-decoration-none">option.layer.toolbar.config</a></td>
+        <td i18n-message="Tool settings in the toolbar."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar-config">option.layer.toolbar.config</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>crop</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar-config-crop" class="text-decoration-none">option.layer.toolbar.config.crop</a></td>
+        <td i18n-message="Crop tool settings."></td>
+      </tr>
+      <tr>
+        <td>spin</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar-config-spin" class="text-decoration-none">option.layer.toolbar.config.spin</a></td>
+        <td i18n-message="Spin tool settings."></td>
+      </tr>
+      <tr>
+        <td>revert</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar-config-revert" class="text-decoration-none">option.layer.toolbar.config.revert</a></td>
+        <td i18n-message="Revert tool settings."></td>
+      </tr>
+      <tr>
+        <td>download</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar-config-download" class="text-decoration-none">option.layer.toolbar.config.download</a></td>
+        <td i18n-message="Download tool settings."></td>
+      </tr>
+      <tr>
+        <td>filter</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar-config-filter" class="text-decoration-none">option.layer.toolbar.config.filter</a></td>
+        <td i18n-message="Filter tool settings."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar-config-crop">option.layer.toolbar.config.crop</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Specifies whether to turn on the cutting tool."></td>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>string</td>
+        <td><code>crop</code></td>
+        <td i18n-message="Crop tool title attribute value."></td>
+      </tr>
+      <tr>
+        <td>grid</td>
+        <td>string</td>
+        <td><code>quarter</code></td>
+        <td>
+          <div i18n-message="Specifies the style of the grid during cropping."></div>
+          <div i18n-message="If it is <code>fasely</code>, no grid is drawn."></div>
+          <div i18n-message="This attribute can only have the following values:"></div>
+          <ul>
+            <li>quarter</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>icon</td>
+        <td>string</td>
+        <td><code>fas fa-crop-alt</code></td>
+        <td i18n-message="Cropping tool icon."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar-config-spin">option.layer.toolbar.config.spin</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Specifies whether to turn on the tool."></td>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>string</td>
+        <td><code>spin</code></td>
+        <td i18n-message="Tool title attribute value."></td>
+      </tr>
+      <tr>
+        <td>icon</td>
+        <td>string</td>
+        <td><code>fas fa-redo-alt</code></td>
+        <td i18n-message="Tool icon."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar-config-revert">option.layer.toolbar.config.revert</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Specifies whether to turn on the tool."></td>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>string</td>
+        <td><code>revert</code></td>
+        <td i18n-message="Tool title attribute value."></td>
+      </tr>
+      <tr>
+        <td>icon</td>
+        <td>string</td>
+        <td><code>fas fa-sync-alt</code></td>
+        <td i18n-message="Tool icon."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar-config-download">option.layer.toolbar.config.download</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td i18n-message="Specifies whether to turn on the tool."></td>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>string</td>
+        <td><code>download</code></td>
+        <td i18n-message="Tool title attribute value."></td>
+      </tr>
+      <tr>
+        <td>icon</td>
+        <td>string</td>
+        <td><code>fas fa-download</code></td>
+        <td i18n-message="Tool icon."></td>
+      </tr>
+      <tr>
+        <td>mime</td>
+        <td>string</td>
+        <td><code>image/png</code></td>
+        <td i18n-message="Types of exported pictures."></td>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>string</td>
+        <td><code>'picture-' + Date.now()</code></td>
+        <td i18n-message="The name of the exported picture."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar-config-filter">option.layer.toolbar.config.filter</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>enable</td>
+        <td>boolean</td>
+        <td><code>false</code></td>
+        <td>
+          <div i18n-message="Specifies whether to enable the filter."></div>
+          <div i18n-message="It will be automatically set to <code>false</code> when no filter are open"></div>
+        </td>
+      </tr>
+      <tr>
+        <td>config</td>
+        <td>object</td>
+        <td><a href="#imagelayer-option-layer-toolbar-config-filter-config" class="text-decoration-none">option.layer.toolbar.config.filter.config</a></td>
+        <td i18n-message="Filter related settings."></td>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>string</td>
+        <td><code>filter</code></td>
+        <td i18n-message="Tool title attribute value."></td>
+      </tr>
+      <tr>
+        <td>icon</td>
+        <td>string</td>
+        <td><code>fas fa-filter</code></td>
+        <td i18n-message="Tool icon."></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="imagelayer-option-layer-toolbar-config-filter-config">option.layer.toolbar.config.filter.config</h3>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th i18n-message="name"></th>
+        <th i18n-message="type"></th>
+        <th i18n-message="default"></th>
+        <th i18n-message="description"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>blur</td>
+        <td>object</td>
+        <td><code>{
+              'enable': false,
+              'title': 'blur',
+              'icon': null,
+              'textIcon': '模'
+            }</code></td>
+        <td i18n-message="Gaussian blur filter settings."></td>
+      </tr>
+      <tr>
+        <td>gray</td>
+        <td>object</td>
+        <td><code>{
+              'enable': false,
+              'title': 'gray',
+              'icon': null,
+              'textIcon': '灰'
+            }</code></td>
+        <td i18n-message="Grayscale filter settings."></td>
+      </tr>
+      <tr>
+        <td>blur</td>
+        <td>object</td>
+        <td><code>{
+              'enable': false,
+              'title': 'mirror',
+              'icon': null,
+              'textIcon': '镜'
+            }</code></td>
+        <td i18n-message="Mirror filter settings."></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,28 @@
+/*
+* @Author:             wolf
+* @Email:              dd112389@gmail.com
+* @Date:               2020-11-03 02:28:43
+* @Description         手册
+*
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-12 02:09:25
+*/
+
+@charset 'utf-8';
+
+body {
+  min-height: 75rem;
+  padding-top: 4.5rem;
+}
+
+.code {
+  color: #d63384;
+  font-size: .875em;
+  word-wrap: break-word;
+  font-family: var(--bs-font-monospace);
+}
+
+.table tr > th:first-child,
+.table tr > td:first-child {
+  text-indent: .5rem;
+}

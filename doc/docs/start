@@ -1,0 +1,101 @@
+<div class="intro">
+  <h1 id="start" class="intro-title bd-title" i18n-message="start"></h1>
+  <p class="intro-content bd-lead" i18n-message="Quickly start using ModalLayer."></p>
+</div>
+<hr>
+<div class="content bd-content">
+  <h3 id="introduction" i18n-message="introduction"></h3>
+  <p i18n-message="ModalLayer is a modal window written by native JavaScript for front-end display. You can directly use or customize your own modal window."></p>
+  <h3 id="download" i18n-message="download"></h3>
+  <p><a href="https://github.com/snwf/ModalLayer/archive/master.zip" target="_blank" i18n-message="click to download"></a> <span i18n-message="or go to"></span> <a href="https://github.com/snwf/ModalLayer" target="_blank">Github</a></p>
+  <h3 id="build" i18n-message="build"></h3>
+  <div>
+    <p>
+      <span i18n-message="The CSS files are compressed using CleanCSS, and the final generated files are located in the"></span>
+      <kbd>./dist/css</kbd>
+    </p>
+    <p>
+      <span i18n-message="JavaScript files use Babel for ES6 compatibility processing (or not), and then use Google Closure Compiler for compilation and compression, and the final generated files are located in the"></span>
+      <kbd>./dist/js</kbd>
+    </p>
+    <div>
+      <span i18n-message="Execute the following commands in the project root directory in sequence"></span>
+      <div class="highlight">
+        <p>node ./build/build.js</p>
+        <p class="mb-0">node ./dist/compiler.js</p>
+      </div>
+    </div>
+    <p i18n-message="If an error message appears, you need to solve it and execute it again."></p>
+  </div>
+  <h3 id="project-structure" i18n-message="project structure"></h3>
+  <div class="highlight">
+    <pre>
+modallayer/
+├── build
+│   ├── css
+│   ├── js
+│   ├── build.js
+│   ├── README.md
+├── dist
+│   ├── css
+│   ├── js
+│   ├── compiler.js
+│   ├── README.md
+├── doc
+│   ├── css
+│   ├── docs
+│   ├── js
+│   ├── static
+│   ├── index.html
+├── example
+│   ├── develop
+│   ├── produce
+├── src
+│   ├── css
+│   ├── js
+├── static
+│   ├── fontawesome-free
+│   ├── jasmine-standalone
+│   ├── mathjs
+├── unit
+│   ├── spec
+│   ├── index.html
+├── .babelrc
+├── .editorconfig
+├── .gitignore
+├── package.json
+├── README.md
+    </pre>
+  </div>
+  <h3 id="source-structure" i18n-message="source structure"></h3>
+  <div class="highlight">
+    <pre>
+modallayer/src/
+├── css
+│   ├── skin
+│   ├── animation.css
+│   ├── core.css
+├── js
+│   ├── assistant
+│   ├── core
+│   ├── layer
+│   ├── storage
+│   ├── worker
+    </pre>
+  </div>
+  <h3 id="example" i18n-message="Example"></h3>
+  <div>
+    <h5 id="message" i18n-message="messagelayer"></h5>
+    <div class="highlight">
+      <button type="button" class="btn btn-sm btn-outline-primary float-right" i18n-message="Click me to try" onclick="ModalLayer.msg('Hello!')"></button>
+      <p>// 弹出一个消息层</p>
+      <code>ModalLayer.msg('Hello!')</code>
+    </div>
+    <h5 id="alert" i18n-message="alertlayer"></h5>
+    <div class="highlight">
+      <button type="button" class="btn btn-sm btn-outline-primary float-right" i18n-message="Click me to try" onclick="ModalLayer.alert({content: 'Hello, World!'})"></button>
+      <p>// 弹出一个提示层</p>
+      <code>ModalLayer.alert({content: 'Hello, World!'})</code>
+    </div>
+  </div>
+</div>
