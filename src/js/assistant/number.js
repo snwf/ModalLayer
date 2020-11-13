@@ -5,7 +5,7 @@
 * @Description         数字助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-27 01:18:40
+* @Last Modified time: 2020-11-14 02:00:54
 */
 
 class NumberAssistant {
@@ -19,25 +19,17 @@ class NumberAssistant {
    * @param    {Number}                 mul2 乘数
    * @return   {Number}                      乘积
    */
-  static mul (mul1, mul2) {
-    let mul, carry;
+  static multiply (mul1, mul2) {
+    let carry, floatLen;
 
-    mul = [
-      mul1.toString().split('.'),
-      mul2.toString().split('.')
-    ];
+    floatLen = 0;
+    mul1 = mul1.toString();
+    mul2 = mul2.toString();
+    floatLen += mul1.split('.')[1]?.length ?? 0
+    floatLen = mul2.split('.')[1]?.length ?? 0;
+    carry = window.Math.pow(10, floatLen);
 
-    carry = window.Math.pow(10, window.Math.max(
-      mul[0][1].length ?? 0,
-      mul[1][1].length ?? 0
-    ));
-
-    mul = [
-      [Number(mul[0][0]), Number('0.' + mul[0][1]) * carry],
-      [Number(mul[1][0]), Number('0.' + mul[1][1]) * carry]
-    ];
-
-    return (mul[0][0] !== 0 ? mul[0][0] : 1) * (mul[1][0] !== 0 ? mul[1][0] : 1) + (mul[0][1] * mul[1][1] / carry);
+    return Number(mul1.replace('.', '')) * Number(mul2.replace('.', '')) / carry;
   }
 
   /**
@@ -50,7 +42,7 @@ class NumberAssistant {
    * @param    {Number}                 divisor  除数
    * @return   {Number}                          商
    */
-  static div (dividend, divisor) {
+  static divide (dividend, divisor) {
     let carry;
 
     carry = window.Math.pow(10, window.Math.max(
@@ -267,7 +259,7 @@ class NumberAssistant {
     rectRB = rect[1];
 
     if (
-      (point[0] < rectLT[0] || point[1] < rectLT[1]) || 
+      (point[0] < rectLT[0] || point[1] < rectLT[1]) ||
       (point[0] > rectRB[0] || point[1] > rectRB[1])
     )
       return false;
@@ -276,6 +268,6 @@ class NumberAssistant {
   }
 }
 
-window['math'] && (NumberAssistant['__proto__'] = window['math']);
+window['math'] && (NumberAssistant = Object.assign(NumberAssistant, window['math']));
 
 Object.defineProperty(ModalLayer['_assistant'], 'number', {value: NumberAssistant});
