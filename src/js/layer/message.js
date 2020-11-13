@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 20:04:23
-* @Description         
+* @Description         消息层
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 00:55:09
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-13 23:26:21
 */
 
 class MessageLayer extends ModalLayer {

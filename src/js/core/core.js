@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-28 01:07:00
+* @Last Modified time: 2020-11-14 00:35:15
 */
 
 class ModalLayer {
@@ -54,7 +54,7 @@ class ModalLayer {
   /**
    * 默认事件
    *
-   * @type {[type]}
+   * @type {Object}
    */
   static _event = EVENT;
 
@@ -177,9 +177,6 @@ class ModalLayer {
     // 设置ID
     options.index = ModalLayer['_instance'].length;
     
-    // 设置父窗口
-    options.window = options['window'] ?? window.document.body;
-
     // 初始化配置
     this['option'] = ModalLayer['_assistant']['object']['merge'](options, ModalLayer['_option']['common']);
   }
@@ -259,11 +256,12 @@ class ModalLayer {
    */
   initNode () {
     let okButton, noButton, cancelButton;
-    let container, titleNode, titleChild;
+    let mask, container, titleNode, titleChild;
 
     // 生成DOM
     this['variable']['nodes'] = ModalLayer['_assistant']['element']['objectToNode'](this['variable']['struct']['_build']);
 
+    mask = this['variable']['nodes']['mask'];
     container = this['variable']['nodes']['container'];
 
     // interaction_button
@@ -272,6 +270,10 @@ class ModalLayer {
     cancelButton = container.querySelector('.modal-layer-interaction-btn-cancel');
 
     // 设置属性
+    if (this['option']['window'] !== null) {
+      mask?.setAttribute('has-window', '');
+      container.setAttribute('has-window', '');
+    }
     container.setAttribute('modal-layer-popup-time', this['option']['popupTime']);
     container.setAttribute('content-full-container', Number(this['option']['content']['fullContainer']));
     container.setAttribute('modal-layer-type', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['TYPE'], this['type']).toLowerCase());
@@ -475,20 +477,21 @@ class ModalLayer {
   }
 
   /**
-   * 将节点插入this['option']['window']中
+   * 将节点插入父容器(this.option.window)中
+   * 若用户没有指定或在body中没有找到用户指定的容器则将 document.body 作为父容器.
    *
    * @Author   Wolf
    * @DateTime 2020-09-02T00:58:14+0800
    */
   insertNode () {
+    let fragment = document.createDocumentFragment();
+    let parentWindow = this['option']['window'] ?? window.document.body;
+    if (parentWindow instanceof String || typeof parentWindow === 'string')
+      parentWindow = document.querySelector(parentWindow) ?? window.docuemnt.body;
     Object.keys(this['variable']['nodes']).forEach(key => {
-      let parentWindow = this['option']['window'];
-      if (parentWindow instanceof String || typeof parentWindow === 'string')
-        parentWindow = this['option']['window'] = document.querySelector(parentWindow) ?? window.docuemnt.body;
-      if (!parentWindow.insertAdjacentElement)
-        parentWindow = this['option']['window'] = window.document.body;
-      parentWindow.insertAdjacentElement('beforeend', this['variable']['nodes'][key]);
+      fragment.appendChild(this['variable']['nodes'][key]);
     }, this);
+    parentWindow.appendChild(fragment);
   }
 
   /**
@@ -550,19 +553,19 @@ class ModalLayer {
    *
    * @Author   Wolf
    * @DateTime 2020-09-02T02:26:20+0800
-   * @param    {Mixed}             status 状态
+   * @param    {Mixed}             status 模态层状态
    */
   setStatus (status) {
-    if (Object.values(ModalLayer['_enum']['STATUS']).includes(status)) {
-      this['status'] = status;
-      this['variable']['nodes']['container'].setAttribute('modal-layer-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['STATUS'], status));
-    } else {
-      status = status.toUpperCase();
-      if (ModalLayer['_enum']['STATUS'][status] === undefined)
+    let text;
+    if (!Object.values(ModalLayer['_enum']['STATUS']).includes(status)) {
+      text = status.toUpperCase();
+      if ((status = ModalLayer['_enum']['STATUS'][text]) === undefined)
         throw Error('Illegal value');
-      this['status'] = ModalLayer['_enum']['STATUS'][status];
-      this['variable']['nodes']['container'].setAttribute('modal-layer-status', status.toLowerCase());
+    } else {
+      text = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['STATUS'], status);
     }
+    this['status'] = status;
+    this['variable']['nodes']['container'].setAttribute('modal-layer-status', text.toLowerCase());
   }
 
  /**
@@ -572,28 +575,23 @@ class ModalLayer {
   * @DateTime 2020-09-02T02:28:37+0800
   */
   resize () {
-    let widthTmpNum, heightTmpNum;
-    let containerNode, modalChildNodes;
-    let windowWidth, windowHeight, newModalWidth, newModalHeight;
+    let defaultArea;
+    let container, modalChildNodes;
 
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
-    newModalWidth = newModalHeight = 0;
-    containerNode = this['variable']['nodes']['container'];
-    modalChildNodes = containerNode.children;
-    widthTmpNum = this['option']['areaProportion'][0].toString().length - (this['option']['areaProportion'][0].toString().indexOf('.') + 1);
-    heightTmpNum = this['option']['areaProportion'][1].toString().length - (this['option']['areaProportion'][1].toString().indexOf('.') + 1);
+    defaultArea = [0, 0];
+    container = this['variable']['nodes']['container'];
+    modalChildNodes = container.children;
 
     // 先设置宽度, 不然会出现高度不正确的现象
-    newModalWidth = windowWidth * (10 * widthTmpNum * this['option']['areaProportion'][0]) / (10 * widthTmpNum);
-    containerNode.style.width = newModalWidth + 'px';
+    defaultArea[0] = (ModalLayer['_assistant']['number']['multiply'] ?? ModalLayer['_assistant']['number']['mul'])(window.innerWidth, this['option']['areaProportion'][0]);
+    container.style.width = defaultArea[0] + 'px';
 
     for (let i = 0; i < modalChildNodes.length; i++)
-      newModalHeight = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? newModalHeight : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), newModalHeight);
-    containerNode.style.height = newModalHeight + 'px';
+      defaultArea[1] = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
+    container.style.height = defaultArea[1] + 'px';
 
     // 记录初始化后的最小值
-    this['variable']['defaultArea'] = [newModalWidth, newModalHeight];
+    this['variable']['defaultArea'] = defaultArea;
   }
 
   /**
@@ -608,10 +606,22 @@ class ModalLayer {
    * @param    {Number}                 h 容器高
    */
   resizeByXYWH (x, y, w, h) {
-    let containerNode, wBoundary;
+    let container, wBoundary;
 
-    containerNode = this['variable']['nodes']['container'];
-    wBoundary = document.documentElement.getBoundingClientRect();
+    container = this['variable']['nodes']['container'];
+    if (this['option']['window'] === null)
+      wBoundary = {
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        right: window.innerWidth,
+        width: window.innerWidth,
+        bottom: window.innerHeight,
+        height: window.innerHeight
+      };
+    else
+      wBoundary = this['option']['window'].getBoundingClientRect();
 
     if (x < wBoundary.x)
       x = wBoundary.x;
@@ -622,15 +632,15 @@ class ModalLayer {
     if (y + h > wBoundary.bottom)
       h = wBoundary.bottom - y;
 
-    containerNode.style.marginLeft = x + 'px';
-    containerNode.style.marginTop = y + 'px';
+    container.style.marginLeft = x + 'px';
+    container.style.marginTop = y + 'px';
 
-    containerNode.style.width = w + 'px';
-    containerNode.style.height = h + 'px';
+    container.style.width = w + 'px';
+    container.style.height = h + 'px';
 
     // 如果为页面层则跟随模态层变化
     if ([ModalLayer['_enum']['TYPE']['PAGE'], ModalLayer['_enum']['TYPE']['VIDEO'], ModalLayer['_enum']['TYPE']['AUDIO']].includes(this.type)) {
-      let pageNode = containerNode.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
+      let pageNode = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
       pageNode.style.width = this['option']['layer']['area'][0] + w - this['variable']['defaultArea'][0] + 'px';
       pageNode.style.height = this['option']['layer']['area'][1] + h - this['variable']['defaultArea'][1] + 'px';
     }

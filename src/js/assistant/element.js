@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-25 00:23:01
+* @Last Modified time: 2020-11-14 00:44:14
 */
 
 class ElementAssistant {
@@ -22,7 +22,12 @@ class ElementAssistant {
     let childRect, parentRect;
 
     childRect = child.getBoundingClientRect();
-    parentRect = parent.getBoundingClientRect();
+    parentRect = parent ? parent.getBoundingClientRect() : {
+      x: 0,
+      y: 0,
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
 
     if (childRect.x < parentRect.x || childRect.x + childRect.width > parentRect.x + parentRect.width)
       return true;

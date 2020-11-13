@@ -2,10 +2,10 @@
 * @Author:             Wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-03 16:53:04
-* @Description         
+* @Description         输入层
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 00:55:32
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-13 23:27:04
 */
 
 class PromptLayer extends AlertLayer {

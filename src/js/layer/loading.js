@@ -2,10 +2,10 @@
 * @Author:             Wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-04 16:52:21
-* @Description         
+* @Description         加载层
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 00:54:48
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-13 23:26:15
 */
 
 class LoadingLayer extends ModalLayer {

@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 14:50:51
-* @Description         
+* @Description         构建ModalLayer所需的Node数据
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-25 00:07:27
+* @Last Modified time: 2020-11-13 23:25:37
 */
 
 const STRUCT = Object.create(null);

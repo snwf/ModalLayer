@@ -30,6 +30,14 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -41,14 +49,6 @@ function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.it
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var ENV = Object.create(null);
 ENV['browser'] = Object.create(null);
@@ -106,103 +106,85 @@ Object.defineProperty(EVENT, 'drag', {
     var _dEvent2,
         _this = this;
 
-    var status;
-    var nowTime;
-    var mousePoint, mousemoveEvent;
-    var target, trigger, targetRect;
-    var boundary, parentWindow, parentWindowRect;
+    var keydownEvent;
+    var status, targetMoveMethod;
+    var boundary, parentWindowRect;
+
+    var mEvent, _mouseupEvent, mousemoveEvent;
+
+    var target, trigger, mousePoint, targetRect;
     status = this['status'];
-    nowTime = Date.now();
     dEvent = (_dEvent2 = dEvent) !== null && _dEvent2 !== void 0 ? _dEvent2 : window.event;
     target = this['variable']['nodes']['container'];
     targetRect = target.getBoundingClientRect();
     mousePoint = [dEvent.screenX, dEvent.screenY];
     trigger = target.querySelector('.modal-layer-title');
-    parentWindow = window.document.documentElement;
-    parentWindowRect = parentWindow.getBoundingClientRect();
-    boundary = [parentWindowRect.x, parentWindowRect.x + parentWindowRect.width, parentWindowRect.x, parentWindowRect.y + parentWindowRect.height];
+
+    if (this['option']['window'] === null) {
+      boundary = [0, window.innerWidth, 0, window.innerHeight];
+    } else {
+      parentWindowRect = this['option']['window'].getBoundingClientRect();
+      boundary = [0, parentWindowRect.width, 0, parentWindowRect.height];
+    }
+
     window.getSelection().empty();
 
-    var targetMoveMethod = function targetMoveMethod(movementX, movementY) {
-      if (mousemoveEvent.buttons !== 1) {
-        mouseUpEvent();
-      } else {
-        if (!_this['option']['drag']['overflow']) {
-          if (targetRect.x + movementX < boundary[0]) targetRect.x = boundary[0] - movementX;
-          if (targetRect.right + movementX > boundary[1]) targetRect.x = boundary[1] - targetRect.width - movementX;
-          if (targetRect.y + movementY < boundary[2]) targetRect.y = boundary[2] - movementY;
-          if (targetRect.bottom + movementY > boundary[3]) targetRect.y = boundary[3] - targetRect.height - movementY;
-        }
-
-        targetRect.x += movementX;
-        targetRect.y += movementY;
-
-        if (_this['option']['resize']['enable'] && _this['option']['content']['fullContainer']) {
-          var resizeW, boundaryX, boundaryY;
-          resizeW = 5;
-          boundaryX = [resizeW, boundary[1] - targetRect.width - resizeW];
-          boundaryY = [resizeW, boundary[3] - targetRect.height - resizeW];
-          if (targetRect.x <= boundaryX[0]) targetRect.x = boundaryX[0];else if (targetRect.x >= boundaryX[1]) targetRect.x = boundaryX[1];
-          if (targetRect.y <= boundaryY[0]) targetRect.y = boundaryY[0];else if (targetRect.y >= boundaryY[1]) targetRect.y = boundaryY[1];
-        }
-
-        target.style.marginLeft = targetRect.x + 'px';
-        target.style.marginTop = targetRect.y + 'px';
-
-        _this['setStatus']('drag');
+    targetMoveMethod = function targetMoveMethod(movementX, movementY) {
+      if (!_this['option']['drag']['overflow']) {
+        if (targetRect.x + movementX < boundary[0]) targetRect.x = boundary[0] - movementX;
+        if (targetRect.right + movementX > boundary[1]) targetRect.x = boundary[1] - targetRect.width - movementX;
+        if (targetRect.y + movementY < boundary[2]) targetRect.y = boundary[2] - movementY;
+        if (targetRect.bottom + movementY > boundary[3]) targetRect.y = boundary[3] - targetRect.height - movementY;
       }
+
+      targetRect.x += movementX;
+      targetRect.y += movementY;
+
+      if (_this['option']['resize']['enable'] && _this['option']['content']['fullContainer']) {
+        var resizeW, boundaryX, boundaryY;
+        resizeW = 5;
+        boundaryX = [resizeW, boundary[1] - targetRect.width - resizeW];
+        boundaryY = [resizeW, boundary[3] - targetRect.height - resizeW];
+        if (targetRect.x <= boundaryX[0]) targetRect.x = boundaryX[0];else if (targetRect.x >= boundaryX[1]) targetRect.x = boundaryX[1];
+        if (targetRect.y <= boundaryY[0]) targetRect.y = boundaryY[0];else if (targetRect.y >= boundaryY[1]) targetRect.y = boundaryY[1];
+      }
+
+      target.style.marginLeft = targetRect.x + 'px';
+      target.style.marginTop = targetRect.y + 'px';
+
+      _this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
     };
 
-    var mouseMoveEvent = function mouseMoveEvent(moveEvent) {
-      var _moveEvent;
-
-      moveEvent = mousemoveEvent = (_moveEvent = moveEvent) !== null && _moveEvent !== void 0 ? _moveEvent : window.event;
-      targetMoveMethod(moveEvent.movementX, moveEvent.movementY);
+    mousemoveEvent = function mousemoveEvent(e) {
+      mEvent = e !== null && e !== void 0 ? e : window.event;
+      if (mEvent.buttons === 1) targetMoveMethod(mEvent.movementX, mEvent.movementY);
     };
 
-    var keyupEvent = function keyupEvent(kEvent) {
+    keydownEvent = function keydownEvent(kEvent) {
       var _kEvent;
 
       var movement;
-      movement = [];
+      movement = [0, 0];
       kEvent = (_kEvent = kEvent) !== null && _kEvent !== void 0 ? _kEvent : window.event;
-
-      switch (kEvent.code) {
-        case 'ArrowUp':
-          movement[1] = -1;
-          break;
-
-        case 'ArrowDown':
-          movement[1] = 1;
-          break;
-
-        case 'ArrowLeft':
-          movement[0] = -1;
-          break;
-
-        case 'ArrowRight':
-          movement[0] = 1;
-          break;
-
-        default:
-          return;
-      }
-
+      if (kEvent.code === 'ArrowLeft') movement[0] = -1;
+      if (kEvent.code === 'ArrowRight') movement[0] = 1;
+      if (kEvent.code === 'ArrowUp') movement[1] = -1;
+      if (kEvent.code === 'ArrowDown') movement[1] = 1;
       kEvent.preventDefault();
-      targetMoveMethod(movement[0], movement[1]);
+      targetMoveMethod.apply(void 0, _toConsumableArray(movement));
     };
 
-    var mouseUpEvent = function mouseUpEvent() {
-      document.removeEventListener('keyup', keyupEvent, true);
-      document.removeEventListener('mousemove', mouseMoveEvent);
-      document.removeEventListener('mouseup', mouseUpEvent);
+    _mouseupEvent = function mouseupEvent() {
+      document.removeEventListener('keydown', keydownEvent, true);
+      document.removeEventListener('mousemove', mousemoveEvent);
+      document.removeEventListener('mouseup', _mouseupEvent);
 
       _this['setStatus'](status);
     };
 
-    document.addEventListener('mouseup', mouseUpEvent);
-    document.addEventListener('mousemove', mouseMoveEvent);
-    document.addEventListener('keyup', keyupEvent, true);
+    document.addEventListener('mouseup', _mouseupEvent);
+    document.addEventListener('mousemove', mousemoveEvent);
+    document.addEventListener('keydown', keydownEvent, true);
   }
 });
 Object.defineProperty(EVENT, 'resize', {
@@ -212,12 +194,10 @@ Object.defineProperty(EVENT, 'resize', {
         _this2 = this;
 
     var status;
-    var nowTime;
-    var windowRect;
+    var boundary;
     var mousePoint, mousemoveEvent;
     var target, trigger, targetArea, targetRect, targetMinArea;
     status = this['status'];
-    nowTime = Date.now();
     dEvent = (_dEvent3 = dEvent) !== null && _dEvent3 !== void 0 ? _dEvent3 : window.event;
     trigger = dEvent.target;
     target = this['variable']['nodes']['container'];
@@ -225,7 +205,10 @@ Object.defineProperty(EVENT, 'resize', {
     targetMinArea = this['variable']['defaultArea'];
     mousePoint = [dEvent.screenX, dEvent.screenY];
     targetArea = [targetRect.width, targetRect.height];
-    windowRect = document.documentElement.getBoundingClientRect();
+    if (this['option']['window'] === null) boundary = {
+      x: 0,
+      y: 0
+    };else boundary = this['option']['window'].getBoundingClientRect();
     window.getSelection().empty();
 
     var mouseMoveEvent = function mouseMoveEvent(mEvent) {
@@ -249,7 +232,7 @@ Object.defineProperty(EVENT, 'resize', {
         if (resizePos.includes('top')) {
           moveNow[1] += movementY;
           moveNow[3] -= movementY;
-          if (moveNow[1] < windowRect.y) moveNow[3] -= windowRect.y - moveNow[1];
+          if (moveNow[1] < boundary.y) moveNow[3] -= boundary.y - moveNow[1];
 
           if (moveNow[3] < targetMinArea[1]) {
             moveNow[1] += moveNow[3] - targetMinArea[1];
@@ -265,7 +248,7 @@ Object.defineProperty(EVENT, 'resize', {
         if (resizePos.includes('left')) {
           moveNow[0] += movementX;
           moveNow[2] -= movementX;
-          if (moveNow[0] < windowRect.x) moveNow[2] -= windowRect.x - moveNow[0];
+          if (moveNow[0] < boundary.x) moveNow[2] -= boundary.x - moveNow[0];
 
           if (moveNow[2] < targetMinArea[0]) {
             moveNow[0] += moveNow[2] - targetMinArea[0];
@@ -994,10 +977,7 @@ var ModalLayer = function () {
   _createClass(ModalLayer, [{
     key: "initOption",
     value: function initOption(options) {
-      var _options$window;
-
       options.index = ModalLayer['_instance'].length;
-      options.window = (_options$window = options['window']) !== null && _options$window !== void 0 ? _options$window : window.document.body;
       this['option'] = ModalLayer['_assistant']['object']['merge'](options, ModalLayer['_option']['common']);
     }
   }, {
@@ -1046,12 +1026,21 @@ var ModalLayer = function () {
     key: "initNode",
     value: function initNode() {
       var okButton, noButton, cancelButton;
-      var container, titleNode, titleChild;
+      var mask, container, titleNode, titleChild;
       this['variable']['nodes'] = ModalLayer['_assistant']['element']['objectToNode'](this['variable']['struct']['_build']);
+      mask = this['variable']['nodes']['mask'];
       container = this['variable']['nodes']['container'];
       okButton = container.querySelector('.modal-layer-interaction-btn-ok');
       noButton = container.querySelector('.modal-layer-interaction-btn-no');
       cancelButton = container.querySelector('.modal-layer-interaction-btn-cancel');
+
+      if (this['option']['window'] !== null) {
+        var _mask;
+
+        (_mask = mask) === null || _mask === void 0 ? void 0 : _mask.setAttribute('has-window', '');
+        container.setAttribute('has-window', '');
+      }
+
       container.setAttribute('modal-layer-popup-time', this['option']['popupTime']);
       container.setAttribute('content-full-container', Number(this['option']['content']['fullContainer']));
       container.setAttribute('modal-layer-type', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['TYPE'], this['type']).toLowerCase());
@@ -1175,16 +1164,17 @@ var ModalLayer = function () {
   }, {
     key: "insertNode",
     value: function insertNode() {
-      var _this5 = this;
+      var _this$option$window,
+          _document$querySelect,
+          _this5 = this;
 
+      var fragment = document.createDocumentFragment();
+      var parentWindow = (_this$option$window = this['option']['window']) !== null && _this$option$window !== void 0 ? _this$option$window : window.document.body;
+      if (parentWindow instanceof String || typeof parentWindow === 'string') parentWindow = (_document$querySelect = document.querySelector(parentWindow)) !== null && _document$querySelect !== void 0 ? _document$querySelect : window.docuemnt.body;
       Object.keys(this['variable']['nodes']).forEach(function (key) {
-        var _document$querySelect;
-
-        var parentWindow = _this5['option']['window'];
-        if (parentWindow instanceof String || typeof parentWindow === 'string') parentWindow = _this5['option']['window'] = (_document$querySelect = document.querySelector(parentWindow)) !== null && _document$querySelect !== void 0 ? _document$querySelect : window.docuemnt.body;
-        if (!parentWindow.insertAdjacentElement) parentWindow = _this5['option']['window'] = window.document.body;
-        parentWindow.insertAdjacentElement('beforeend', _this5['variable']['nodes'][key]);
+        fragment.appendChild(_this5['variable']['nodes'][key]);
       }, this);
+      parentWindow.appendChild(fragment);
     }
   }]);
 
@@ -1227,56 +1217,64 @@ var ModalLayer = function () {
   _createClass(ModalLayer, [{
     key: "setStatus",
     value: function setStatus(status) {
-      if (Object.values(ModalLayer['_enum']['STATUS']).includes(status)) {
-        this['status'] = status;
-        this['variable']['nodes']['container'].setAttribute('modal-layer-status', ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['STATUS'], status));
+      var text;
+
+      if (!Object.values(ModalLayer['_enum']['STATUS']).includes(status)) {
+        text = status.toUpperCase();
+        if ((status = ModalLayer['_enum']['STATUS'][text]) === undefined) throw Error('Illegal value');
       } else {
-        status = status.toUpperCase();
-        if (ModalLayer['_enum']['STATUS'][status] === undefined) throw Error('Illegal value');
-        this['status'] = ModalLayer['_enum']['STATUS'][status];
-        this['variable']['nodes']['container'].setAttribute('modal-layer-status', status.toLowerCase());
+        text = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['STATUS'], status);
       }
+
+      this['status'] = status;
+      this['variable']['nodes']['container'].setAttribute('modal-layer-status', text.toLowerCase());
     }
   }, {
     key: "resize",
     value: function resize() {
-      var widthTmpNum, heightTmpNum;
-      var containerNode, modalChildNodes;
-      var windowWidth, windowHeight, newModalWidth, newModalHeight;
-      windowWidth = window.innerWidth;
-      windowHeight = window.innerHeight;
-      newModalWidth = newModalHeight = 0;
-      containerNode = this['variable']['nodes']['container'];
-      modalChildNodes = containerNode.children;
-      widthTmpNum = this['option']['areaProportion'][0].toString().length - (this['option']['areaProportion'][0].toString().indexOf('.') + 1);
-      heightTmpNum = this['option']['areaProportion'][1].toString().length - (this['option']['areaProportion'][1].toString().indexOf('.') + 1);
-      newModalWidth = windowWidth * (10 * widthTmpNum * this['option']['areaProportion'][0]) / (10 * widthTmpNum);
-      containerNode.style.width = newModalWidth + 'px';
+      var _ModalLayer$_assistan;
+
+      var defaultArea;
+      var container, modalChildNodes;
+      defaultArea = [0, 0];
+      container = this['variable']['nodes']['container'];
+      modalChildNodes = container.children;
+      defaultArea[0] = ((_ModalLayer$_assistan = ModalLayer['_assistant']['number']['multiply']) !== null && _ModalLayer$_assistan !== void 0 ? _ModalLayer$_assistan : ModalLayer['_assistant']['number']['mul'])(window.innerWidth, this['option']['areaProportion'][0]);
+      container.style.width = defaultArea[0] + 'px';
 
       for (var i = 0; i < modalChildNodes.length; i++) {
-        newModalHeight = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? newModalHeight : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), newModalHeight);
+        defaultArea[1] = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
       }
 
-      containerNode.style.height = newModalHeight + 'px';
-      this['variable']['defaultArea'] = [newModalWidth, newModalHeight];
+      container.style.height = defaultArea[1] + 'px';
+      this['variable']['defaultArea'] = defaultArea;
     }
   }, {
     key: "resizeByXYWH",
     value: function resizeByXYWH(x, y, w, h) {
-      var containerNode, wBoundary;
-      containerNode = this['variable']['nodes']['container'];
-      wBoundary = document.documentElement.getBoundingClientRect();
+      var container, wBoundary;
+      container = this['variable']['nodes']['container'];
+      if (this['option']['window'] === null) wBoundary = {
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        right: window.innerWidth,
+        width: window.innerWidth,
+        bottom: window.innerHeight,
+        height: window.innerHeight
+      };else wBoundary = this['option']['window'].getBoundingClientRect();
       if (x < wBoundary.x) x = wBoundary.x;
       if (x + w > wBoundary.right) w = wBoundary.right - x;
       if (y < wBoundary.y) y = wBoundary.y;
       if (y + h > wBoundary.bottom) h = wBoundary.bottom - y;
-      containerNode.style.marginLeft = x + 'px';
-      containerNode.style.marginTop = y + 'px';
-      containerNode.style.width = w + 'px';
-      containerNode.style.height = h + 'px';
+      container.style.marginLeft = x + 'px';
+      container.style.marginTop = y + 'px';
+      container.style.width = w + 'px';
+      container.style.height = h + 'px';
 
       if ([ModalLayer['_enum']['TYPE']['PAGE'], ModalLayer['_enum']['TYPE']['VIDEO'], ModalLayer['_enum']['TYPE']['AUDIO']].includes(this.type)) {
-        var pageNode = containerNode.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
+        var pageNode = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
         pageNode.style.width = this['option']['layer']['area'][0] + w - this['variable']['defaultArea'][0] + 'px';
         pageNode.style.height = this['option']['layer']['area'][1] + h - this['variable']['defaultArea'][1] + 'px';
       }
@@ -2628,7 +2626,12 @@ var ElementAssistant = function () {
     value: function isOverflow(child, parent) {
       var childRect, parentRect;
       childRect = child.getBoundingClientRect();
-      parentRect = parent.getBoundingClientRect();
+      parentRect = parent ? parent.getBoundingClientRect() : {
+        x: 0,
+        y: 0,
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
       if (childRect.x < parentRect.x || childRect.x + childRect.width > parentRect.x + parentRect.width) return true;
       if (childRect.y < parentRect.y || childRect.y + childRect.height > parentRect.y + parentRect.height) return true;
       return false;
@@ -3627,7 +3630,7 @@ var ImageLayer = function (_ModalLayer3) {
   }, {
     key: "compatibleOption",
     value: function compatibleOption(options) {
-      var _ModalLayer$_assistan, _ModalLayer$_assistan2;
+      var _ModalLayer$_assistan2, _ModalLayer$_assistan3;
 
       var imageList;
       var base, wSize;
@@ -3638,13 +3641,13 @@ var ImageLayer = function (_ModalLayer3) {
       imageList = ModalLayer['_assistant']['object'].get(options, 'layer.image');
       if (imageList instanceof FileList) options['layer']['image'] = Object.values(imageList);
       if (!Array.isArray(options['layer']['image'])) options['layer']['image'] = [options['layer']['image']];
-      toolbarConfig = (_ModalLayer$_assistan = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config')) !== null && _ModalLayer$_assistan !== void 0 ? _ModalLayer$_assistan : [];
+      toolbarConfig = (_ModalLayer$_assistan2 = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config')) !== null && _ModalLayer$_assistan2 !== void 0 ? _ModalLayer$_assistan2 : [];
       Object.keys(toolbarConfig).forEach(function (k) {
         toolbarConfig[k] = typeof toolbarConfig[k] === 'boolean' ? {
           enable: toolbarConfig[k]
         } : toolbarConfig[k];
       });
-      filterConfig = (_ModalLayer$_assistan2 = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config.filter.config')) !== null && _ModalLayer$_assistan2 !== void 0 ? _ModalLayer$_assistan2 : [];
+      filterConfig = (_ModalLayer$_assistan3 = ModalLayer['_assistant']['object'].get(options, 'layer.toolbar.config.filter.config')) !== null && _ModalLayer$_assistan3 !== void 0 ? _ModalLayer$_assistan3 : [];
       Object.keys(filterConfig).forEach(function (k) {
         filterConfig[k] = typeof filterConfig[k] === 'boolean' ? {
           enable: filterConfig[k]
@@ -4053,7 +4056,7 @@ var ImageLayer = function (_ModalLayer3) {
       repaintVariable = [].concat(_toConsumableArray(cropCasCenter), [maxWidth, maxHeight]);
 
       _repaintEvent = function repaintEvent() {
-        var _cropCtx, _ModalLayer$_assistan3, _cropCtx2;
+        var _cropCtx, _ModalLayer$_assistan4, _cropCtx2;
 
         cropCtx.save();
         cropCtx.clearRect(0, 0, cropCas.width, cropCas.height);
@@ -4066,7 +4069,7 @@ var ImageLayer = function (_ModalLayer3) {
 
         cropCtx.globalCompositeOperation = 'source-over';
 
-        (_ModalLayer$_assistan3 = ModalLayer['_assistant']['canvas'])['drawGrid'].apply(_ModalLayer$_assistan3, [cropCtx].concat(_toConsumableArray(repaintVariable), [2, 'white', 'quarter']));
+        (_ModalLayer$_assistan4 = ModalLayer['_assistant']['canvas'])['drawGrid'].apply(_ModalLayer$_assistan4, [cropCtx].concat(_toConsumableArray(repaintVariable), [2, 'white', 'quarter']));
 
         ModalLayer['_assistant']['canvas']['drawRect'](cropCtx, repaintVariable[0] - cropBorderHalfSize, repaintVariable[1] - cropBorderHalfSize, repaintVariable[2] + cropBorderSize, repaintVariable[3] + cropBorderSize, cropBorderSize, 'white', [0]);
         ModalLayer['_assistant']['canvas']['drawLBorder'](cropCtx, repaintVariable[0] - cropBorderSizeMul[2], repaintVariable[1] - cropBorderSizeMul[2], repaintVariable[2] + cropBorderSizeMul[4], repaintVariable[3] + cropBorderSizeMul[4], cropBorderSizeMul[6], cropBorderSize, 'white');

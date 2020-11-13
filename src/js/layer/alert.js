@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-03 02:30:04
-* @Description         
+* @Description         提示层
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 00:53:52
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-13 23:25:48
 */
 
 class AlertLayer extends ModalLayer {

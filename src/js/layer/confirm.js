@@ -2,10 +2,10 @@
 * @Author:             Wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-03 14:54:45
-* @Description         
+* @Description         确认层
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 00:54:21
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-13 23:26:06
 */
 
 class ConfirmLayer extends AlertLayer {

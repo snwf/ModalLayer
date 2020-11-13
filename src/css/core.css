@@ -2,25 +2,15 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 00:10:58
-* @Description         
+* @Description         ModalLayer核心样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-18 23:34:42
+* @Last Modified time: 2020-11-14 00:48:59
 */
-
-* {
-  margin: 0px;
-  padding: 0px;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-}
 
 .modal-layer-hide {
   overflow: hidden;
-  visibility: hidden;  
+  visibility: hidden;
 }
 
 .modal-layer-show {
@@ -35,6 +25,10 @@ html, body {
   bottom: 0px;
   width: 100%;
   height: 100%;
+  position: fixed;
+}
+
+.modal-layer-mask[has-window] {
   position: absolute;
 }
 
@@ -47,14 +41,18 @@ html, body {
   height: auto;
   margin: auto;
   display: flex;
+  position: fixed;
   max-width: 100%;
   max-height: 100%;
-  position: absolute;
   flex-direction: column;
 }
 
-.modal-layer-container .modal-layer-title {
-  display: flex;  
+.modal-layer-container[has-window] {
+  position: absolute;
+}
+
+.modal-layer-container > .modal-layer-title {
+  display: flex;
   position: relative;
   flex-direction: row;
 }
@@ -67,13 +65,13 @@ html, body {
   user-select: none;
 }
 
-.modal-layer-container .modal-layer-action {
+.modal-layer-container > .modal-layer-action {
   flex: 1;
   display: flex;
   flex-direction: row;
 }
 
-.modal-layer-action .modal-layer-action-btn {
+.modal-layer-action > .modal-layer-action-btn {
   position: relative;
   display: inline-block;
   -webkit-user-select: none;
@@ -94,7 +92,13 @@ html, body {
   height: 100%;
 }
 
-.modal-layer-container .modal-layer-interaction {
+/*避免拖拽或重设大小时受iframe影响*/
+.modal-layer-container[modal-layer-status="drag"] > .modal-layer-content,
+.modal-layer-container[modal-layer-status="resize"] > .modal-layer-content {
+  pointer-events: none;
+}
+
+.modal-layer-container > .modal-layer-interaction {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -155,7 +159,7 @@ html, body {
   left: 0px;
   right: 0px;
   opacity: 0;
-  bottom: 0px;  
+  bottom: 0px;
   width: 100%;
   height: 100%;
   position: absolute;
@@ -261,20 +265,6 @@ html, body {
   height: 15px;
 }
 
-.modal-layer-skin-default .modal-layer-drag-mask,
-.modal-layer-skin-default .modal-layer-resize-mask {
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  z-index: 1;
-  bottom: 0px;
-  width: 100%;
-  height: 100%;
-  visibility: hidden;
-  position: absolute;
-  background: transparent;
-}
-
 #modal-layer-minimize-queue {
   left: 0px;
   right: 0px;
@@ -284,7 +274,7 @@ html, body {
   flex-direction: row;
 }
 
-#modal-layer-minimize-queue .modal-layer-minimize-queue-item {
+#modal-layer-minimize-queue > .modal-layer-minimize-queue-item {
   flex: 0.14;
   overflow: hidden;
   display: inline-block;

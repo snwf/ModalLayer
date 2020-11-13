@@ -2,10 +2,10 @@
 * @Author:             Wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-21 01:25:08
-* @Description         
+* @Description         环境变量
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-21 01:27:53
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-13 23:25:20
 */
 
 const ENV = Object.create(null);

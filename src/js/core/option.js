@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-01 16:14:29
-* @Description         
+* @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-23 02:08:44
+* @Last Modified time: 2020-11-13 23:24:35
 */
 
 const OPTION = Object.create(null);
@@ -54,7 +54,7 @@ Object.defineProperty(OPTION, 'image', {
   'value': {
     'image': [], // 图片, 可以为file对象也可以为Image节点, 甚至可以为base64数据.当图片加载不成功时会迭代尝试.
     'size': null, // 指定图片大小, 格式为[w, h], 只能为具体的值, 单位是像素.如果设置了size则sizeRange不再起作用.
-    'sizeRange': { // 指定图片大小范围, 格式为[w, h], 可以为像素或是百分比、小数. 
+    'sizeRange': { // 指定图片大小范围, 格式为[w, h], 可以为像素或是百分比、小数.
       'min': [0.15625, 0.160257], // 最小尺寸
       'max': [0.9, 0.9] // 最大尺寸, 可以为像素、百分比(浏览器可视区域比例, 最好不要超过90%).
     },
@@ -122,7 +122,7 @@ Object.defineProperty(OPTION, 'common', {
     'index': 0, // ID
     'ui': 'modal-layer-ui', // 统一的class
     'title': null, // 标题(传入false则不显示标题栏)
-    'window': null, // 父窗口(父节点)
+    'window': null, // 父容器, 不能为static定位, 否则无法约束.
     'popupTime': 5, // 模态层默认显示时间
     'skin': 'default', // 皮肤样式
     'parentModalLayer': null, // 父模态层

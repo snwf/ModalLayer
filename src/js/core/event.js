@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-24 23:16:54
+* @Last Modified time: 2020-11-13 23:33:04
 */
 
 /**
@@ -84,14 +84,13 @@ Object.defineProperty(EVENT, 'active', {
 Object.defineProperty(EVENT, 'drag', {
   'enumerable': true,
   'value': function (dEvent) {
-    let status;
-    let nowTime;
-    let mousePoint, mousemoveEvent;
-    let target, trigger, targetRect;
-    let boundary, parentWindow, parentWindowRect;
+    let keydownEvent;
+    let status, targetMoveMethod;
+    let boundary, parentWindowRect;
+    let mEvent, mouseupEvent, mousemoveEvent;
+    let target, trigger, mousePoint, targetRect;
 
     status = this['status'];
-    nowTime = Date.now();
     dEvent = dEvent ?? window.event;
     // 目标元素
     target = this['variable']['nodes']['container'];
@@ -101,112 +100,104 @@ Object.defineProperty(EVENT, 'drag', {
     mousePoint = [dEvent.screenX, dEvent.screenY];
     // 触发元素
     trigger = target.querySelector('.modal-layer-title');
-    // 拖拽目标元素父窗体
-    parentWindow = window.document.documentElement;
-    // 父窗体Rect
-    parentWindowRect = parentWindow.getBoundingClientRect();
-    // 父窗体边界值(左右边界值, 上下边界值)
-    boundary = [parentWindowRect.x, parentWindowRect.x + parentWindowRect.width, parentWindowRect.x, parentWindowRect.y + parentWindowRect.height]
+
+    if (this['option']['window'] === null) {
+      // 父窗体边界值(左右边界值, 上下边界值)
+      boundary = [0, window.innerWidth, 0, window.innerHeight];
+    } else {
+      // 父窗体Rect
+      parentWindowRect = this['option']['window'].getBoundingClientRect();
+      // 父窗体边界值(左右边界值, 上下边界值)
+      boundary = [0, parentWindowRect.width, 0, parentWindowRect.height];
+    }
 
     // 取消文字选中
     window.getSelection().empty();
 
     // 统一移动方法
-    let targetMoveMethod = (movementX, movementY) => {
-      if (mousemoveEvent.buttons !== 1) {
-        mouseUpEvent();
-      } else {
-        if (!this['option']['drag']['overflow']) {
-          if (targetRect.x + movementX < boundary[0])
-            targetRect.x = boundary[0] - movementX;
-          if (targetRect.right + movementX > boundary[1])
-            targetRect.x = boundary[1] - targetRect.width - movementX;
-          if (targetRect.y + movementY < boundary[2])
-            targetRect.y = boundary[2] - movementY;
-          if (targetRect.bottom + movementY > boundary[3])
-            targetRect.y = boundary[3] - targetRect.height - movementY;
-        }
-
-        targetRect.x += movementX;
-        targetRect.y += movementY;
-
-        if (this['option']['resize']['enable'] && this['option']['content']['fullContainer']) {
-          let resizeW, boundaryX, boundaryY;
-          
-          resizeW = 5;
-          boundaryX = [resizeW, boundary[1] - targetRect.width - resizeW];
-          boundaryY = [resizeW, boundary[3] - targetRect.height - resizeW];
-
-          if (targetRect.x <= boundaryX[0])
-            targetRect.x = boundaryX[0];
-          else if (targetRect.x >= boundaryX[1])
-            targetRect.x = boundaryX[1];
-
-          if (targetRect.y <= boundaryY[0])
-            targetRect.y = boundaryY[0];
-          else if (targetRect.y >= boundaryY[1])
-            targetRect.y = boundaryY[1];
-        }
-
-        target.style.marginLeft = targetRect.x + 'px';
-        target.style.marginTop = targetRect.y + 'px';
-
-        this['setStatus']('drag');
+    targetMoveMethod = (movementX, movementY) => {
+      if (!this['option']['drag']['overflow']) {
+        if (targetRect.x + movementX < boundary[0])
+          targetRect.x = boundary[0] - movementX;
+        if (targetRect.right + movementX > boundary[1])
+          targetRect.x = boundary[1] - targetRect.width - movementX;
+        if (targetRect.y + movementY < boundary[2])
+          targetRect.y = boundary[2] - movementY;
+        if (targetRect.bottom + movementY > boundary[3])
+          targetRect.y = boundary[3] - targetRect.height - movementY;
       }
+
+      targetRect.x += movementX;
+      targetRect.y += movementY;
+
+      if (this['option']['resize']['enable'] && this['option']['content']['fullContainer']) {
+        let resizeW, boundaryX, boundaryY;
+        
+        resizeW = 5;
+        boundaryX = [resizeW, boundary[1] - targetRect.width - resizeW];
+        boundaryY = [resizeW, boundary[3] - targetRect.height - resizeW];
+
+        if (targetRect.x <= boundaryX[0])
+          targetRect.x = boundaryX[0];
+        else if (targetRect.x >= boundaryX[1])
+          targetRect.x = boundaryX[1];
+
+        if (targetRect.y <= boundaryY[0])
+          targetRect.y = boundaryY[0];
+        else if (targetRect.y >= boundaryY[1])
+          targetRect.y = boundaryY[1];
+      }
+
+      target.style.marginLeft = targetRect.x + 'px';
+      target.style.marginTop = targetRect.y + 'px';
+
+      this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
     }
 
     // 鼠标移动事件
-    let mouseMoveEvent = moveEvent => {
-      moveEvent = mousemoveEvent = moveEvent ?? window.event;
-      targetMoveMethod(moveEvent.movementX, moveEvent.movementY);
+    mousemoveEvent = e => {
+      mEvent = e ?? window.event;
+      if (mEvent.buttons === 1)
+        targetMoveMethod(mEvent.movementX, mEvent.movementY);
     };
 
     // 方向键调整
-    let keyupEvent = kEvent => {
+    // 由于手边没有无冲突键盘, 不知道会不会冲突.
+    // 之后换键盘了再验证.
+    // TODO::CHECK
+    keydownEvent = kEvent => {
       let movement;
 
-      movement = [];
+      movement = [0, 0];
       kEvent = kEvent ?? window.event;
 
-      switch (kEvent.code) {
-        // up
-        case 'ArrowUp':
-          movement[1] = -1;
-          break;
-        // doww
-        case 'ArrowDown':
-          movement[1] = 1;
-          break;
-        // left
-        case 'ArrowLeft':
-          movement[0] = -1;
-          break;
-        // right
-        case 'ArrowRight':
-          movement[0] = 1;
-          break;
-        default:
-          return;
-      }
+      // left
+      if (kEvent.code === 'ArrowLeft') movement[0] = -1;
+      // right
+      if (kEvent.code === 'ArrowRight') movement[0] = 1;
+      // up
+      if (kEvent.code === 'ArrowUp') movement[1] = -1;
+      // down
+      if (kEvent.code === 'ArrowDown') movement[1] = 1;
 
       // 取消默认动作，从而避免处理两次
       kEvent.preventDefault();
 
-      targetMoveMethod(movement[0], movement[1]);
+      targetMoveMethod(...movement);
     }
     
     // 放开鼠标事件
-    let mouseUpEvent = () => {
-      document.removeEventListener('keyup', keyupEvent, true);
-      document.removeEventListener('mousemove', mouseMoveEvent);
-      document.removeEventListener('mouseup', mouseUpEvent);
+    mouseupEvent = () => {
+      document.removeEventListener('keydown', keydownEvent, true);
+      document.removeEventListener('mousemove', mousemoveEvent);
+      document.removeEventListener('mouseup', mouseupEvent);
 
       this['setStatus'](status);
     };
 
-    document.addEventListener('mouseup', mouseUpEvent);
-    document.addEventListener('mousemove', mouseMoveEvent);
-    document.addEventListener('keyup', keyupEvent, true);
+    document.addEventListener('mouseup', mouseupEvent);
+    document.addEventListener('mousemove', mousemoveEvent);
+    document.addEventListener('keydown', keydownEvent, true);
   }
 });
 
@@ -221,13 +212,11 @@ Object.defineProperty(EVENT, 'resize', {
   'enumerable': true,
   'value': function (dEvent) {
     let status;
-    let nowTime;
-    let windowRect;
+    let boundary;
     let mousePoint, mousemoveEvent;
     let target, trigger, targetArea, targetRect, targetMinArea;
 
     status = this['status'];
-    nowTime = Date.now();
     dEvent = dEvent ?? window.event;
     // 触发元素
     trigger = dEvent.target;
@@ -241,28 +230,13 @@ Object.defineProperty(EVENT, 'resize', {
     mousePoint = [dEvent.screenX, dEvent.screenY];
     // 目标元素长宽
     targetArea = [targetRect.width, targetRect.height];
-    // 窗口Rect
-    windowRect = document.documentElement.getBoundingClientRect();
+
+    // 父窗体Rect
+    if (this['option']['window'] === null) boundary = {x: 0, y: 0};
+    else boundary = this['option']['window'].getBoundingClientRect();
 
     // 取消文字选中
     window.getSelection().empty();
-
-    // 伸缩之前加上遮罩层防止选中某些元素意外执行事件
-    // 需要再外层也加上遮罩层, 否则可能会出现多个page层互相影响的情况.
-    // let resizeMask = target.querySelector('.modal-layer-resize-mask');
-    // let resizeBodyMask = document.querySelector('.modal-layer-resize-mask');
-    // if (!resizeMask) {
-    //   resizeMask = ModalLayer.utils.common.objectToDom([this.nodeData.resizeMask])[0];
-    //   target.insertAdjacentElement('afterbegin', resizeMask);
-    // }
-    // if (resizeBodyMask.parentNode !== document.body || resizeMask === resizeBodyMask || !resizeBodyMask) {
-    //   resizeBodyMask = ModalLayer.utils.common.objectToDom([this.nodeData.resizeMask])[0];
-    //   resizeBodyMask.style.zIndex = parseInt(target.style.zIndex) - 1;
-    //   resizeBodyMask.style.cssText += 'top: 0; left: 0; right: 0; bottom: 0; position: fixed;';
-    //   document.body.insertAdjacentElement('afterbegin', resizeBodyMask);
-    // }
-    // resizeMask.style.visibility = 'visible';
-    // resizeBodyMask.style.visibility = 'visible';
 
     let mouseMoveEvent = mEvent => {
       let resizePos;
@@ -283,8 +257,8 @@ Object.defineProperty(EVENT, 'resize', {
         if (resizePos.includes('top')) {
           moveNow[1] += movementY;
           moveNow[3] -= movementY;
-          if (moveNow[1] < windowRect.y)
-            moveNow[3] -= windowRect.y - moveNow[1];
+          if (moveNow[1] < boundary.y)
+            moveNow[3] -= boundary.y - moveNow[1];
           if (moveNow[3] < targetMinArea[1]) {
             moveNow[1] += moveNow[3] - targetMinArea[1];
             moveNow[3] = targetMinArea[1];
@@ -298,8 +272,8 @@ Object.defineProperty(EVENT, 'resize', {
         if (resizePos.includes('left')) {
           moveNow[0] += movementX;
           moveNow[2] -= movementX;
-          if (moveNow[0] < windowRect.x)
-            moveNow[2] -= windowRect.x - moveNow[0];
+          if (moveNow[0] < boundary.x)
+            moveNow[2] -= boundary.x - moveNow[0];
           if (moveNow[2] < targetMinArea[0]) {
             moveNow[0] += moveNow[2] - targetMinArea[0];
             moveNow[2] = targetMinArea[0];
