@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 00:50:17
+* @Last Modified time: 2020-11-14 02:14:38
 */
 
 class ImageLayer extends ModalLayer {
@@ -1068,7 +1068,9 @@ class ImageLayer extends ModalLayer {
   download () {
     let cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
 
-    ModalLayer['_assistant']['canvas']['download'](cas, this['option']['title'], 'image/png');
+    let filename = cas.getAttribute('download-filename') ?? this['option']['layer']['toolbar']['config']['download']['name'] + Date.now();
+
+    ModalLayer['_assistant']['canvas']['download'](cas, filename, this['option']['layer']['toolbar']['config']['download']['mime']);
   }
 }
 

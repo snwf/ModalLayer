@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:24:35
+* @Last Modified time: 2020-11-14 01:25:39
 */
 
 const OPTION = Object.create(null);
@@ -104,8 +104,10 @@ Object.defineProperty(OPTION, 'image', {
         },
         'download': { // 是否开启下载
           'enable': false,
+          'name': 'picture-',
+          'mime': 'image/png',
           'title': 'download',
-          'icon': 'fas fa-download'
+          'icon': 'fas fa-download',
         }
       }
     }
