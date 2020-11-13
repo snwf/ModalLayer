@@ -816,7 +816,7 @@
       <tr>
         <td>name</td>
         <td>string</td>
-        <td><code>'picture-' + Date.now()</code></td>
+        <td><code>'picture-'</code></td>
         <td i18n-message="The name of the exported picture."></td>
       </tr>
     </tbody>

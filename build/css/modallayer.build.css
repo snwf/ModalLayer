@@ -7,7 +7,7 @@
 * @Description         ModalLayer核心样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 00:48:59
+* @Last Modified time: 2020-11-14 03:10:46
 */
 
 .modal-layer-hide {
@@ -83,6 +83,10 @@
   user-select: none;
   -webkit-box-flex: 0.1;
   -moz-box-flex: 0.1;
+}
+
+.modal-layer-container > .modal-layer-content {
+  z-index: -1;
 }
 
 .modal-layer-container[content-full-container="1"] > .modal-layer-content {

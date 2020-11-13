@@ -472,6 +472,8 @@ Object.defineProperty(OPTION, 'image', {
         },
         'download': {
           'enable': false,
+          'name': 'picture-',
+          'mime': 'image/png',
           'title': 'download',
           'icon': 'fas fa-download'
         }
@@ -977,7 +979,8 @@ var ModalLayer = function () {
   _createClass(ModalLayer, [{
     key: "initOption",
     value: function initOption(options) {
-      options.index = ModalLayer['_instance'].length;
+      options['index'] = ModalLayer['_instance'].length;
+      ModalLayer['_instance'][options['index']] = this;
       this['option'] = ModalLayer['_assistant']['object']['merge'](options, ModalLayer['_option']['common']);
     }
   }, {
@@ -1127,7 +1130,6 @@ var ModalLayer = function () {
 
         this['variable']['nodes'][key].className = ui + ' ' + skinCls + ' ' + indexCls + ' ' + this['variable']['nodes'][key].className.trim() + ' ' + hideCls;
       }, this);
-      ModalLayer['_instance'][this['option']['index']] = this;
     }
   }, {
     key: "initEvent",
@@ -1170,7 +1172,7 @@ var ModalLayer = function () {
 
       var fragment = document.createDocumentFragment();
       var parentWindow = (_this$option$window = this['option']['window']) !== null && _this$option$window !== void 0 ? _this$option$window : window.document.body;
-      if (parentWindow instanceof String || typeof parentWindow === 'string') parentWindow = (_document$querySelect = document.querySelector(parentWindow)) !== null && _document$querySelect !== void 0 ? _document$querySelect : window.docuemnt.body;
+      if (parentWindow instanceof String || typeof parentWindow === 'string') parentWindow = (_document$querySelect = document.querySelector(parentWindow)) !== null && _document$querySelect !== void 0 ? _document$querySelect : window.document.body;
       Object.keys(this['variable']['nodes']).forEach(function (key) {
         fragment.appendChild(_this5['variable']['nodes'][key]);
       }, this);
@@ -1210,6 +1212,7 @@ var ModalLayer = function () {
       (_this$option$hook = this['option']['hook']) === null || _this$option$hook === void 0 ? void 0 : (_this$option$hook$ini = _this$option$hook['initEnded']) === null || _this$option$hook$ini === void 0 ? void 0 : (_this$option$hook$ini2 = _this$option$hook$ini.call) === null || _this$option$hook$ini2 === void 0 ? void 0 : _this$option$hook$ini2.call(_this$option$hook$ini, this);
       this['insertNode']();
     } catch (e) {
+      ModalLayer['_instance'].splice(ModalLayer['_instance'].indexOf(this), 1);
       reject === null || reject === void 0 ? void 0 : reject.call(null, e);
     }
   }
@@ -1422,16 +1425,17 @@ var ModalLayer = function () {
     value: function remove() {
       var _this10 = this;
 
-      var nodes;
+      var nodes, status;
+      status = this['status'];
       nodes = this['variable']['nodes'];
-      if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(this['status'])) return Promise.resolve();
 
-      if (this['status'] === ModalLayer['_enum']['STATUS']['MINIMIZE']) {
+      if (status === ModalLayer['_enum']['STATUS']['MINIMIZE']) {
         var index = ModalLayer['_minimizeQueue'].indexOf(this);
         delete ModalLayer['_minimizeQueue'][index];
       }
 
-      this['setStatus']('removing');
+      this['setStatus'](ModalLayer['_enum']['STATUS']['REMOVING']);
+      if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['HIDE'], ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(status)) return Promise.resolve();
       return this['hide']().then(function () {
         _this10['removeAllEvent']();
 
@@ -1448,7 +1452,9 @@ var ModalLayer = function () {
       var _this11 = this;
 
       this.remove().then(function () {
-        ModalLayer._instance.splice(_this11['option']['index'], 1);
+        var index = ModalLayer._instance.indexOf(_this11);
+
+        ModalLayer._instance.splice(index, 1);
 
         ModalLayer['_assistant']['object']['dereference'](_this11['event']);
         ModalLayer['_assistant']['object']['dereference'](_this11['option']);
@@ -2689,8 +2695,9 @@ var ElementAssistant = function () {
     }
   }, {
     key: "maxZIndex",
-    value: function maxZIndex() {
-      var allNodes = Array.from(document.all);
+    value: function maxZIndex(node) {
+      var allNodes;
+      if (node) allNodes = ElementAssistant.getAllElement(node);else allNodes = Array.from(document.all);
       return parseInt(allNodes.reduce(function (prev, currNode) {
         var currNodeZIndex = getComputedStyle(currNode, null).zIndex;
         return window.Math.max(prev, !isNaN(currNodeZIndex) ? currNodeZIndex : 0);
@@ -3887,7 +3894,7 @@ var ImageLayer = function (_ModalLayer3) {
           'duration': 1,
           'color': 'deepskyblue'
         },
-        'window': this['variable']['nodes']['container']
+        'window': this['variable']['nodes']['container'].querySelector('.modal-layer-content')
       }, function (e) {
         throw e;
       });
@@ -4278,6 +4285,7 @@ var ImageLayer = function (_ModalLayer3) {
           _blur$gray$mirror$fil,
           _blur$gray$mirror;
 
+      var showPromise;
       var wKey, sText, wScript;
       var cas, ctx, imgData, filterType;
       filterType = target.getAttribute('filter-type');
@@ -4285,9 +4293,9 @@ var ImageLayer = function (_ModalLayer3) {
       if (cas.getAttribute('load-status') == ModalLayer['_enum']['LOAD_STATUS']['FAILED'] || !filterType) return;
       ctx = cas.getContext('2d');
       imgData = ctx.getImageData(0, 0, cas.width, cas.height);
-      this['variable']['image']['layer']['show']();
+      showPromise = this['variable']['image']['layer']['show']();
 
-      if (ModalLayer['_env']['feature']['worker']) {
+      if (ModalLayer['_env']['feature']['Worker']) {
         wKey = 'image-layer-worker-' + Date.now();
         sText = '!' + ModalLayer['_worker'].get('canvasFilter').toString() + '()';
         wScript = URL.createObjectURL(new Blob(sText.split(''), {
@@ -4296,9 +4304,9 @@ var ImageLayer = function (_ModalLayer3) {
         if (!ModalLayer['_assistant']['worker']['has'](wKey)) ModalLayer['_assistant']['worker']['create'](wKey, wScript);
         ModalLayer['_assistant']['worker']['listener'](wKey).then(function (e) {
           if (e['data']['error'] == 0) ctx.putImageData(new ImageData(new Uint8ClampedArray(e['data']['buffer']), cas.width, cas.height), 0, 0);else console.error(Error(e['data']['message']));
-
-          _this23['variable']['image']['layer']['hide']();
-
+          showPromise.then(function () {
+            return _this23['variable']['image']['layer']['hide']();
+          });
           ModalLayer['_assistant']['worker']['close'](wKey);
         });
       }
@@ -4344,8 +4352,9 @@ var ImageLayer = function (_ModalLayer3) {
           } else {
             imgData = ModalLayer['_assistant']['canvasFilter']['gaussianBlur'](imgData, radius, sigma);
             ctx.putImageData(imgData, 0, 0);
-
-            _this23['variable']['image']['layer']['hide']();
+            showPromise.then(function () {
+              return _this23['variable']['image']['layer']['hide']();
+            });
           }
         },
         'gray': function gray() {
@@ -4357,8 +4366,9 @@ var ImageLayer = function (_ModalLayer3) {
           } else {
             imgData = ModalLayer['_assistant']['canvasFilter']['grayscale'](ctx.getImageData(0, 0, cas.width, cas.height));
             ctx.putImageData(imgData, 0, 0);
-
-            _this23['variable']['image']['layer']['hide']();
+            showPromise.then(function () {
+              return _this23['variable']['image']['layer']['hide']();
+            });
           }
         },
         'mirror': function mirror() {
@@ -4376,8 +4386,9 @@ var ImageLayer = function (_ModalLayer3) {
           } else {
             imgData = ModalLayer['_assistant']['canvasFilter']['mirror'](ctx.getImageData(0, 0, cas.width, cas.height), axis);
             ctx.putImageData(imgData, 0, 0);
-
-            _this23['variable']['image']['layer']['hide']();
+            showPromise.then(function () {
+              return _this23['variable']['image']['layer']['hide']();
+            });
           }
         }
       })[filterType]) === null || _blur$gray$mirror$fil === void 0 ? void 0 : _blur$gray$mirror$fil.call(_blur$gray$mirror);
@@ -4398,8 +4409,11 @@ var ImageLayer = function (_ModalLayer3) {
   }, {
     key: "download",
     value: function download() {
+      var _cas$getAttribute;
+
       var cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
-      ModalLayer['_assistant']['canvas']['download'](cas, this['option']['title'], 'image/png');
+      var filename = (_cas$getAttribute = cas.getAttribute('download-filename')) !== null && _cas$getAttribute !== void 0 ? _cas$getAttribute : this['option']['layer']['toolbar']['config']['download']['name'] + Date.now();
+      ModalLayer['_assistant']['canvas']['download'](cas, filename, this['option']['layer']['toolbar']['config']['download']['mime']);
     }
   }]);
 

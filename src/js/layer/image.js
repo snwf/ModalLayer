@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 02:14:38
+* @Last Modified time: 2020-11-14 03:55:35
 */
 
 class ImageLayer extends ModalLayer {
@@ -437,7 +437,7 @@ class ImageLayer extends ModalLayer {
           'duration': 1,
           'color': 'deepskyblue'
         },
-        'window': this['variable']['nodes']['container']
+        'window': this['variable']['nodes']['container'].querySelector('.modal-layer-content')
       }, e => {throw e;});
 
     return this['variable']['image']['finish'] = new Promise((resolve, reject) => {
@@ -932,7 +932,7 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-05T01:12:49+0800
    */
   filter (target) {
-
+    let showPromise;
     let wKey, sText, wScript;
     let cas, ctx, imgData, filterType;
 
@@ -944,9 +944,9 @@ class ImageLayer extends ModalLayer {
     ctx = cas.getContext('2d');
     imgData = ctx.getImageData(0, 0, cas.width, cas.height);
 
-    this['variable']['image']['layer']['show']();
+    showPromise = this['variable']['image']['layer']['show']();
 
-    if (ModalLayer['_env']['feature']['worker']) {
+    if (ModalLayer['_env']['feature']['Worker']) {
       wKey = 'image-layer-worker-' + Date.now();
       sText = '!' + ModalLayer['_worker'].get('canvasFilter').toString() + '()';
       wScript = URL.createObjectURL(new Blob(sText.split(''), {'type': 'text/javascript'}));
@@ -957,7 +957,7 @@ class ImageLayer extends ModalLayer {
           ctx.putImageData(new ImageData(new Uint8ClampedArray(e['data']['buffer']), cas.width, cas.height), 0 , 0);
         else
           console.error(Error(e['data']['message']));
-        this['variable']['image']['layer']['hide']();
+        showPromise.then(() => this['variable']['image']['layer']['hide']());
 
         // 使用完毕关闭worker
         ModalLayer['_assistant']['worker']['close'](wKey);
@@ -1003,7 +1003,7 @@ class ImageLayer extends ModalLayer {
         } else {
           imgData = ModalLayer['_assistant']['canvasFilter']['gaussianBlur'](imgData, radius, sigma);
           ctx.putImageData(imgData, 0 , 0);
-          this['variable']['image']['layer']['hide']();
+          showPromise.then(() => this['variable']['image']['layer']['hide']());
         }
       },
       'gray': () => {
@@ -1016,7 +1016,7 @@ class ImageLayer extends ModalLayer {
         } else {
           imgData = ModalLayer['_assistant']['canvasFilter']['grayscale'](ctx.getImageData(0, 0, cas.width, cas.height));
           ctx.putImageData(imgData, 0, 0);
-          this['variable']['image']['layer']['hide']();
+          showPromise.then(() => this['variable']['image']['layer']['hide']());
         }
       },
       'mirror': () => {
@@ -1031,7 +1031,7 @@ class ImageLayer extends ModalLayer {
         } else {
           imgData = ModalLayer['_assistant']['canvasFilter']['mirror'](ctx.getImageData(0, 0, cas.width, cas.height), axis);
           ctx.putImageData(imgData, 0, 0);
-          this['variable']['image']['layer']['hide']();
+          showPromise.then(() => this['variable']['image']['layer']['hide']());
         }
       }
     }[filterType])?.();

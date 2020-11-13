@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 00:44:14
+* @Last Modified time: 2020-11-14 03:00:48
 */
 
 class ElementAssistant {
@@ -44,7 +44,7 @@ class ElementAssistant {
    * @Author   Wolf
    * @DateTime 2020-09-01T23:26:56+0800
    * @param    {Element}                 parentNode 父节点
-   * @return   {Array}                             节点数组
+   * @return   {Array}                              节点数组
    */
   static getAllElement (parentNode) {
     let nodeList, childrenNodeList;
@@ -124,14 +124,21 @@ class ElementAssistant {
   }
 
   /**
-   * 获取页面中的Z轴最大值
+   * 获取最大的z-index值
+   * 若传入一个节点则获取该节点下面的最大z-index
    *
-   * @Author   Wolf
-   * @DateTime 2020-09-01T23:37:35+0800
-   * @return   {Number}                 页面中Z轴最大值(只有通过position进行定位的元素z-index值才会被获取到)
+   * @Author    wolf
+   * @Datetime  2020-11-14T02:57:05+0800
+   * @param     {Element}                  node  获取该节点下最大的z-index
+   * @return    {Number}                         最大的z-index值(只有通过position进行定位的元素z-index值才会被获取到)
    */
-  static maxZIndex() {
-    let allNodes = Array.from(document.all);
+  static maxZIndex (node) {
+    let allNodes;
+
+    if (node)
+      allNodes = ElementAssistant.getAllElement(node);
+    else
+      allNodes = Array.from(document.all);
 
     return parseInt(allNodes.reduce(function(prev, currNode) {
       let currNodeZIndex = getComputedStyle(currNode, null).zIndex;

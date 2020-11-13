@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 01:41:14
+* @Last Modified time: 2020-11-14 03:36:14
 */
 
 class ModalLayer {
@@ -175,7 +175,10 @@ class ModalLayer {
    */
   initOption (options) {
     // 设置ID
-    options.index = ModalLayer['_instance'].length;
+    options['index'] = ModalLayer['_instance'].length;
+
+    // 记录当前实例
+    ModalLayer['_instance'][options['index']] = this;
     
     // 初始化配置
     this['option'] = ModalLayer['_assistant']['object']['merge'](options, ModalLayer['_option']['common']);
@@ -378,9 +381,6 @@ class ModalLayer {
       // 默认隐藏
       this['variable']['nodes'][key].className = ui + ' ' + skinCls + ' ' + indexCls + ' ' + this['variable']['nodes'][key].className.trim() + ' ' + hideCls;
     }, this);
-
-    // 将设置完成的Node放入实例数组
-    ModalLayer['_instance'][this['option']['index']] = this;
   }
 
   /**
@@ -487,7 +487,7 @@ class ModalLayer {
     let fragment = document.createDocumentFragment();
     let parentWindow = this['option']['window'] ?? window.document.body;
     if (parentWindow instanceof String || typeof parentWindow === 'string')
-      parentWindow = document.querySelector(parentWindow) ?? window.docuemnt.body;
+      parentWindow = document.querySelector(parentWindow) ?? window.document.body;
     Object.keys(this['variable']['nodes']).forEach(key => {
       fragment.appendChild(this['variable']['nodes'][key]);
     }, this);
@@ -544,6 +544,7 @@ class ModalLayer {
       // 插入节点
       this['insertNode']();
     } catch (e) {
+      ModalLayer['_instance'].splice(ModalLayer['_instance'].indexOf(this), 1);
       reject?.call(null, e);
     }
   }
@@ -850,19 +851,21 @@ class ModalLayer {
    * @return   {Promise}                 Promise对象
    */
   remove () {
-    let nodes;
+    let nodes, status;
     
+    status = this['status'];
     nodes = this['variable']['nodes'];
-    if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(this['status'])) return Promise.resolve();
 
     // 如果当前层处于最小化状态则移出最小化任务栏.
-    if (this['status'] === ModalLayer['_enum']['STATUS']['MINIMIZE']) {
+    if (status === ModalLayer['_enum']['STATUS']['MINIMIZE']) {
       let index = ModalLayer['_minimizeQueue'].indexOf(this);
       delete ModalLayer['_minimizeQueue'][index];
     }
 
-    // 将当前状态置为removing
-    this['setStatus']('removing');
+    // 将当前状态更改为removing.
+    this['setStatus'](ModalLayer['_enum']['STATUS']['REMOVING']);
+
+    if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['HIDE'], ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(status)) return Promise.resolve();
 
     // 隐藏模态层
     return this['hide']().then(() => {
@@ -890,8 +893,9 @@ class ModalLayer {
     // 移除节点以及移除监听事件
     this.remove()
     .then(() => {
+      let index = ModalLayer._instance.indexOf(this);
       // 删除实例
-      ModalLayer._instance.splice(this['option']['index'], 1);
+      ModalLayer._instance.splice(index, 1);
 
       // 解除相关变量引用.
       ModalLayer['_assistant']['object']['dereference'](this['event']);
