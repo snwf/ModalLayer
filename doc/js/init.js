@@ -2,10 +2,10 @@
 * @Author:             wolf
 * @Email:              dd112389@gmail.com
 * @Date:               2020-11-10 16:59:21
-* @Description         
+* @Description         初始化
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 21:14:30
+* @Last Modified time: 2020-11-15 03:48:33
 */
 
 'use strict';
@@ -21,7 +21,7 @@ let language = navigator.language;
 
 const contentStatus = ['start', false];
 
-let theme = localStorage.getItem('theme-style');
+let theme = localStorage.getItem('theme-style') ?? 'light';
 
 init.theme = function (nTheme = 'light') {
   let oTheme = theme;
@@ -55,14 +55,14 @@ init.theme = function (nTheme = 'light') {
 
 init.content = function (name = 'start') {
   let allowContent = ['start', 'option', 'event', 'method', 'assistant'];
-  if (!allowContent.includes(name) || (contentStatus[0] === name && contentStatus[1])) return;
+  if (!allowContent.includes(name) || (contentStatus[0] === name && contentStatus[1])) return Promise.resolve();
   contentStatus[0] = name;
   contentStatus[1] = false;
   if (loading)
     loading.show();
   else
     loading = ModalLayer.loading({layer: {icon: 3}});
-  fetch('./docs/' + name, {
+  return fetch('./docs/' + name, {
     mode: 'cors',
     method: 'get',
     cache: 'no-cache',

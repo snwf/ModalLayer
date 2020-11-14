@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:26:15
+* @Last Modified time: 2020-11-15 03:02:37
 */
 
 class LoadingLayer extends ModalLayer {
@@ -27,6 +27,8 @@ class LoadingLayer extends ModalLayer {
     this['option']['drag']['enable'] = false;
     this['option']['resize']['enable'] = false;
     this['option']['progress']['enable'] = false;
+    this['option']['mask']['clickRemove'] = false;
+    this['option']['content']['fullContainer'] = true;
   }
 
   /**
@@ -50,8 +52,10 @@ class LoadingLayer extends ModalLayer {
       if (!Array.isArray(options['layer']['position']))
         options['layer']['position'] = [options['layer']['position'], options['layer']['position']];
 
-      for (let i = 0; i < 2; i++)
-        options['layer']['position'][i] = positionMap[options['layer']['position'][i]];
+      for (let i = 0; i < 2; i++) {
+        options['layer']['position'][i] = positionMap[options['layer']['position'][i]] ?? options['layer']['position'][i];
+        options['layer']['position'][i] = window.isNaN(options['layer']['position'][i]) ? options['layer']['position'][i] : options['layer']['position'][i] + 'px'
+      }
     }
   }
 
@@ -114,10 +118,40 @@ class LoadingLayer extends ModalLayer {
 
     container.style.cssText += 'background: transparent; box-shadow: none;';
     content.style.cssText += 'background: ' + this['option']['layer'].background;
-    loadingBox.style.cssText = 'justify-content: ' + this['option']['layer'].position[0] + '; align-items: ' + this['option']['layer'].position[1];
+    if (this['option']['layer']['position'][0].endsWith('px'))
+      loadingIcon.style.cssText += `margin-left: ${this['option']['layer']['position'][0]}`;
+    else
+      loadingBox.style.cssText += `align-items: ${this['option']['layer']['position'][0]}`;
+
+    if (this['option']['layer']['position'][1].endsWith('px'))
+      loadingIcon.style.cssText += `margin-top: ${this['option']['layer']['position'][1]}`;
+    else
+      loadingBox.style.cssText += `justify-content: ${this['option']['layer']['position'][1]};`;
     loadingIcon.style.cssText += 'font-size: ' + this['option']['layer']['size'] + 'px; width: ' + this['option']['layer']['area'][0] + 'px; height: ' + this['option']['layer']['area'][1] + 'px; color: ' + this['option']['layer'].color + '; animation-duration: ' + this['option']['layer'].duration + 's;';
     if (!ModalLayer['_assistant']['object']['isEmpty'](this['option']['layer']['rate']))
       loadingIcon.style.animationTimingFunction = this['option']['layer']['rate'];
+  }
+
+  /**
+  * 根据屏幕大小重绘模态层大小
+   *
+   * @Author    wolf
+   * @Datetime  2020-11-15T02:20:06+0800
+   */
+  resize () {
+    let defaultArea;
+
+    if (this['option']['window']) {
+      let rect = this['option']['window'].getBoundingClientRect();
+      defaultArea = [rect.width === 0 ? window.innerWidth : rect.width, rect.height === 0 ? window.innerHeight : rect.height];
+    } else {
+      defaultArea = [window.innerWidth, window.innerHeight];
+    }
+
+    this['variable']['nodes']['container'].style.cssText += `width: ${defaultArea[0]}px; height: ${defaultArea[1]}px`;
+
+    // 记录初始化后的最小值
+    this['variable']['defaultArea'] = defaultArea;
   }
 }
 

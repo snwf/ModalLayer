@@ -5,7 +5,7 @@
 * @Description         对象助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-25 00:10:41
+* @Last Modified time: 2020-11-14 23:28:35
 */
 
 class ObjectAssistant {
@@ -58,7 +58,7 @@ class ObjectAssistant {
    * 设置一个属性到对象
    * 与默认赋值方法不同的是该方法可以通过传入一串字符串或数组进行级联赋值
    * 若父值不存在则自动赋值{}.
-   * 
+   *
    * 注意:
    * 如果属性的父值不为Object则会将其重新赋值为Object.
    * 语义上该方法并不适用于数组与Set.
@@ -99,7 +99,7 @@ class ObjectAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-03T22:57:53+0800
-   * @return   {Boolean}                
+   * @return   {Boolean}
    */
   static isEmpty (v) {
     return v === null || v === undefined;
@@ -110,8 +110,8 @@ class ObjectAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-24T01:35:38+0800
-   * @param    {Mixed}                  v 
-   * @return   {Boolean}                  
+   * @param    {Mixed}                  v
+   * @return   {Boolean}
    */
   static isString (v) {
     return typeof v === 'string' || v instanceof String;

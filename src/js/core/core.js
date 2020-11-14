@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 03:36:14
+* @Last Modified time: 2020-11-15 03:03:09
 */
 
 class ModalLayer {
@@ -191,6 +191,9 @@ class ModalLayer {
    * @DateTime 2020-09-04T14:14:23+0800
    */
   compatibleOption (options) {
+    if (ModalLayer['_assistant']['object']['isString'](options['window']))
+      options['window'] = document.querySelector(options['window']);
+
     if (typeof options['mask'] === 'boolean' || ['true', 'false'].includes(options['mask']))
       options['mask'] = {'enable': Boolean(options['mask']), 'clickRemove': true};
 
@@ -486,11 +489,7 @@ class ModalLayer {
   insertNode () {
     let fragment = document.createDocumentFragment();
     let parentWindow = this['option']['window'] ?? window.document.body;
-    if (parentWindow instanceof String || typeof parentWindow === 'string')
-      parentWindow = document.querySelector(parentWindow) ?? window.document.body;
-    Object.keys(this['variable']['nodes']).forEach(key => {
-      fragment.appendChild(this['variable']['nodes'][key]);
-    }, this);
+    Object.keys(this['variable']['nodes']).forEach(key => fragment.appendChild(this['variable']['nodes'][key]), this);
     parentWindow.appendChild(fragment);
   }
 

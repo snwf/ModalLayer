@@ -5,7 +5,7 @@
 * @Description         Worker助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-27 01:37:58
+* @Last Modified time: 2020-11-15 02:47:13
 */
 
 class WorkerAssistant {
@@ -30,12 +30,16 @@ class WorkerAssistant {
    * @param    {Worker}                 w Worker实例
    */
   static add (k, w) {
-    let cache = CacheAssistant['get']('list', WorkerAssistant);
+    let cache;
+    
+    if (!(cache = CacheAssistant['get']('list', WorkerAssistant)))
+      CacheAssistant['set']('list', cache = new Map, WorkerAssistant);
+    
     if (!(w instanceof Worker))
       throw new TypeError('Not a Worker instance.');
     if (WorkerAssistant['has'](k))
       throw new Error('The key already exists.');
-    if (!cache) cache = new Map;
+    
     cache.set(k, w);
   }
 
@@ -58,15 +62,17 @@ class WorkerAssistant {
    * @DateTime 2020-09-18T22:04:57+0800
    * @param    {String}                 k   worker名称
    * @param    {String}                 url 在worker中执行的脚本url
+   * @param    {Boolean}                add 创建成功后是否添加到缓存中
    * @return   {Worker}                     成功返回一个Worker对象
    */
-  static create (k, url) {
+  static create (k, url, add = false) {
     let worker, cache;
-    cache = CacheAssistant['get']('list', WorkerAssistant);
-    if (!cache) cache = new Map;
+    if (!(cache = CacheAssistant['get']('list', WorkerAssistant)))
+      CacheAssistant['set']('list', cache = new Map, WorkerAssistant);
     try {
       worker = new Worker(url);
       cache.set(k, worker);
+      if (add) WorkerAssistant.add(k, worker);
     } catch (e) {
       throw e;
     }

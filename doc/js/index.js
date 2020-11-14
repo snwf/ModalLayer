@@ -5,7 +5,7 @@
 * @Description         文档
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-12 01:19:25
+* @Last Modified time: 2020-11-15 03:47:49
 */
 
 'use strict';
@@ -24,8 +24,23 @@ ModalLayer._assistant.event.add(document.querySelector('#theme-list'), 'click', 
 });
 
 // 监听更换文档内容事件
-ModalLayer._assistant.event.add(document.querySelector('.bd-links'), 'click', 'li.mb-1 > a[aria-expanded="true"]', function () {
-  init.content(this.getAttribute('data-content-name'));
+ModalLayer._assistant.event.add(document.querySelector('.bd-links'), 'click', 'li.mb-1 > a[aria-expanded="true"], .list-unstyled > li > a.d-inline-flex', function (e) {
+  let target, contentName;
+
+  e.preventDefault()
+  
+  target = this;
+
+  do {
+    if (target.getAttribute('aria-expanded') === 'true' || target.previousElementSibling?.getAttribute('aria-expanded') === 'true') {
+      contentName = target.getAttribute('data-content-name') ?? target.previousElementSibling.getAttribute('data-content-name');
+      break;
+    }
+    target = target.parentNode;
+  } while (target !== document.body);
+    
+  contentName && init.content(contentName).then(() => window.location.hash = this.getAttribute('href'));
+
 });
 
 // 初始化侧边栏
