@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-15 03:03:09
+* @Last Modified time: 2020-11-16 05:01:57
 */
 
 class ModalLayer {
@@ -234,6 +234,7 @@ class ModalLayer {
     this['variable']['timeout'] = Object.create(null);
     this['variable']['interval'] = Object.create(null);
     this['variable']['eventSymbol'] = Object.create(null);
+    this['variable']['defaultRect'] = Object.create(null);
     this['variable']['animationName'] = Object.create(null);
     this['variable']['struct']['_build'] = Object.create(null);
     this['variable']['struct']['_backup'] = Object.create(null);
@@ -592,6 +593,8 @@ class ModalLayer {
 
     // 记录初始化后的最小值
     this['variable']['defaultArea'] = defaultArea;
+    this['variable']['defaultRect']['width'] = defaultArea[0];
+    this['variable']['defaultRect']['height'] = defaultArea[1];
   }
 
   /**
@@ -632,18 +635,60 @@ class ModalLayer {
     if (y + h > wBoundary.bottom)
       h = wBoundary.bottom - y;
 
-    container.style.marginLeft = x + 'px';
-    container.style.marginTop = y + 'px';
-
-    container.style.width = w + 'px';
-    container.style.height = h + 'px';
+    container.style.cssText += `top: ${y}px; left: ${x}px; width: ${w}px; height: ${h};`;
 
     // 如果为页面层则跟随模态层变化
     if ([ModalLayer['_enum']['TYPE']['PAGE'], ModalLayer['_enum']['TYPE']['VIDEO'], ModalLayer['_enum']['TYPE']['AUDIO']].includes(this.type)) {
       let pageNode = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
-      pageNode.style.width = this['option']['layer']['area'][0] + w - this['variable']['defaultArea'][0] + 'px';
-      pageNode.style.height = this['option']['layer']['area'][1] + h - this['variable']['defaultArea'][1] + 'px';
+      pageNode.style.cssText += `width: ${this['option']['layer']['area'][0] + w - this['variable']['defaultArea'][0]}px; height: ${this['option']['layer']['area'][1] + h - this['variable']['defaultArea'][1]}px;`;
     }
+  }
+
+  /**
+   * 根据配置项定位模态层
+   *
+   * @Author    wolf
+   * @Datetime  2020-11-16T02:55:39+0800
+   */
+  positioning () {
+    let container, parentNode;
+    let posX, posY, width, height, parent;
+
+    container = this['variable']['nodes']['container'];
+    parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
+
+    if (this['option']['position']) {
+      [posX, posY] = this['option']['position'];
+    }
+    // 若 this.option.position 未设置或为Falsely则自动居中.
+    else {
+      width = this['variable']['defaultRect']['width'];
+      height = this['variable']['defaultRect']['height'];
+
+      parent = {
+        scrollY: parentNode?.scrollTop ?? 0,
+        scrollX: parentNode?.scrollLeft ?? 0,
+        width: parentNode ? parentNode.clientWidth : window.innerWidth,
+        height: parentNode ? parentNode.clientHeight : window.innerHeight
+      }
+
+      posX = ModalLayer['_assistant']['number']['chain'](parent.width).subtract(width).divide(2).add(parent.scrollX).floor().done();
+      posY = ModalLayer['_assistant']['number']['chain'](parent.height).subtract(height).divide(2).add(parent.scrollY).floor().done();
+
+      // 若父容器存在则直接计算当前屏幕的中心位置.
+      // 否则需要将滚动距离列入考虑.
+      // if (this['option']['window']) {
+        // posX += window.scrollX ?? window.pageXOffset;
+        // posY += window.scrollY ?? window.pageYOffset;
+        // posY += this['option']['window'].scrollTop;
+        // posX += this['option']['window'].scrollLeft;
+      // }
+    }
+
+    container.style.cssText += `top: ${posY}px; left: ${posX}px;`;
+
+    this['variable']['defaultRect']['top'] = posY;
+    this['variable']['defaultRect']['left'] = posX;
   }
 
   /**
@@ -988,8 +1033,11 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('message'))(options, reject);
 
-    // 重绘模态层大小
+    // 初始化模态层大小
     layer.resize();
+
+    // 初始化模态层位置
+    layer.positioning();
 
     // 显示
     layer.show();
@@ -1014,8 +1062,11 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('alert'))(options, reject);
 
-    // 重绘模态层大小
+    // 初始化模态层大小
     layer.resize();
+
+    // 初始化模态层位置
+    layer.positioning();
 
     // 显示
     layer.show();
@@ -1040,8 +1091,11 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('confirm'))(options, reject);
 
-    // 重绘模态层大小
+    // 初始化模态层大小
     layer.resize();
+
+    // 初始化模态层位置
+    layer.positioning();
 
     // 显示
     layer.show();
@@ -1066,8 +1120,11 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('prompt'))(options, reject);
 
-    // 重绘模态层大小
+    // 初始化模态层大小
     layer.resize();
+
+    // 初始化模态层位置
+    layer.positioning();
 
     // 显示
     layer.show();
@@ -1092,8 +1149,11 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('page'))(options, reject);
 
-    // 重绘模态层大小
+    // 初始化模态层大小
     layer.resize();
+
+    // 初始化模态层位置
+    layer.positioning();
 
     // 显示
     layer.show();
@@ -1120,8 +1180,17 @@ class ModalLayer {
 
     layer['variable']['image']['finish']
 
-    // 重绘模态层大小
-    .then(() => layer.resize())
+    // 初始化模态层大小
+    .then(() => {
+      layer.resize();
+      layer['variable']['image']['layer'].resize();
+    })
+
+    // 初始化模态层位置
+    .then(() => {
+      layer.positioning();
+      layer['variable']['image']['layer'].positioning();
+    })
 
     // 显示
     .then(() => layer.show());
@@ -1146,8 +1215,11 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('loading'))(options, reject);
 
-    // 重绘模态层大小
+    // 初始化模态层大小
     layer.resize();
+
+    // 初始化模态层位置
+    layer.positioning();
 
     // 显示
     layer.show();

@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:33:04
+* @Last Modified time: 2020-11-16 05:14:24
 */
 
 /**
@@ -85,8 +85,8 @@ Object.defineProperty(EVENT, 'drag', {
   'enumerable': true,
   'value': function (dEvent) {
     let keydownEvent;
+    let boundary, parentNode;
     let status, targetMoveMethod;
-    let boundary, parentWindowRect;
     let mEvent, mouseupEvent, mousemoveEvent;
     let target, trigger, mousePoint, targetRect;
 
@@ -101,14 +101,17 @@ Object.defineProperty(EVENT, 'drag', {
     // 触发元素
     trigger = target.querySelector('.modal-layer-title');
 
-    if (this['option']['window'] === null) {
+    if (this['option']['window']) {
+      parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
+      // 父窗体边界值(左右边界值, 上下边界值)
+      boundary = [0, parentNode.offsetWidth, 0, parentNode.offsetHeight];
+
+      // 若有滚动则加上.
+      targetRect.y += parentNode?.scrollTop ?? 0;
+      targetRect.x += parentNode?.scrollLeft ?? 0;
+    } else {
       // 父窗体边界值(左右边界值, 上下边界值)
       boundary = [0, window.innerWidth, 0, window.innerHeight];
-    } else {
-      // 父窗体Rect
-      parentWindowRect = this['option']['window'].getBoundingClientRect();
-      // 父窗体边界值(左右边界值, 上下边界值)
-      boundary = [0, parentWindowRect.width, 0, parentWindowRect.height];
     }
 
     // 取消文字选中
@@ -148,8 +151,7 @@ Object.defineProperty(EVENT, 'drag', {
           targetRect.y = boundaryY[1];
       }
 
-      target.style.marginLeft = targetRect.x + 'px';
-      target.style.marginTop = targetRect.y + 'px';
+      target.style.cssText += `top: ${targetRect.y}px; left: ${targetRect.x}px;`;
 
       this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
     }
@@ -208,11 +210,12 @@ Object.defineProperty(EVENT, 'drag', {
  * @DateTime 2020-09-04T00:04:17+0800
  * @param    {MouseEvent}                 dEvent 鼠标按下事件对象
  */
+// TODO 无法满足新的定位实现.
 Object.defineProperty(EVENT, 'resize', {
   'enumerable': true,
   'value': function (dEvent) {
     let status;
-    let boundary;
+    let boundary, parentNode;
     let mousePoint, mousemoveEvent;
     let target, trigger, targetArea, targetRect, targetMinArea;
 
@@ -230,10 +233,12 @@ Object.defineProperty(EVENT, 'resize', {
     mousePoint = [dEvent.screenX, dEvent.screenY];
     // 目标元素长宽
     targetArea = [targetRect.width, targetRect.height];
+    
+    // 父节点
+    parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
 
     // 父窗体Rect
-    if (this['option']['window'] === null) boundary = {x: 0, y: 0};
-    else boundary = this['option']['window'].getBoundingClientRect();
+    boundary = {x: 0, y: 0};
 
     // 取消文字选中
     window.getSelection().empty();
@@ -252,7 +257,7 @@ Object.defineProperty(EVENT, 'resize', {
         movementX = mEvent.screenX - mousePoint[0];
         movementY = mEvent.screenY - mousePoint[1];
         resizePos = trigger.getAttribute('position-resize-bar');
-        moveNow = [targetRect.x, targetRect.y, targetArea[0], targetArea[1]];
+        moveNow = [targetRect.x + (parentNode?.scrollLeft ?? 0), targetRect.y + (parentNode?.scrollTop ?? 0), targetArea[0], targetArea[1]];
 
         if (resizePos.includes('top')) {
           moveNow[1] += movementY;

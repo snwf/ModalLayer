@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 03:55:35
+* @Last Modified time: 2020-11-16 04:00:35
 */
 
 class ImageLayer extends ModalLayer {
@@ -402,9 +402,11 @@ class ImageLayer extends ModalLayer {
 
     // 记录初始化后的最小值
     this['variable']['defaultArea'] = defaultArea;
+    this['variable']['defaultRect']['width'] = defaultArea[0];
+    this['variable']['defaultRect']['height'] = defaultArea[1];
 
-    // 判断是否允许超出屏幕, 若不允许且已经超出则需要进行纠正
-    if (!this['option']['drag']['overflow'] && ModalLayer['_assistant']['element']['isOverflow'](container, this['option']['window']))
+    // 判断是否允许超出屏幕, 若不允许且已经超出则需要进行修正
+    if (!this['option']['drag']['overflow'] && ModalLayer['_assistant']['element']['isOverflow'](container, this['option']['window'] ?? document.body))
       container.style.cssText += 'margin-top: auto; margin-left: auto';
   }
 
