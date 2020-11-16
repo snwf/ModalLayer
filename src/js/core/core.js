@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-16 05:01:57
+* @Last Modified time: 2020-11-16 23:56:22
 */
 
 class ModalLayer {
@@ -598,49 +598,23 @@ class ModalLayer {
   }
 
   /**
-   * 根据给定的参数重绘模态层
-   * 不允许溢出document边界
+   * 根据给定的参数调整模态层的位置/大小
    *
-   * @Author   Wolf
-   * @DateTime 2020-09-03T04:35:04+0800
-   * @param    {Number}                 x x轴坐标
-   * @param    {Number}                 y y轴坐标
-   * @param    {Number}                 w 容器宽
-   * @param    {Number}                 h 容器高
+   * @Author    wolf
+   * @Datetime  2020-11-16T21:10:10+0800
+   * @param    {Number}                   x x轴坐标
+   * @param    {Number}                   y y轴坐标
+   * @param    {Number}                   w 容器宽
+   * @param    {Number}                   h 容器高
    */
-  resizeByXYWH (x, y, w, h) {
-    let container, wBoundary;
-
-    container = this['variable']['nodes']['container'];
-    if (this['option']['window'] === null)
-      wBoundary = {
-        x: 0,
-        y: 0,
-        top: 0,
-        left: 0,
-        right: window.innerWidth,
-        width: window.innerWidth,
-        bottom: window.innerHeight,
-        height: window.innerHeight
-      };
-    else
-      wBoundary = this['option']['window'].getBoundingClientRect();
-
-    if (x < wBoundary.x)
-      x = wBoundary.x;
-    if (x + w > wBoundary.right)
-      w = wBoundary.right - x;
-    if (y < wBoundary.y)
-      y = wBoundary.y;
-    if (y + h > wBoundary.bottom)
-      h = wBoundary.bottom - y;
-
-    container.style.cssText += `top: ${y}px; left: ${x}px; width: ${w}px; height: ${h};`;
+  resizeBy (x, y, w, h) {
+    let container = this['variable']['nodes']['container'];
+    container.style.cssText += `top: ${y}px; left: ${x}px; width: ${w}px; height: ${h}px;`;
 
     // 如果为页面层则跟随模态层变化
     if ([ModalLayer['_enum']['TYPE']['PAGE'], ModalLayer['_enum']['TYPE']['VIDEO'], ModalLayer['_enum']['TYPE']['AUDIO']].includes(this.type)) {
       let pageNode = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
-      pageNode.style.cssText += `width: ${this['option']['layer']['area'][0] + w - this['variable']['defaultArea'][0]}px; height: ${this['option']['layer']['area'][1] + h - this['variable']['defaultArea'][1]}px;`;
+      pageNode.style.cssText += `width: ${this['option']['layer']['area'][0] + w - this['variable']['defaultRect']['width']}px; height: ${this['option']['layer']['area'][1] + h - this['variable']['defaultRect']['height']}px;`;
     }
   }
 
