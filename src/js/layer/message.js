@@ -75,3 +75,4 @@ class MessageLayer extends ModalLayer {
 
 ModalLayer['_achieve'].set('msg', MessageLayer);
 ModalLayer['_achieve'].set('message', MessageLayer);
+

@@ -26,6 +26,16 @@ Object.defineProperty(OPTION, 'page', {
     'name': 'modal-layer-page-' // 名称前缀
   }
 });
+/**
+ * tips 默认配置
+ * 
+ * @type {object}
+ */
+Object.defineProperty(OPTION,'tips',{
+  'value': {
+    'location': null, // 获取用户绑定元素位置
+    }
+});
 
 /**
  * 加载层默认配置

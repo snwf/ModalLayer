@@ -57,7 +57,8 @@ Object.defineProperty(ENUM, 'TYPE', {
     'LOADING': 5,
     'IMAGE': 6,
     'VIDEO': 7,
-    'AUTDIO': 8
+    'AUTDIO': 8,
+    'TIPS': 9
   }
 });
 

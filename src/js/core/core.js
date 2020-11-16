@@ -266,7 +266,7 @@ class ModalLayer {
 
     // 生成DOM
     this['variable']['nodes'] = ModalLayer['_assistant']['element']['objectToNode'](this['variable']['struct']['_build']);
-
+ 
     mask = this['variable']['nodes']['mask'];
     container = this['variable']['nodes']['container'];
 
@@ -996,6 +996,39 @@ class ModalLayer {
 
     return layer;
   }
+  /**
+   * tips层
+   * 
+   * @param   {Mixed}      options 模态层设置 
+   * @param   {Function}   reject  当出现错误时调用方法
+   * 
+   * @return  {ModalLayer}         模态层实例
+   */
+  static tips(options,reject){
+    let layer = null;
+    if(typeof options === 'string')
+      options = {
+        'content': options,
+        'type': ModalLayer['_enum']['TYPE']['TIPS']
+      }
+    else
+      options.type = ModalLayer['_enum']['TYPE']['TIPS'];
+  
+    // 实例化
+    layer = new (ModalLayer['_achieve'].get('tips'))(options,reject);
+
+    // 重绘模态层大小
+    layer.resize();
+
+    //模态层定位
+    layer.xtips();
+
+    //显示
+    layer.show();
+
+    return layer;
+
+  }
 
   /**
    * 警报层
@@ -1094,7 +1127,7 @@ class ModalLayer {
 
     // 重绘模态层大小
     layer.resize();
-
+    
     // 显示
     layer.show();
 
