@@ -47,6 +47,10 @@
   <script src="../../src/js/storage/abstract.js"></script>
   <script src="../../src/js/storage/sync-storage.js"></script>
   <style>
+    body {
+      height: 9600px;
+      position: relative;
+    }
     #test-button-container {
       position: absolute;
       top: 50%;
@@ -98,7 +102,7 @@
   // 测试loading
   document.querySelector('#loading-button').onclick = function () {
     let option = {
-      popupTime: 0,
+      popupTime: 5,
       layer: {
         icon: 0,
         duration: 1,
@@ -282,13 +286,11 @@
   }
   document.querySelector('#page-button-2').onclick = function () {
     let option = {
-      mask: {
-        enable: false
-      },
+      mask: true,
       title: '测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试',
       popupTime: 0,
       content: {
-        fullContainer: false
+        fullContainer: true
       },
       layer: {
         scrolling: 'yes',

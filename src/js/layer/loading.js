@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-15 03:02:37
+* @Last Modified time: 2020-11-16 03:33:36
 */
 
 class LoadingLayer extends ModalLayer {
@@ -152,6 +152,8 @@ class LoadingLayer extends ModalLayer {
 
     // 记录初始化后的最小值
     this['variable']['defaultArea'] = defaultArea;
+    this['variable']['defaultRect']['width'] = defaultArea[0];
+    this['variable']['defaultRect']['height'] = defaultArea[1];
   }
 }
 

@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 00:17:35
+* @Last Modified time: 2020-11-16 03:25:30
 */
 
 class PageLayer extends ModalLayer {
@@ -122,9 +122,14 @@ class PageLayer extends ModalLayer {
     }
   }
 
+ /**
+  * 根据屏幕大小重绘模态层大小
+  *
+  * @Author   Wolf
+  * @DateTime 2020-09-02T02:28:37+0800
+  */
   resize () {
     let pageNode;
-    let widthTmpNum, heightTmpNum;
     let containerNode, modalChildNodes;
     let windowWidth, windowHeight, newModalWidth, newModalHeight;
 
@@ -133,17 +138,17 @@ class PageLayer extends ModalLayer {
     newModalWidth = newModalHeight = 0;
     containerNode = this['variable']['nodes']['container'];
     modalChildNodes = containerNode.children;
-    widthTmpNum = this['option']['areaProportion'][0].toString().length - (this['option']['areaProportion'][0].toString().indexOf('.') + 1);
-    heightTmpNum = this['option']['areaProportion'][1].toString().length - (this['option']['areaProportion'][1].toString().indexOf('.') + 1);
 
     pageNode = containerNode.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
     newModalWidth = pageNode.offsetWidth + (pageNode.parentNode.offsetLeft * 2);
-    for (let i = 0; i < modalChildNodes.length; i++) 
+    for (let i = 0; i < modalChildNodes.length; i++)
       newModalHeight = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? newModalHeight : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), newModalHeight);
     containerNode.style.width = newModalWidth + 'px';
     containerNode.style.height = newModalHeight + 'px';
 
     // 记录初始化后的最小值
+    this['variable']['defaultRect']['width'] = newModalWidth;
+    this['variable']['defaultRect']['height'] = newModalHeight;
     this['variable']['defaultArea'] = [newModalWidth, newModalHeight];
   }
 }

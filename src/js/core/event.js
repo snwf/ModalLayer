@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:33:04
+* @Last Modified time: 2020-11-16 23:52:54
 */
 
 /**
@@ -45,7 +45,7 @@ Object.defineProperty(EVENT, 'interaction', {
  * @Author   Wolf
  * @DateTime 2020-09-01T19:59:15+0800
  * @param    {Event}                 dEvent Event对象
- * @return   {Void}                            
+ * @return   {Void}
  */
 Object.defineProperty(EVENT, 'active', {
   'enumerable': true,
@@ -84,11 +84,11 @@ Object.defineProperty(EVENT, 'active', {
 Object.defineProperty(EVENT, 'drag', {
   'enumerable': true,
   'value': function (dEvent) {
-    let keydownEvent;
-    let status, targetMoveMethod;
-    let boundary, parentWindowRect;
-    let mEvent, mouseupEvent, mousemoveEvent;
+    let status;
+    let boundary, parentNode;
     let target, trigger, mousePoint, targetRect;
+    let parentComputedStyle, parentComputedStyleObj;
+    let mEvent, mouseupEvent, keydownEvent, mousemoveEvent;
 
     status = this['status'];
     dEvent = dEvent ?? window.event;
@@ -101,64 +101,64 @@ Object.defineProperty(EVENT, 'drag', {
     // 触发元素
     trigger = target.querySelector('.modal-layer-title');
 
-    if (this['option']['window'] === null) {
+    if (this['option']['window']) {
+      parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
+      // 父节点计算后的样式
+      parentComputedStyle = this['option']['window'] ? window.getComputedStyle(this['option']['window']) : null;
+      parentComputedStyleObj = {
+        marginTop: parseInt(parentComputedStyle?.marginTop ?? 0),
+        paddingTop: parseInt(parentComputedStyle?.paddingTop ?? 0),
+        marginLeft: parseInt(parentComputedStyle?.marginLeft ?? 0),
+        paddingLeft: parseInt(parentComputedStyle?.paddingLeft ?? 0),
+        marginRight: parseInt(parentComputedStyle?.marginRight ?? 0),
+        paddingRight: parseInt(parentComputedStyle?.paddingRight ?? 0),
+        marginBottom: parseInt(parentComputedStyle?.marginBottom ?? 0),
+        paddingBottom: parseInt(parentComputedStyle?.paddingBottom ?? 0)
+      }
       // 父窗体边界值(左右边界值, 上下边界值)
-      boundary = [0, window.innerWidth, 0, window.innerHeight];
+      boundary = [
+        0,
+        parentNode.offsetWidth - parentComputedStyleObj.marginLeft - parentComputedStyleObj.marginRight - parentComputedStyleObj.paddingLeft - parentComputedStyleObj.paddingRight,
+        0,
+        parentNode.offsetHeight - parentComputedStyleObj.marginTop - parentComputedStyleObj.marginBottom - parentComputedStyleObj.paddingTop - parentComputedStyleObj.paddingBottom
+      ];
+
+      // 若有滚动则加上.
+      targetRect.y += parentNode?.scrollTop ?? 0;
+      targetRect.x += parentNode?.scrollLeft ?? 0;
     } else {
-      // 父窗体Rect
-      parentWindowRect = this['option']['window'].getBoundingClientRect();
       // 父窗体边界值(左右边界值, 上下边界值)
-      boundary = [0, parentWindowRect.width, 0, parentWindowRect.height];
+      boundary = [0, document.documentElement.clientWidth, 0, document.documentElement.clientHeight];
     }
 
     // 取消文字选中
     window.getSelection().empty();
 
-    // 统一移动方法
-    targetMoveMethod = (movementX, movementY) => {
-      if (!this['option']['drag']['overflow']) {
-        if (targetRect.x + movementX < boundary[0])
-          targetRect.x = boundary[0] - movementX;
-        if (targetRect.right + movementX > boundary[1])
-          targetRect.x = boundary[1] - targetRect.width - movementX;
-        if (targetRect.y + movementY < boundary[2])
-          targetRect.y = boundary[2] - movementY;
-        if (targetRect.bottom + movementY > boundary[3])
-          targetRect.y = boundary[3] - targetRect.height - movementY;
-      }
-
-      targetRect.x += movementX;
-      targetRect.y += movementY;
-
-      if (this['option']['resize']['enable'] && this['option']['content']['fullContainer']) {
-        let resizeW, boundaryX, boundaryY;
-        
-        resizeW = 5;
-        boundaryX = [resizeW, boundary[1] - targetRect.width - resizeW];
-        boundaryY = [resizeW, boundary[3] - targetRect.height - resizeW];
-
-        if (targetRect.x <= boundaryX[0])
-          targetRect.x = boundaryX[0];
-        else if (targetRect.x >= boundaryX[1])
-          targetRect.x = boundaryX[1];
-
-        if (targetRect.y <= boundaryY[0])
-          targetRect.y = boundaryY[0];
-        else if (targetRect.y >= boundaryY[1])
-          targetRect.y = boundaryY[1];
-      }
-
-      target.style.marginLeft = targetRect.x + 'px';
-      target.style.marginTop = targetRect.y + 'px';
-
-      this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
-    }
-
     // 鼠标移动事件
     mousemoveEvent = e => {
       mEvent = e ?? window.event;
-      if (mEvent.buttons === 1)
-        targetMoveMethod(mEvent.movementX, mEvent.movementY);
+      if (mEvent.buttons === 1) {
+        targetRect.x += mEvent.movementX;
+        targetRect.y += mEvent.movementY;
+
+        if (!this['option']['drag']['overflow']) {
+          if (
+            targetRect.x < boundary[0] ||
+            targetRect.x > boundary[1] - targetRect.width
+          )
+            targetRect.x -= mEvent.movementX;
+
+          if (
+            targetRect.y < boundary[2] ||
+            targetRect.y > boundary[3] - targetRect.height
+          )
+            targetRect.y -= mEvent.movementY;
+        }
+
+        this.resizeBy(targetRect.x, targetRect.y, targetRect.width, targetRect.height);
+
+        this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
+      }
     };
 
     // 方向键调整
@@ -208,102 +208,110 @@ Object.defineProperty(EVENT, 'drag', {
  * @DateTime 2020-09-04T00:04:17+0800
  * @param    {MouseEvent}                 dEvent 鼠标按下事件对象
  */
+// TODO 无法满足新的定位实现.
 Object.defineProperty(EVENT, 'resize', {
   'enumerable': true,
   'value': function (dEvent) {
     let status;
-    let boundary;
-    let mousePoint, mousemoveEvent;
-    let target, trigger, targetArea, targetRect, targetMinArea;
+    let boundary, parentNode;
+    let target, trigger, targetArea, targetRect;
+    let mousePoint, mouseupEvent, mousemoveEvent;
+    let parentComputedStyle, parentComputedStyleObj;
 
     status = this['status'];
     dEvent = dEvent ?? window.event;
     // 触发元素
     trigger = dEvent.target;
+    // 鼠标按下时的坐标
+    mousePoint = [dEvent.x, dEvent.y];
     // 目标元素
     target = this['variable']['nodes']['container'];
     // 目标元素Rect
     targetRect = target.getBoundingClientRect();
-    // 目标元素最小大小
-    targetMinArea = this['variable']['defaultArea'];
-    // 鼠标按下时的坐标
-    mousePoint = [dEvent.screenX, dEvent.screenY];
     // 目标元素长宽
     targetArea = [targetRect.width, targetRect.height];
-
-    // 父窗体Rect
-    if (this['option']['window'] === null) boundary = {x: 0, y: 0};
-    else boundary = this['option']['window'].getBoundingClientRect();
+    // 父节点
+    parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
+    // 父节点计算后的样式
+    parentComputedStyle = this['option']['window'] ? window.getComputedStyle(this['option']['window']) : null;
+    parentComputedStyleObj = {
+      marginTop: parseInt(parentComputedStyle?.marginTop ?? 0),
+      paddingTop: parseInt(parentComputedStyle?.paddingTop ?? 0),
+      marginLeft: parseInt(parentComputedStyle?.marginLeft ?? 0),
+      paddingLeft: parseInt(parentComputedStyle?.paddingLeft ?? 0)
+    }
+    // 父节点Rect
+    boundary = {x: 0, y: 0, width: parentNode?.offsetWidth ?? window.innerWidth, height: parentNode?.offsetHeight ?? window.innerHeight};
 
     // 取消文字选中
     window.getSelection().empty();
 
-    let mouseMoveEvent = mEvent => {
+    // 若有滚动则加上.
+    targetRect.y += parentNode ? parentNode.scrollTop - parentComputedStyleObj.marginTop - parentComputedStyleObj.paddingTop : 0;
+    targetRect.x += parentNode ? parentNode.scrollLeft - parentComputedStyleObj.marginLeft - parentComputedStyleObj.paddingLeft  : 0;
+    mousemoveEvent = mEvent => {
       let resizePos;
       let moveNow, movementX, movementY;
 
+      mEvent = mEvent ?? window.event;
       if (mEvent.buttons !== 1) {
-        mouseUpEvent();
+        mouseupEvent();
         return;
-      } else {
-        this['setStatus']('resize');
-
-        mEvent = mEvent ?? window.event;
-        movementX = mEvent.screenX - mousePoint[0];
-        movementY = mEvent.screenY - mousePoint[1];
-        resizePos = trigger.getAttribute('position-resize-bar');
-        moveNow = [targetRect.x, targetRect.y, targetArea[0], targetArea[1]];
-
-        if (resizePos.includes('top')) {
-          moveNow[1] += movementY;
-          moveNow[3] -= movementY;
-          if (moveNow[1] < boundary.y)
-            moveNow[3] -= boundary.y - moveNow[1];
-          if (moveNow[3] < targetMinArea[1]) {
-            moveNow[1] += moveNow[3] - targetMinArea[1];
-            moveNow[3] = targetMinArea[1];
-          }
-        }
-        if (resizePos.includes('bottom')) {
-          moveNow[3] += movementY;
-          if (moveNow[3] < targetMinArea[1])
-            moveNow[3] = targetMinArea[1];
-        }
-        if (resizePos.includes('left')) {
-          moveNow[0] += movementX;
-          moveNow[2] -= movementX;
-          if (moveNow[0] < boundary.x)
-            moveNow[2] -= boundary.x - moveNow[0];
-          if (moveNow[2] < targetMinArea[0]) {
-            moveNow[0] += moveNow[2] - targetMinArea[0];
-            moveNow[2] = targetMinArea[0];
-          }
-        }
-        if (resizePos.includes('right')) {
-          moveNow[2] += movementX;
-          if (moveNow[2] < targetMinArea[0])
-            moveNow[2] = targetMinArea[0];
-        }
-
-        this['resizeByXYWH'](Number(moveNow[0]), Number(moveNow[1]), Number(moveNow[2]), Number(moveNow[3]));
       }
+
+      this['setStatus']('resize');
+
+      resizePos = trigger.getAttribute('position-resize-bar');
+
+      if (resizePos.includes('top')) {
+        if (
+            targetRect.y + mEvent.movementY > boundary.y &&
+            targetRect.height - mEvent.movementY > this['variable']['defaultRect']['height']
+          ) {
+          targetRect.y += mEvent.movementY;
+          targetRect.height -= mEvent.movementY;
+        }
+      }
+      if (resizePos.includes('bottom')) {
+        targetRect.height += mEvent.movementY;
+        if (
+          targetRect.height > boundary.height ||
+          targetRect.height < this['variable']['defaultRect']['height']
+        )
+          targetRect.height -= mEvent.movementY;
+      }
+      if (resizePos.includes('left')) {
+        if (
+            targetRect.x + mEvent.movementX > boundary.x &&
+            targetRect.width - mEvent.movementX > this['variable']['defaultRect']['width']
+          ) {
+          targetRect.x += mEvent.movementX;
+          targetRect.width -= mEvent.movementX;
+        }
+      }
+      if (resizePos.includes('right')) {
+        targetRect.width += mEvent.movementX;
+        if (
+          targetRect.width > boundary.width ||
+          targetRect.width < this['variable']['defaultRect']['width']
+        )
+          targetRect.width -= mEvent.movementX;
+      }
+      this.resizeBy(targetRect.x, targetRect.y, targetRect.width, targetRect.height);
     };
 
 
     // 放开鼠标事件
-    let mouseUpEvent = () => {
-      // 隐藏遮罩层
-      // target.querySelector('.modal-layer-resize-mask').removeAttribute('style');
-      // document.body.removeChild(document.querySelector('.modal-layer-resize-mask'));
+    mouseupEvent = () => {
 
-      document.removeEventListener('mousemove', mouseMoveEvent);
-      document.removeEventListener('mouseup', mouseUpEvent);
+      document.removeEventListener('mousemove', mousemoveEvent);
+      document.removeEventListener('mouseup', mouseupEvent);
 
       this['setStatus'](status);
     };
 
-    document.addEventListener('mouseup', mouseUpEvent);
-    document.addEventListener('mousemove', mouseMoveEvent);
+    document.addEventListener('mouseup', mouseupEvent);
+    document.addEventListener('mousemove', mousemoveEvent);
   }
 });
 

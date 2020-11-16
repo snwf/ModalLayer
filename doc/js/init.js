@@ -5,7 +5,7 @@
 * @Description         初始化
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-15 03:48:33
+* @Last Modified time: 2020-11-15 22:36:33
 */
 
 'use strict';
@@ -17,7 +17,7 @@ const init = Object.create(null);
 
 let loading = null;
 
-let language = navigator.language;
+let language = localStorage.getItem('language') ?? navigator.language;
 
 const contentStatus = ['start', false];
 
@@ -97,6 +97,7 @@ init.language = function (lang = 'zh-CN') {
     i18nList[i].innerHTML = getMessage(i18nList[i].getAttribute('i18n-message'), lang);
 
   language = lang;
+  localStorage.setItem('language', lang);
   languageShow.innerText = select.innerText;
 }
 
