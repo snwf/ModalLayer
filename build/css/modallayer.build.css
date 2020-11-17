@@ -7,7 +7,7 @@
 * @Description         ModalLayer核心样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 03:10:46
+* @Last Modified time: 2020-11-17 20:25:36
 */
 
 .modal-layer-hide {
@@ -30,15 +30,9 @@
   position: fixed;
 }
 
-.modal-layer-mask[has-window] {
-  position: absolute;
-}
+.modal-layer-mask[has-window] {position: absolute;}
 
 .modal-layer-container {
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
   width: auto;
   height: auto;
   margin: auto;
@@ -112,7 +106,7 @@
   user-select: none;
 }
 
-.modal-layer-container .modal-layer-progress-bar {
+.modal-layer-container > .modal-layer-progress-bar {
   position: absolute;
 }
 
@@ -146,18 +140,6 @@
   width: 100%;
   bottom: 0px;
   height: 2px;
-}
-
-.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=top] .modal-layer-progress-bar-progress,
-.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=bottom] .modal-layer-progress-bar-progress {
-  width: 0px;
-  height: 100%;
-}
-
-.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=left] .modal-layer-progress-bar-progress,
-.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=right] .modal-layer-progress-bar-progress {
-  width: 100%;
-  height: 0px;
 }
 
 .modal-layer-container > .modal-layer-resize-box {
@@ -293,7 +275,7 @@
 * @Description         ModalLayer默认皮肤样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 21:56:46
+* @Last Modified time: 2020-11-17 03:28:02
 */
 
 .modal-layer-skin-default.modal-layer-ui,
@@ -320,7 +302,7 @@
   line-height: 40px;
 }
 
-.modal-layer-skin-default#modal-layer-minimize-queue .modal-layer-minimize-queue-item {
+.modal-layer-skin-default#modal-layer-minimize-queue > .modal-layer-minimize-queue-item {
   height: 100%;
   background: white;
   box-shadow: 0px 0px 5px 1px #ccc;
@@ -331,11 +313,11 @@
   user-select: none;
 }
 
-.modal-layer-skin-default#modal-layer-minimize-queue .modal-layer-minimize-queue-item:not(:first-child):last-child {
+.modal-layer-skin-default#modal-layer-minimize-queue > .modal-layer-minimize-queue-item:not(:first-child):last-child {
   margin-right: 8%;
 }
 
-.modal-layer-skin-default .modal-layer-minimize-queue-item .modal-layer-minimize-queue-item-title {
+.modal-layer-skin-default .modal-layer-minimize-queue-item > .modal-layer-minimize-queue-item-title {
   color: #444;
   margin: 0px 1em;
   font-size: 0.9em;
@@ -345,14 +327,14 @@
   text-overflow: ellipsis;
 }
 
-.modal-layer-skin-default .modal-layer-title {
+.modal-layer-skin-default > .modal-layer-title {
   font-size: 0.9em;
   background: #f8f8f8;
   align-items: center;
   border-bottom: 1px solid #eee;
 }
 
-.modal-layer-skin-default[allow-drag="1"] .modal-layer-title{
+.modal-layer-skin-default[allow-drag="1"] > .modal-layer-title{
   cursor: move;
 }
 
@@ -364,6 +346,7 @@
   min-height: 1rem;
   padding: 12px 2px;
   margin-left: 20px;
+  font-weight: normal;
   white-space: nowrap;
   box-sizing: content-box;
   text-overflow: ellipsis;
@@ -379,7 +362,7 @@
   justify-content: flex-end;
 }
 
-.modal-layer-skin-default .modal-layer-action .modal-layer-action-btn {
+.modal-layer-skin-default .modal-layer-action > .modal-layer-action-btn {
   color: #666;
   height: 100%;
   cursor: pointer;
@@ -395,12 +378,13 @@
 }
 
 .modal-layer-skin-default[modal-layer-type=loading] .modal-layer-loading-box {
+  width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
+  pointer-events: none;
 }
 
-.modal-layer-skin-default[modal-layer-type=image] .modal-layer-content {
+.modal-layer-skin-default[modal-layer-type=image] > .modal-layer-content {
   height: 100%;
   display: flex;
   font-size: 0px;
@@ -410,7 +394,7 @@
   justify-content: center;
 }
 
-.modal-layer-skin-default .modal-layer-toolbar {
+.modal-layer-skin-default > .modal-layer-toolbar {
   display: flex;
   flex-wrap: wrap;
   position: relative;
@@ -419,24 +403,24 @@
   justify-content: center;
 }
 
-.modal-layer-toolbar .modal-layer-toolbar-item {
+.modal-layer-toolbar > .modal-layer-toolbar-item {
   flex: 1;
   flex-grow: 0;
   font-size: 0px;
   position: relative;
 }
 
-.modal-layer-toolbar-item .modal-layer-toolbar-item-icon {
+.modal-layer-toolbar-item > .modal-layer-toolbar-item-icon {
   color: gray;
   padding: 10px;
 }
 
-.modal-layer-toolbar-item .modal-layer-toolbar-item-icon:hover {
+.modal-layer-toolbar-item > .modal-layer-toolbar-item-icon:hover {
   color: white;
   background: rgba(0, 0, 0, .15);
 }
 
-.modal-layer-toolbar-item .modal-layer-toolbar-item-child-list {  
+.modal-layer-toolbar-item > .modal-layer-toolbar-item-child-list {
     top: 0px;
     left: 50%;
     opacity: 0;
@@ -451,7 +435,7 @@
     border-radius: 0px 0px 2px 2px;
 }
 
-.modal-layer-toolbar-item-child-list .modal-layer-toolbar-filter-icon {
+.modal-layer-toolbar-item-child-list > .modal-layer-toolbar-filter-icon {
   color: white;
   padding: 2px 8px;
   border-radius: 2px;
@@ -464,11 +448,11 @@
   user-select: none;
 }
 
-.modal-layer-toolbar-item-child-list .modal-layer-toolbar-filter-icon:hover {
+.modal-layer-toolbar-item-child-list > .modal-layer-toolbar-filter-icon:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
-.modal-layer-toolbar-item:hover .modal-layer-toolbar-item-child-list {
+.modal-layer-toolbar-item:hover > .modal-layer-toolbar-item-child-list {
   display: flex;
   visibility: visible;
   flex-direction: row;
@@ -478,14 +462,14 @@
   animation-fill-mode:forwards;
 }
 
-.modal-layer-skin-default .modal-layer-content {
+.modal-layer-skin-default > .modal-layer-content {
   color: black;
   font-size: 0.9em;
   margin: 24px 20px;
   position: relative;
 }
 
-.modal-layer-skin-default .modal-layer-interaction {
+.modal-layer-skin-default > .modal-layer-interaction {
   margin: 0px 20px;
   text-align: right;
   padding: 0px 0px 10px 0px;
@@ -544,6 +528,18 @@
 .modal-layer-skin-default .modal-layer-progress-bar-progress {
   display: block;
   background: deepskyblue;
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=top] .modal-layer-progress-bar-progress,
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=bottom] .modal-layer-progress-bar-progress {
+  width: 0px;
+  height: 100%;
+}
+
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=left] .modal-layer-progress-bar-progress,
+.modal-layer-skin-default .modal-layer-progress-bar[progress-bar-position=right] .modal-layer-progress-bar-progress {
+  width: 100%;
+  height: 0px;
 }
 
 /*

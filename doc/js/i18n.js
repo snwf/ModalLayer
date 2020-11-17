@@ -5,7 +5,7 @@
 * @Description         国际化
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-12 01:39:45
+* @Last Modified time: 2020-11-17 01:41:08
 */
 
 'use strict';
@@ -181,6 +181,8 @@ message['zh-CN'] = {
   'Specify the image size range, the format is [width, height], which can be pixels, percentages, or decimals.': '指定图片大小范围, 格式为[width, height], 可以为像素或是百分比、小数. ',
   'Hook function in the initialization process of the modal layer.': '模态层初始化过程中的钩子函数.',
   'This attribute controls the width and height of the modal layer.': '该属性控制模态层的宽高',
+  'Specifies the position of the modal layer, expecting an integer array.': '规定模态层的位置, 期待一个整型数组.',
+  'If it is not an array, the elements are automatically repeated to form an array.': '若非数组则自动重复元素组成数组.',
   'If an error message appears, you need to solve it and execute it again.': '若出现错误提示则需要解决后重新执行.',
   'Modal layer title.<br>When this property is set to <code>false</code>, the title bar is not displayed.': '模态层标题.<br>当该属性设置 <code>false</code> 时则不显示标题栏.',
   'The position of the text/icon, can be left, center, right or specific pixel value.': '文本/图标的位置, 可以为left, center, right或具体像素值.',

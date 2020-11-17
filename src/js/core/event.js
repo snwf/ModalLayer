@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-16 23:52:54
+* @Last Modified time: 2020-11-17 20:52:54
 */
 
 /**
@@ -84,7 +84,7 @@ Object.defineProperty(EVENT, 'active', {
 Object.defineProperty(EVENT, 'drag', {
   'enumerable': true,
   'value': function (dEvent) {
-    let status;
+    let status, moveMethod;
     let boundary, parentNode;
     let target, trigger, mousePoint, targetRect;
     let parentComputedStyle, parentComputedStyleObj;
@@ -123,9 +123,14 @@ Object.defineProperty(EVENT, 'drag', {
         parentNode.offsetHeight - parentComputedStyleObj.marginTop - parentComputedStyleObj.marginBottom - parentComputedStyleObj.paddingTop - parentComputedStyleObj.paddingBottom
       ];
 
-      // 若有滚动则加上.
-      targetRect.y += parentNode?.scrollTop ?? 0;
-      targetRect.x += parentNode?.scrollLeft ?? 0;
+      // 若有滚动并且未定义position则加上.
+      if (this['option']['position']) {
+        targetRect.y = target.offsetTop;
+        targetRect.x = target.offsetLeft;
+      } else {
+        targetRect.y += parentNode?.scrollTop ?? 0;
+        targetRect.x += parentNode?.scrollLeft ?? 0;
+      }
     } else {
       // 父窗体边界值(左右边界值, 上下边界值)
       boundary = [0, document.documentElement.clientWidth, 0, document.documentElement.clientHeight];
@@ -183,7 +188,7 @@ Object.defineProperty(EVENT, 'drag', {
       // 取消默认动作，从而避免处理两次
       kEvent.preventDefault();
 
-      targetMoveMethod(...movement);
+      moveMethod(...movement);
     }
     
     // 放开鼠标事件
@@ -247,8 +252,13 @@ Object.defineProperty(EVENT, 'resize', {
     window.getSelection().empty();
 
     // 若有滚动则加上.
-    targetRect.y += parentNode ? parentNode.scrollTop - parentComputedStyleObj.marginTop - parentComputedStyleObj.paddingTop : 0;
-    targetRect.x += parentNode ? parentNode.scrollLeft - parentComputedStyleObj.marginLeft - parentComputedStyleObj.paddingLeft  : 0;
+    if (this['option']['position']) {
+      targetRect.y = target.offsetTop;
+      targetRect.x = target.offsetLeft;
+    } else {
+      targetRect.y += parentNode ? parentNode.scrollTop - parentComputedStyleObj.marginTop - parentComputedStyleObj.paddingTop : 0;
+      targetRect.x += parentNode ? parentNode.scrollLeft - parentComputedStyleObj.marginLeft - parentComputedStyleObj.paddingLeft  : 0;
+    }
     mousemoveEvent = mEvent => {
       let resizePos;
       let moveNow, movementX, movementY;
@@ -275,7 +285,7 @@ Object.defineProperty(EVENT, 'resize', {
       if (resizePos.includes('bottom')) {
         targetRect.height += mEvent.movementY;
         if (
-          targetRect.height > boundary.height ||
+          targetRect.y + targetRect.height > boundary.height ||
           targetRect.height < this['variable']['defaultRect']['height']
         )
           targetRect.height -= mEvent.movementY;
@@ -292,7 +302,7 @@ Object.defineProperty(EVENT, 'resize', {
       if (resizePos.includes('right')) {
         targetRect.width += mEvent.movementX;
         if (
-          targetRect.width > boundary.width ||
+          targetRect.x + targetRect.width > boundary.width ||
           targetRect.width < this['variable']['defaultRect']['width']
         )
           targetRect.width -= mEvent.movementX;

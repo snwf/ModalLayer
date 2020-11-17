@@ -41,6 +41,15 @@
         <td i18n-message="Modal parent container."></td>
       </tr>
       <tr>
+        <td>position</td>
+        <td>array</td>
+        <td><code>null</code></td>
+        <td>
+          <span i18n-message="Specifies the position of the modal layer, expecting an integer array."></span><br>
+          <span i18n-message="If it is not an array, the elements are automatically repeated to form an array."></span>
+        </td>
+      </tr>
+      <tr>
         <td>popupTime</td>
         <td>number</td>
         <td><code>5</code></td>

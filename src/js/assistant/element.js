@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 03:00:48
+* @Last Modified time: 2020-11-17 03:02:10
 */
 
 class ElementAssistant {
@@ -67,13 +67,14 @@ class ElementAssistant {
    *
    * @Author   Wolf
    * @DateTime 2020-09-01T23:29:34+0800
-   * @param    {Element}                 node 节点
-   * @return   {Number}                       高度(像素)
+   * @param    {Element}                 node   节点
+   * @param    {String}                  pseudo 伪类
+   * @return   {Number}                         高度(像素)
    */
-  static getNodeHeight (node) {
+  static getNodeHeight (node, pseudo = null) {
     let computedStyle, marginBottom;
 
-    computedStyle = getComputedStyle(node, null);
+    computedStyle = getComputedStyle(node, pseudo);
     marginBottom = parseInt(computedStyle.marginBottom);
 
     return node.offsetTop + node.offsetHeight + marginBottom;

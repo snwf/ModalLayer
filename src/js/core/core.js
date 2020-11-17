@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-16 23:56:22
+* @Last Modified time: 2020-11-17 20:59:08
 */
 
 class ModalLayer {
@@ -193,6 +193,15 @@ class ModalLayer {
   compatibleOption (options) {
     if (ModalLayer['_assistant']['object']['isString'](options['window']))
       options['window'] = document.querySelector(options['window']);
+
+    if (options['position']) {
+      if (!Array.isArray(options['position'])) {
+        if (window.isNaN(options['position']))
+          options['position'] = null;
+        else
+          options['position'] = [options['position'], options['position']];
+      }
+    }
 
     if (typeof options['mask'] === 'boolean' || ['true', 'false'].includes(options['mask']))
       options['mask'] = {'enable': Boolean(options['mask']), 'clickRemove': true};
@@ -448,36 +457,6 @@ class ModalLayer {
       this['variable']['eventSymbol']['interactionNo'] = ModalLayer['_assistant']['event']['add'](noButton, 'click', null, this['event']['interaction']['no'], this, null, options);
     if (cancelButton)
       this['variable']['eventSymbol']['interactionCancel'] = ModalLayer['_assistant']['event']['add'](cancelButton, 'click', null, this['event']['interaction']['cancel'], this, null, options);
-
-    // if (this['option']['mask']['enable'] && this['option']['mask']['clickRemove'])
-      // this['variable']['nodes']['mask'].addEventListener('click', this['event']['clickMask'] = this['event']['clickMask'].bind(this));
-
-    // if (this['option']['drag']['enable'])
-      // this['variable']['nodes']['container'].querySelector('.modal-layer-title').addEventListener('mousedown', this['event']['drag'] = this['event']['drag'].bind(this));
-
-    // if (this['option']['resize']['enable'])
-      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-resize-bar', 'mousedown', this['event']['resize'] = this['event']['resize'].bind(this));
-
-    // this['variable']['nodes']['container'].addEventListener('mousedown', this['event']['active'] = this['event']['active'].bind(this));
-
-    // if (this['event']['action']['close'] instanceof Function)
-      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-close', 'click', this['event']['action']['close'], this);
-
-    // if (this['event']['action']['expand'] instanceof Function)
-      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-expand', 'click', this['event']['action']['expand'], this);
-
-    // if (this['event']['action']['minimize'] instanceof Function)
-      // ModalLayer['_assistant']['element']['eventTarget'](this['variable']['nodes']['container'], '.modal-layer-action-btn-minimize', 'click', this['event']['action']['minimize'], this);
-
-    // if (this['event']['interaction']['ok'] && okButton)
-      // okButton.addEventListener('click', this['event']['interaction_ok'] = this['event']['interaction']['ok'].bind(okButton, this));
-
-    // if (this['event']['interaction']['no'] && noButton)
-      // noButton.addEventListener('click', this['event']['interaction_no'] = this['event']['interaction']['no'].bind(noButton, this));
-
-    // if (this['event']['interaction']['cancel'] && cancelButton)
-      // cancelButton.addEventListener('click', this['event']['interaction_cancel'] = this['event']['interaction']['cancel'].bind(cancelButton, this));
-
   }
 
   /**
@@ -588,7 +567,7 @@ class ModalLayer {
     container.style.width = defaultArea[0] + 'px';
 
     for (let i = 0; i < modalChildNodes.length; i++)
-      defaultArea[1] = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
+      defaultArea[1] = getComputedStyle(modalChildNodes[i]).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
     container.style.height = defaultArea[1] + 'px';
 
     // 记录初始化后的最小值
@@ -646,8 +625,8 @@ class ModalLayer {
         height: parentNode ? parentNode.clientHeight : window.innerHeight
       }
 
-      posX = ModalLayer['_assistant']['number']['chain'](parent.width).subtract(width).divide(2).add(parent.scrollX).floor().done();
-      posY = ModalLayer['_assistant']['number']['chain'](parent.height).subtract(height).divide(2).add(parent.scrollY).floor().done();
+      posX = ModalLayer['_assistant']['number']['chain'](parent.width)['subtract'](width)['divide'](2)['add'](parent.scrollX).floor().done();
+      posY = ModalLayer['_assistant']['number']['chain'](parent.height)['subtract'](height)['divide'](2)['add'](parent.scrollY).floor().done();
 
       // 若父容器存在则直接计算当前屏幕的中心位置.
       // 否则需要将滚动距离列入考虑.
@@ -797,7 +776,7 @@ class ModalLayer {
       queueNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue']])[0];
       queueNode.classList.add(this['option']['ui'], `modal-layer-skin-${this['option']['skin']}`);
       // 模态层最小化还原
-      ModalLayer['_variable']['minimizeQueueEvent'] = ModalLayer['_assistant']['event']['add'](queueNode, 'click', '.modal-layer-minimize-queue-item', this['event']['minimizeRevert'], null, null, false);
+      ModalLayer['_assistant']['cache']['set']('minimizeQueueEvent', ModalLayer['_assistant']['event']['add'](queueNode, 'click', '.modal-layer-minimize-queue-item', this['event']['minimizeRevert'], null, null, false));
       document.body.insertAdjacentElement('beforeend', queueNode);
     }
 
@@ -850,7 +829,7 @@ class ModalLayer {
         queueItemNode.remove();
         if (ModalLayer['_minimizeQueue'].length <= 0) {
           queueNode.remove();
-          ModalLayer['_assistant']['event']['remove'](ModalLayer['_variable']['minimizeQueueEvent']);
+          ModalLayer['_assistant']['cache']['has']('minimizeQueueEvent') && ModalLayer['_assistant']['event']['remove'](ModalLayer['_assistant']['cache']['get']('minimizeQueueEvent'));
         }
         resolve();
       }
@@ -948,38 +927,6 @@ class ModalLayer {
 
     // 移除所有事件
     Object.values(this['variable']['eventSymbol']).forEach(symbol => ModalLayer['_assistant']['event']['remove'](symbol));
-
-    okButton = nodes['container'].querySelector('.modal-layer-interaction-btn-ok');
-    noButton = nodes['container'].querySelector('.modal-layer-interaction-btn-no');
-    cancelButton = nodes['container'].querySelector('.modal-layer-interaction-btn-cancel');
-
-    // 移除遮罩层点击事件
-    // if (this['option']['mask']['enable'] && this['option']['mask']['clickRemove'])
-      // nodes['mask'].removeEventListener('click', this['event']['clickMask']);
-
-    // 移除模态层拖拽事件
-    // if (this['option']['drag']['enable'])
-      // nodes['container'].querySelector('.modal-layer-title').removeEventListener('mousedown', this['event']['drag']);
-
-    // 移除模态层伸缩事件
-    // if (this['option']['resize']['enable'])
-    //   nodes['container'].removeEventListener('mousedown', this['event']['resize']);
-
-    // 移除活动层事件
-    nodes['container'].removeEventListener('mousedown', this['event']['active']);
-    
-    // 移除action事件
-    nodes['container'].removeEventListener('click', this['event']['action']['close']);
-    nodes['container'].removeEventListener('click', this['event']['action']['expand']);
-    nodes['container'].removeEventListener('click', this['event']['action']['minimize']);
-
-    // 移除interaction事件
-    okButton && okButton.removeEventListener('click', this['event']['interaction_ok']);
-    noButton && noButton.removeEventListener('click', this['event']['interaction_no']);
-    cancelButton && cancelButton.removeEventListener('click', this['event']['interaction_cancel']);
-
-    // 移除监听模态层最小化还原事件
-    document.removeEventListener('click', this['event']['minimizeRevert']);
   }
 
   /**
@@ -1011,7 +958,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1040,7 +987,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1069,7 +1016,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1098,7 +1045,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1127,7 +1074,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1162,7 +1109,7 @@ class ModalLayer {
 
     // 初始化模态层位置
     .then(() => {
-      layer.positioning();
+      layer['positioning']();
       layer['variable']['image']['layer'].positioning();
     })
 
@@ -1193,7 +1140,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
