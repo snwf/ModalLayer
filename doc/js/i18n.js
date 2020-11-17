@@ -5,7 +5,7 @@
 * @Description         国际化
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-17 01:41:08
+* @Last Modified time: 2020-11-18 01:20:58
 */
 
 'use strict';
@@ -26,6 +26,7 @@ message['en'] = {
   'start': 'Start',
   'light': 'Light',
   'event': 'Event',
+  'object': 'Object',
   'search': 'Search',
   'method': 'Method',
   'try it': 'Try it',
@@ -66,6 +67,7 @@ message['zh-CN'] = {
   'event': '事件',
   'name': '名称',
   'type': '类型',
+  'object': '对象',
   'method': '方法',
   'search': '检索',
   'common': '公共',
@@ -126,6 +128,7 @@ message['zh-CN'] = {
   'Expand button text description.': '全屏按钮文本描述',
   'Mirror filter settings.': '镜像滤镜设置.',
   'Grayscale filter settings.': '灰度化滤镜设置.',
+  'Can be the following values:': '可以为如下值:',
   'Gaussian blur filter settings.': '高斯模糊滤镜设置.',
   'Minimize button text description.': '最小化按钮文本描述',
   'Ok button text description.': '确定按钮文本描述',
@@ -169,6 +172,8 @@ message['zh-CN'] = {
   'Automatically set index for recording modal layer.': '自动设置的用于记录模态层索引.',
   'Specifies whether to display the border around the iframe.': '规定是否显示 iframe 周围的边框',
   'Transparency at the beginning and end of transition animation.': '过渡动画开始和结束时的透明度.',
+  'If it is <code>null</code>, there is no transition animation.': '若为 <code>null</code> 则没有过渡动画.',
+  'Expect an array, the elements in the array can be the following values:': '期望一个数组, 该数组中的元素可以为如下值:',
   'Or a <a href="//developer.mozilla.org/docs/Web/API/FileList" class="code" target="_blank">FileList</a> object.': '或是一个 <a href="//developer.mozilla.org/docs/Web/API/FileList" class="code" target="_blank">FileList</a> 对象.',
   'Call this method after configuration initialization before inserting the node.': '配置初始化后插入节点前调用该方法.',
   'The zoom ratio at the beginning and end of the transition animation.': '过渡动画开始和结束时的缩放比例.',

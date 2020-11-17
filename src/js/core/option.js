@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-17 01:42:38
+* @Last Modified time: 2020-11-18 01:17:55
 */
 
 const OPTION = Object.create(null);
@@ -149,6 +149,7 @@ Object.defineProperty(OPTION, 'common', {
     'transition': { // 过渡动画设置
       'time': 0.2, // 持续时间
       'opacity': 0, // 开始和结束时的透明度
+      'animation': 0, // 动画名称或Animation对象或预设方案
       'scale': [0.45, 0.45] // 开始和结束时的缩放比例
     },
     'mask': { // 遮罩层设置

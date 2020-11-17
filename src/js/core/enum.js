@@ -5,7 +5,7 @@
 * @Description         枚举
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-27 02:17:36
+* @Last Modified time: 2020-11-18 00:51:30
 */
 
 const ENUM = Object.create(null);
@@ -108,5 +108,22 @@ Object.defineProperty(ENUM, 'BROWSER_STORAGE', {
     'SESSIONSTORAGE': 'sessionStorage'
   }
 });
+
+/**
+ * 预设过渡动画
+ *
+ * @type {Object}
+ */
+Object.defineProperty(ENUM, 'TRANSITION_ANIMATION_PRESET', {
+  'enumerable': true,
+  'value': {
+    'CENTER_SCALE': 0,
+    'BOTTOM_TO_TOP': 1,
+    'TOP_TO_BOTTOM': 2,
+    'LEFT_TO_RIGHT': 3,
+    'RIGHT_TO_LEFT': 4,
+    'FLIP': 5,
+  }
+})
 
 Object.freeze(ENUM);

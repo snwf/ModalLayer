@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-17 20:52:54
+* @Last Modified time: 2020-11-18 02:22:57
 */
 
 /**
@@ -139,31 +139,34 @@ Object.defineProperty(EVENT, 'drag', {
     // 取消文字选中
     window.getSelection().empty();
 
+    // 统一移动方法
+    moveMethod = (movementX, movementY) => {
+      targetRect.x += movementX;
+      targetRect.y += movementY;
+
+      if (!this['option']['drag']['overflow']) {
+        if (
+          targetRect.x < boundary[0] ||
+          targetRect.x > boundary[1] - targetRect.width
+        )
+          targetRect.x -= movementX;
+
+        if (
+          targetRect.y < boundary[2] ||
+          targetRect.y > boundary[3] - targetRect.height
+        )
+          targetRect.y -= movementY;
+      }
+
+      this.resizeBy(targetRect.x, targetRect.y, targetRect.width, targetRect.height);
+
+      this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
+    };
+
     // 鼠标移动事件
     mousemoveEvent = e => {
       mEvent = e ?? window.event;
-      if (mEvent.buttons === 1) {
-        targetRect.x += mEvent.movementX;
-        targetRect.y += mEvent.movementY;
-
-        if (!this['option']['drag']['overflow']) {
-          if (
-            targetRect.x < boundary[0] ||
-            targetRect.x > boundary[1] - targetRect.width
-          )
-            targetRect.x -= mEvent.movementX;
-
-          if (
-            targetRect.y < boundary[2] ||
-            targetRect.y > boundary[3] - targetRect.height
-          )
-            targetRect.y -= mEvent.movementY;
-        }
-
-        this.resizeBy(targetRect.x, targetRect.y, targetRect.width, targetRect.height);
-
-        this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
-      }
+      if (mEvent.buttons === 1) moveMethod(mEvent.movementX, mEvent.movementY);
     };
 
     // 方向键调整
