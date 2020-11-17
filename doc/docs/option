@@ -275,6 +275,24 @@
         <td><code>[0.45, 0.45]</code></td>
         <td i18n-message="The zoom ratio at the beginning and end of the transition animation."></td>
       </tr>
+      <tr>
+        <td>animation</td>
+        <td>
+          <span>number</span><br>
+          <span>string</span><br>
+          <span>Animation</span>
+        </td>
+        <td><code>0</code></td>
+        <td>
+          <span i18n-message="Can be the following values:"></span>
+          <ul>
+            <li><a href="#" class="code">ModalLayer._enum.TRANSITION_ANIMATION_PRESET</a></li>
+            <li><span class="code">CSS Animation</span> <span i18n-message="name"></span></li>
+            <li><a class="code" href="//developer.mozilla.org/docs/Web/API/Animation/Animation" target="_blank">Animation</a> <span i18n-message="object"></span></li>
+          </ul>
+          <span i18n-message="If it is <code>null</code>, there is no transition animation."></span>
+        </td>
+      </tr>
     </tbody>
   </table>
   <h3 id="content-option-mask">option.mask</h3>

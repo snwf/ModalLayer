@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 01:18:08
 * @Description         一些常用的窗体的封装
 *
-* @Last Modified by:   Makeit
-* @Last Modified time: 2020-11-18 00:57:00
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-11-18 02:42:28
 */
 
 class ModalLayer {
@@ -191,9 +191,11 @@ class ModalLayer {
    * @DateTime 2020-09-04T14:14:23+0800
    */
   compatibleOption (options) {
+    // 父容器
     if (ModalLayer['_assistant']['object']['isString'](options['window']))
       options['window'] = document.querySelector(options['window']);
 
+    // 定位配置
     if (options['position']) {
       if (!Array.isArray(options['position'])) {
         if (window.isNaN(options['position']))
@@ -203,9 +205,11 @@ class ModalLayer {
       }
     }
 
+    // 遮罩层
     if (typeof options['mask'] === 'boolean' || ['true', 'false'].includes(options['mask']))
       options['mask'] = {'enable': Boolean(options['mask']), 'clickRemove': true};
 
+    // 内容
     if (!options['content'] || ModalLayer['_assistant']['object']['isEmpty'](options['content']['value']))
       options['content'] = {'value': options['content'], 'fullContainer': options['content']?.['fullContainer'] ?? false};
   }
@@ -230,7 +234,16 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T12:22:48+0800
    */
-  checkOption () {}
+  checkOption () {
+    // 检查过渡动画是否正确设置
+    if (window.isNaN(this['option']['transition']['animation'])) {
+      if (!ModalLayer['_assistant']['object']['isString'](this['option']['transition']['animation']) && !(this['option']['transition']['animation'] instanceof Animation))
+        throw Error('Expects a css animation name or Animation object.');
+    } else {
+      if (!Object.values(ModalLayer['_enum']['TRANSITION_ANIMATION_PRESET']).includes(this['option']['transition']['animation']))
+        throw Error('No preset animation found.');
+    }
+  }
 
   /**
    * 初始化局部变量
@@ -337,14 +350,58 @@ class ModalLayer {
    */
   initNodeFinally () {
     let ui, skinCls, hideCls, showCls, indexCls;
-    let opacityAnimationCss, transformAnimationCss;
-    let opacityAnimationName, transformAnimationName;
-    let opacityAnimationChange, transformAnimationChange;
 
     ui = this['option']['ui'];
     hideCls = 'modal-layer-hide';
     skinCls = 'modal-layer-skin-' + this['option']['skin'];
     indexCls = 'modal-layer-index-' + this['option']['index'];
+
+    // 统一设置
+    Object.keys(this['variable']['nodes']).forEach(function (key) {
+      let allNodes = ModalLayer['_assistant']['element']['getAllElement'](this['variable']['nodes'][key]);
+
+      // 设置样式类
+      for (let i = 0; i < allNodes.length; i++) {
+        let classList = allNodes[i].classList;
+        if (!classList.contains(ui));
+          classList.add(ui);
+      }
+
+      // 设置默认class
+      // 设置皮肤class
+      // 设置索引class
+      // 默认隐藏
+      this['variable']['nodes'][key].className = ui + ' ' + skinCls + ' ' + indexCls + ' ' + this['variable']['nodes'][key].className.trim() + ' ' + hideCls;
+    }, this);
+  }
+
+  /**
+   * 设置过渡动画
+   *
+   * @Author    wolf
+   * @Datetime  2020-11-18T02:37:12+0800
+   */
+  initAnimation () {
+    let animationPreset;
+    let opacityAnimationCss, transformAnimationCss;
+    let opacityAnimationName, transformAnimationName;
+    let opacityAnimationChange, transformAnimationChange;
+
+    // animationPreset = [
+    //   {
+    //     'keyframes': [
+    //       {},
+    //       {}
+    //     ],
+    //     'options': {
+          
+    //     }
+    //   },
+    //   {},
+    //   {},
+    //   {},
+    //   {}
+    // ];
 
     // 构造css代码准备工作
     opacityAnimationName = 'transition-opacity-' + (this['option']['transition']['opacity'] * 100) + '-animation';
@@ -376,24 +433,6 @@ class ModalLayer {
       ModalLayer['_assistant']['css']['addCss'](transformAnimationName, transformAnimationCss);
       ModalLayer['_assistant']['css']['addCss'](transformAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](transformAnimationName + '-reverse', {'from': transformAnimationChange.to, 'to': transformAnimationChange.from}));
     }
-
-    // 统一设置
-    Object.keys(this['variable']['nodes']).forEach(function (key) {
-      let allNodes = ModalLayer['_assistant']['element']['getAllElement'](this['variable']['nodes'][key]);
-
-      // 设置样式类
-      for (let i = 0; i < allNodes.length; i++) {
-        let classList = allNodes[i].classList;
-        if (!classList.contains(ui));
-          classList.add(ui);
-      }
-
-      // 设置默认class
-      // 设置皮肤class
-      // 设置索引class
-      // 默认隐藏
-      this['variable']['nodes'][key].className = ui + ' ' + skinCls + ' ' + indexCls + ' ' + this['variable']['nodes'][key].className.trim() + ' ' + hideCls;
-    }, this);
   }
 
   /**
@@ -510,6 +549,9 @@ class ModalLayer {
 
       // 构造节点后续处理
       this['initNodeFinally']();
+
+      // 设置过渡动画
+      this['initAnimation']();
 
       // 初始化事件
       this['initEvent']();
