@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-17 02:37:35
+* @Last Modified time: 2020-11-17 20:59:08
 */
 
 class ModalLayer {
@@ -567,7 +567,7 @@ class ModalLayer {
     container.style.width = defaultArea[0] + 'px';
 
     for (let i = 0; i < modalChildNodes.length; i++)
-      defaultArea[1] = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
+      defaultArea[1] = getComputedStyle(modalChildNodes[i]).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
     container.style.height = defaultArea[1] + 'px';
 
     // 记录初始化后的最小值
@@ -625,8 +625,8 @@ class ModalLayer {
         height: parentNode ? parentNode.clientHeight : window.innerHeight
       }
 
-      posX = ModalLayer['_assistant']['number']['chain'](parent.width).subtract(width).divide(2).add(parent.scrollX).floor().done();
-      posY = ModalLayer['_assistant']['number']['chain'](parent.height).subtract(height).divide(2).add(parent.scrollY).floor().done();
+      posX = ModalLayer['_assistant']['number']['chain'](parent.width)['subtract'](width)['divide'](2)['add'](parent.scrollX).floor().done();
+      posY = ModalLayer['_assistant']['number']['chain'](parent.height)['subtract'](height)['divide'](2)['add'](parent.scrollY).floor().done();
 
       // 若父容器存在则直接计算当前屏幕的中心位置.
       // 否则需要将滚动距离列入考虑.
@@ -958,7 +958,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -987,7 +987,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1016,7 +1016,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1045,7 +1045,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1074,7 +1074,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();
@@ -1109,7 +1109,7 @@ class ModalLayer {
 
     // 初始化模态层位置
     .then(() => {
-      layer.positioning();
+      layer['positioning']();
       layer['variable']['image']['layer'].positioning();
     })
 
@@ -1140,7 +1140,7 @@ class ModalLayer {
     layer.resize();
 
     // 初始化模态层位置
-    layer.positioning();
+    layer['positioning']();
 
     // 显示
     layer.show();

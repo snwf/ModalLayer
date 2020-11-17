@@ -45,45 +45,48 @@
   <script src="../../src/js/storage/abstract.js"></script>
   <script src="../../src/js/storage/sync-storage.js"></script>
   <style>
-    body {
-      /*height: 9600px;*/
+    #test-button-container {
+      width: 160px;
+      margin: 200px auto;
+      text-align: center;
+    }
+    main {
+      height: 9600px;
       position: relative;
     }
-    #test-button-container {
-      top: 50%;
-      left: 0px;
-      right: 0px;
-      width: 145px;
-      margin: 0px auto;
-      position: absolute;
-      text-align: center;
-      transform: translateY(-50%);
-    }
-
     #test-button-container button {
       width: 145px;
       margin: 5px 0px;
       padding: 10px 0px;
+    }
+    #test-box {
+      top: 0px;
+      left: 0px;
+      width: 500px;
+      height: 500px;
+      position: absolute;
     }
   </style>
 </head>
 <body>
   <!-- <img id="img" src="./01.jpg" width="500" alt="" style="display: none;"> -->
   <!-- <canvas id="border" width="480" height="360" style="margin: 50px"></canvas> -->
-  <div id="test-button-container">
-    <button id="loading-button" type="button">测试loading</button>
-    <button id="msg-button" type="button">测试msg</button>
-    <button id="alert-button" type="button">测试alert</button>
-    <button id="confirm-button" type="button">测试confirm</button>
-    <button id="prompt-button" type="button">测试prompt</button>
-    <button id="page-button-1" type="button">测试page</button>
-    <button id="page-button-2" type="button">测试page</button>
-    <button id="image-button" type="button">测试image</button>
-    <button id="delete-all-ModalLayer">删除所有模态层</button>
-    <button id="delete-all-cache">清空所有缓存(ModalLayer产生的)</button>
-    <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
-  </div>
-  <div id="test-box" style="width: 500px; height: 500px; position: relative;"></div>
+  <main>
+    <div id="test-button-container">
+      <button id="loading-button" type="button">测试loading</button>
+      <button id="msg-button" type="button">测试msg</button>
+      <button id="alert-button" type="button">测试alert</button>
+      <button id="confirm-button" type="button">测试confirm</button>
+      <button id="prompt-button" type="button">测试prompt</button>
+      <button id="page-button-1" type="button">测试page</button>
+      <button id="page-button-2" type="button">测试page</button>
+      <button id="image-button" type="button">测试image</button>
+      <button id="delete-all-ModalLayer">删除所有模态层</button>
+      <button id="delete-all-cache">清空所有缓存(ModalLayer产生的)</button>
+      <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
+    </div>
+    <div id="test-box"></div>
+  </main>
 </body>
 <script>
   // 绘制边框
