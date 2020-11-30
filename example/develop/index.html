@@ -23,6 +23,7 @@
   <script src="../../src/js/layer/confirm.js"></script>
   <script src="../../src/js/layer/message.js"></script>
   <script src="../../src/js/layer/loading.js"></script>
+  <script src="../../src/js/layer/tips.js"></script>
 
   <script src="../../src/js/assistant/cache.js"></script>
   <script src="../../src/js/assistant/event.js"></script>
@@ -81,6 +82,7 @@
       <button id="page-button-1" type="button">测试page</button>
       <button id="page-button-2" type="button">测试page</button>
       <button id="image-button" type="button">测试image</button>
+      <button id="tips" type="button">tips层</button>
       <button id="delete-all-ModalLayer">删除所有模态层</button>
       <button id="delete-all-cache">清空所有缓存(ModalLayer产生的)</button>
       <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
@@ -119,7 +121,7 @@
   // 测试msg
   document.querySelector('#msg-button').onclick = function () {
     let option = {
-      popupTime: 5,
+      popupTime: 0,
       hook: {
         initStart: function () {
           // 检查之前老旧实例如果存在则销毁
@@ -428,5 +430,29 @@
 // };
 // var per = PerformanceAssistant.functionMeasure(ModalLayer.image, [testOption], 30);
 // var report = PerformanceAssistant.getAnalysis(per);
+// 测试tips
+document.querySelector('#tips').onclick = function () {
+    
+    let option = {
+      popupTime: 0,
+      layer:{
+        location: '#tips',
+        position: 3
+      },
+      progress: {
+        enable: true,
+        color: 'red',
+        position: 'top',
+      },
+      content: '<span>Hi 我是tips层</span>'
+    };
+
+    ModalLayer.tips(option, function (error) {
+      console.error(error);
+    });
+    // ModalLayer.msg('测试一下', function (error) {
+    //   console.error(error);
+    // });
+  }
 </script>
 </html>

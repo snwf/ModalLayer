@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 01:18:08
 * @Description         一些常用的窗体的封装
 *
-* @Last Modified by:   wolf
-* @Last Modified time: 2020-11-17 20:59:08
+* @Last Modified by:   Makeit
+* @Last Modified time: 2020-11-18 00:57:00
 */
 
 class ModalLayer {
@@ -179,7 +179,7 @@ class ModalLayer {
 
     // 记录当前实例
     ModalLayer['_instance'][options['index']] = this;
-    
+
     // 初始化配置
     this['option'] = ModalLayer['_assistant']['object']['merge'](options, ModalLayer['_option']['common']);
   }
@@ -437,7 +437,7 @@ class ModalLayer {
 
     // 当点击模态层时如果有多个模态层为显示状态则点击的对象置于最上层
     this['variable']['eventSymbol']['active'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'mousedown', null, this['event']['active'], this, null, options);
-    
+
     // action 由于action使用了Font Awesome, 最好使用事件委托
     if (this['event']['action']['close'] instanceof Function)
       this['variable']['eventSymbol']['actionClose'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-close', this['event']['action']['close'], this, null, options);
@@ -445,12 +445,12 @@ class ModalLayer {
       this['variable']['eventSymbol']['actionExpand'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-expand', this['event']['action']['expand'], this, null, options);
     if (this['event']['action']['minimize'] instanceof Function)
       this['variable']['eventSymbol']['actionMinimize'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-minimize', this['event']['action']['minimize'], this, null, options);
-    
+
     // interaction 默认只绑定cancel
     okButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-ok');
     noButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-no');
     cancelButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-cancel');
-    
+
     if (this['event']['interaction']['ok'] && okButton)
       this['variable']['eventSymbol']['interactionOk'] = ModalLayer['_assistant']['event']['add'](okButton, 'click', null, this['event']['interaction']['ok'], this, null, options);
     if (this['event']['interaction']['no'] && noButton)
@@ -677,7 +677,7 @@ class ModalLayer {
         // 自动关闭模态层
         if (this['option']['popupTime'] > 0)
           this['event']['autoShutdown'].call(this);
-        
+
         // 只执行一次.
         nodes['container']['onanimationend'] = null;
 
@@ -733,7 +733,7 @@ class ModalLayer {
           if (nodes[key].classList.contains(showCls))
             nodes[key].classList.replace(showCls, hideCls);
         });
-        
+
         // 更改当前状态
         this['setStatus']('hide');
 
@@ -849,7 +849,7 @@ class ModalLayer {
    */
   remove () {
     let nodes, status;
-    
+
     status = this['status'];
     nodes = this['variable']['nodes'];
 
@@ -964,6 +964,40 @@ class ModalLayer {
     layer.show();
 
     return layer;
+  }
+
+  /**
+   * tips层
+   *
+   * @param   {Mixed}      options 模态层设置
+   * @param   {Function}   reject  当出现错误时调用方法
+   *
+   * @return  {ModalLayer}         模态层实例
+   */
+  static tips(options,reject){
+    let layer = null;
+    if(typeof options === 'string')
+      options = {
+        'content': options,
+        'type': ModalLayer['_enum']['TYPE']['TIPS']
+      }
+    else
+      options.type = ModalLayer['_enum']['TYPE']['TIPS'];
+
+    // 实例化
+    layer = new (ModalLayer['_achieve'].get('tips'))(options,reject);
+
+    // 重绘模态层大小
+    layer.resize();
+
+    //初始化模态层定位
+    layer['positioning']();
+
+    //显示
+    layer.show();
+
+    return layer;
+
   }
 
   /**

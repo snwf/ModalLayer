@@ -240,6 +240,15 @@ class ElementAssistant {
 
     return node;
   }
+  /**
+   * 获取元素的位置
+   *
+   * @Author   makeit66
+   * @DateTime 
+   * @param    {node}                           node
+   * @return   {Element}                        数组
+   */
+
 }
 
 Object.defineProperty(ModalLayer['_assistant'], 'element', {value: ElementAssistant});

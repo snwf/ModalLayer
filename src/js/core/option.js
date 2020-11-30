@@ -31,9 +31,10 @@ Object.defineProperty(OPTION, 'page', {
  * 
  * @type {object}
  */
-Object.defineProperty(OPTION,'tips',{
+Object.defineProperty(OPTION, 'tips', {
   'value': {
-    'location': null, // 获取用户绑定元素位置
+    'location': null, // 获取用户绑定元素
+    'position': null, //  设置tips的位置 
     }
 });
 

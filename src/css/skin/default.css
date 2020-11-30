@@ -103,6 +103,40 @@
   cursor: pointer;
 }
 
+.modal-layer-skin-default[modal-layer-type=tips] {
+  background: rgba(7, 7, 7, 0.5);
+  color: white;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon {
+  position: absolute;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=left] {
+  top: 0px;
+  bottom: 0px;
+  margin: auto;
+  right: 0px;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=right] {
+  top: 0px;
+  bottom: 0px;
+  margin: auto;
+  left: 0px;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=down] {
+  top: 0px;
+  left: 0px;
+  margin: auto;
+  right: 0px;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=up] {
+  bottom: 0px;
+  left: 0px;
+  margin: auto;
+  right: 0px;
+}
+
+
+
 .modal-layer-skin-default[modal-layer-type=loading] > .modal-layer-content {
   height: 100%;
 }

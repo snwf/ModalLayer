@@ -26,6 +26,23 @@ Object.defineProperty(ENUM, 'ARROW', {
 });
 
 /**
+ * 位置(Keycode)
+ *
+ * @type {Object}
+ */
+Object.defineProperty(ENUM, 'TIPS_POSITION', {
+  'enumerable': true,
+  'value': {
+    'LEFT': 1,
+    'UP': 0,
+    'RIGHT': 2,
+    'DOWN': 3
+  }
+});
+
+
+
+/**
  * 方位
  *
  * @type {Object}
