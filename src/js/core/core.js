@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 03:14:55
+* @Last Modified time: 2020-12-01 03:35:40
 */
 
 class ModalLayer {
@@ -210,7 +210,7 @@ class ModalLayer {
       options['mask'] = {'enable': Boolean(options['mask']), 'clickRemove': true};
 
     // 内容
-    if (!options['content'] || ModalLayer['_assistant']['object']['isEmpty'](options['content']['value']))
+    if (!ModalLayer['_assistant']['object']['isOnlyObject'](options['content']))
       options['content'] = {'value': options['content'], 'fullContainer': options['content']?.['fullContainer'] ?? false};
   }
 
@@ -542,6 +542,9 @@ class ModalLayer {
 
       this['type'] = options['type'];
       this['status'] = ModalLayer['_enum']['STATUS']['HIDE'];
+
+      // // 创建配置副本
+      // options = ModalLayer['_assistant']['object']['deepCopy'](options);
 
       // 配置兼容性处理
       this['compatibleOption'](options);
