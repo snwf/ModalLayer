@@ -118,6 +118,11 @@
   document.querySelector('#msg-button').onclick = function () {
     let option = {
       popupTime: 0,
+      transition: {
+        duration: .5,
+        easing: 'linear',
+        animation: [{opacity: 0},{opacity: 1}],
+      },
       hook: {
         initStart: function () {
           // 检查之前老旧实例如果存在则销毁

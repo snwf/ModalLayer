@@ -5,7 +5,7 @@
 * @Description         国际化
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-18 01:20:58
+* @Last Modified time: 2020-12-01 02:58:24
 */
 
 'use strict';
@@ -152,6 +152,7 @@ message['zh-CN'] = {
   'Specifies whether to enable the filter.': '规定是否启用滤镜.',
   'Specifies whether to enable the toolbar.': '规定是否启用工具栏.',
   'Whether to open the progress bar display.': '是否开启进度条显示.',
+  'The rate of the animation\'s change over time.': '动画随时间变化的速率.',
   'Specifies whether to turn on the cutting tool.': '规定是否开启裁剪工具.',
   'This attribute can only have the following values:': '该属性只能为以下值:',
   'Adjust the modal layer size event settings.': '调整模态层大小事件设置.',

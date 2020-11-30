@@ -258,36 +258,44 @@
     </thead>
     <tbody>
       <tr>
-        <td>time</td>
+        <td>duration</td>
         <td>number</td>
         <td><code>0.2</code></td>
         <td i18n-message="Transition animation duration."></td>
       </tr>
       <tr>
-        <td>opacity</td>
-        <td>number</td>
-        <td><code>0</code></td>
-        <td i18n-message="Transparency at the beginning and end of transition animation."></td>
-      </tr>
-      <tr>
-        <td>scale</td>
-        <td>array</td>
-        <td><code>[0.45, 0.45]</code></td>
-        <td i18n-message="The zoom ratio at the beginning and end of the transition animation."></td>
+        <td>easing</td>
+        <td>string</td>
+        <td><code>ease</code></td>
+        <td>
+          <span i18n-message="The rate of the animation's change over time."></span>
+          <ul>
+            <li>linear</li>
+            <li>ease</li>
+            <li>ease-in</li>
+            <li>ease-out</li>
+            <li>ease-in-out</li>
+            <li>step-start</li>
+            <li>step-end</li>
+            <li>steps(<integer>[, [ start | end ] ]?)</li>
+            <li>cubic-bezier(&lt;number&gt;, &lt;number&gt;, &lt;number&gt;, &lt;number&gt;)</li>
+          </ul>
+          <a href="https://developer.mozilla.org/docs/Web/API/EffectTiming/easing" target="_blank" class="code">easing</a>
+        </td>
       </tr>
       <tr>
         <td>animation</td>
         <td>
           <span>number</span><br>
-          <span>string</span><br>
-          <span>Animation</span>
+          <span>array</span><br>
+          <span><a class="code" href="//developer.mozilla.org/docs/Web/API/Animation/Animation" target="_blank">Animation</a></span><br>
         </td>
         <td><code>0</code></td>
         <td>
           <span i18n-message="Can be the following values:"></span>
           <ul>
             <li><a href="#" class="code">ModalLayer._enum.TRANSITION_ANIMATION_PRESET</a></li>
-            <li><span class="code">CSS Animation</span> <span i18n-message="name"></span></li>
+            <li><code>[{opacity: 0}, {opacity: 1}]</code></li>
             <li><a class="code" href="//developer.mozilla.org/docs/Web/API/Animation/Animation" target="_blank">Animation</a> <span i18n-message="object"></span></li>
           </ul>
           <span i18n-message="If it is <code>null</code>, there is no transition animation."></span>

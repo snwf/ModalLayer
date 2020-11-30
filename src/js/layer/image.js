@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-16 04:00:35
+* @Last Modified time: 2020-12-01 02:52:43
 */
 
 class ImageLayer extends ModalLayer {
@@ -163,10 +163,10 @@ class ImageLayer extends ModalLayer {
     if (
       !this['option']['layer']['size'] && 
       (
-        window.isNaN(parseInt(this['option']['layer']['sizeRange']['min'][0])) ||
-        window.isNaN(parseInt(this['option']['layer']['sizeRange']['min'][1])) ||
-        window.isNaN(parseInt(this['option']['layer']['sizeRange']['max'][0])) ||
-        window.isNaN(parseInt(this['option']['layer']['sizeRange']['max'][1]))
+        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['min'][0])) ||
+        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['min'][1])) ||
+        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['max'][0])) ||
+        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['max'][1]))
       )
     )
       throw new Error('layer.sizeRange does not meet expectations.');

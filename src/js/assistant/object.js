@@ -5,7 +5,7 @@
 * @Description         对象助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 23:28:35
+* @Last Modified time: 2020-12-01 02:34:18
 */
 
 class ObjectAssistant {
@@ -244,8 +244,8 @@ class ObjectAssistant {
         let nCover;
         [_k, _v] = [_key[i], _val[i]];
         v = val[key.indexOf(_k)];
-        nCover = ObjectAssistant['isEmpty'](v);
-        if ((ObjectAssistant['isEmpty'](v) || ObjectAssistant['isCollection'](v)) && ObjectAssistant['isCollection'](_v)) {
+        nCover = v === undefined;
+        if ((nCover || ObjectAssistant['isCollection'](v)) && ObjectAssistant['isCollection'](_v)) {
           let newEle = [];
           prevObj[_k] = (nCover ? _v.constructor : v.constructor)?.() ?? Object.create(null);
           newEle[1] = [Object.keys(_v), Object.values(_v)];

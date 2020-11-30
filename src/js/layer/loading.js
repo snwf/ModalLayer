@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-16 03:33:36
+* @Last Modified time: 2020-12-01 02:53:29
 */
 
 class LoadingLayer extends ModalLayer {
@@ -54,7 +54,7 @@ class LoadingLayer extends ModalLayer {
 
       for (let i = 0; i < 2; i++) {
         options['layer']['position'][i] = positionMap[options['layer']['position'][i]] ?? options['layer']['position'][i];
-        options['layer']['position'][i] = window.isNaN(options['layer']['position'][i]) ? options['layer']['position'][i] : options['layer']['position'][i] + 'px'
+        options['layer']['position'][i] = Number.isInteger(options['layer']['position'][i]) ? options['layer']['position'][i] : options['layer']['position'][i] + 'px'
       }
     }
   }
@@ -89,7 +89,7 @@ class LoadingLayer extends ModalLayer {
     loading = this['variable']['struct']['_backup']['content_loading'] = ModalLayer['_struct']['content_loading'];
     loadingIcon = this['variable']['struct']['_backup']['content_loading_icon'] = ModalLayer['_struct']['content_loading_icon'];
     
-    if (window.isNaN(Number(this['option']['layer'].icon)))
+    if (Number.isInteger(Number(this['option']['layer'].icon)))
       loading.innerHTML[0].class += ' ' + this['option']['layer'].icon;
     else
       loading.innerHTML[0] = loadingIcon[this['option']['layer'].icon];
