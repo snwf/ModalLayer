@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-18 02:42:28
+* @Last Modified time: 2020-12-01 03:14:55
 */
 
 class ModalLayer {
@@ -198,7 +198,7 @@ class ModalLayer {
     // 定位配置
     if (options['position']) {
       if (!Array.isArray(options['position'])) {
-        if (window.isNaN(options['position']))
+        if (Number.isInteger(options['position']))
           options['position'] = null;
         else
           options['position'] = [options['position'], options['position']];
@@ -236,12 +236,15 @@ class ModalLayer {
    */
   checkOption () {
     // 检查过渡动画是否正确设置
-    if (window.isNaN(this['option']['transition']['animation'])) {
-      if (!ModalLayer['_assistant']['object']['isString'](this['option']['transition']['animation']) && !(this['option']['transition']['animation'] instanceof Animation))
-        throw Error('Expects a css animation name or Animation object.');
-    } else {
+    if (Number.isFinite(this['option']['transition']['animation'])) {
       if (!Object.values(ModalLayer['_enum']['TRANSITION_ANIMATION_PRESET']).includes(this['option']['transition']['animation']))
         throw Error('No preset animation found.');
+    } else if (this['option']['transition']['animation'] !== null) {
+      if (
+        !Array.isArray(this['option']['transition']['animation']) &&
+        !(this['option']['transition']['animation'] instanceof Animation)
+      )
+        throw Error('Expects a css animation name or Animation object.');
     }
   }
 
@@ -255,9 +258,9 @@ class ModalLayer {
     this['variable']['struct'] = Object.create(null);
     this['variable']['timeout'] = Object.create(null);
     this['variable']['interval'] = Object.create(null);
+    this['variable']['animation'] = Object.create(null);
     this['variable']['eventSymbol'] = Object.create(null);
     this['variable']['defaultRect'] = Object.create(null);
-    this['variable']['animationName'] = Object.create(null);
     this['variable']['struct']['_build'] = Object.create(null);
     this['variable']['struct']['_backup'] = Object.create(null);
   }
@@ -382,57 +385,71 @@ class ModalLayer {
    * @Datetime  2020-11-18T02:37:12+0800
    */
   initAnimation () {
-    let animationPreset;
-    let opacityAnimationCss, transformAnimationCss;
-    let opacityAnimationName, transformAnimationName;
-    let opacityAnimationChange, transformAnimationChange;
+    let nodes;
+    let animation;
+    let preset, option;
 
-    // animationPreset = [
-    //   {
-    //     'keyframes': [
-    //       {},
-    //       {}
-    //     ],
-    //     'options': {
-          
-    //     }
-    //   },
-    //   {},
-    //   {},
-    //   {},
-    //   {}
-    // ];
+    preset = Object.create(null);
+    nodes = this['variable']['nodes'];
 
-    // 构造css代码准备工作
-    opacityAnimationName = 'transition-opacity-' + (this['option']['transition']['opacity'] * 100) + '-animation';
-    transformAnimationName = 'transition-scale-' + (this['option']['transition']['scale'][0] * 100) + '-' + (this['option']['transition']['scale'][1] * 100) + '-animation';
+    if (this['option']['transition']['animation'] === null) return;
 
-    this['variable']['animationName']['transition_opacity'] = opacityAnimationName;
-    this['variable']['animationName']['transition_scale'] = transformAnimationName;
+    animation = this['option']['transition']['animation'];
 
-    if (!ModalLayer['_assistant']['css']['hasCss'](opacityAnimationName)) {
-      opacityAnimationChange = {
-        'from': 'opacity: ' + this['option']['transition']['opacity'],
-        'to': 'opacity: 1',
-      };
-      // 构造css动画
-      opacityAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](opacityAnimationName, opacityAnimationChange);
-      // 将css代码插入到style中
-      ModalLayer['_assistant']['css']['addCss'](opacityAnimationName, opacityAnimationCss);
-      ModalLayer['_assistant']['css']['addCss'](opacityAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](opacityAnimationName + '-reverse', {'from': opacityAnimationChange['to'], 'to': opacityAnimationChange['from']}));
-    }
+    preset.other = [
+      {'opacity': 0},
+      {'opacity': 1}
+    ];
+    preset['container'] = [
+      // 正拉伸
+      [
+        {'opacity': 0, 'transform': 'scale(.45)'},
+        {'opacity': 1, 'transform': 'scale(1)'}
+      ],
+      // 向下位移
+      [
+        {'opacity': 0, 'transform': 'translateY(-100%)'},
+        {'opacity': 1, 'transform': 'translateY(0)'}
+      ],
+      // 展开X轴
+      [
+        {'opacity': 0, 'transform': 'rotateY(-120deg)'},
+        {'opacity': 1, 'transform': 'rotateY(0)'}
+      ],
+      // 对角拉伸
+      [
+        {'opacity': 0, 'transform': 'skewX(-100deg)'},
+        {'opacity': 1, 'transform': 'skewX(0deg)'}
+      ],
+      // 向上弹出
+      [
+        {'opacity': 0, 'transform': 'translateY(200%) scale(.45)'},
+        {'opacity': 1, 'transform': 'translateY(0) scale(1)'}
+      ]
+    ];
 
-    if (!ModalLayer['_assistant']['css']['hasCss'](transformAnimationName)) {
-      transformAnimationChange = {
-        'from': 'transform: scale(' + this['option']['transition']['scale'][0] + ', ' + this['option']['transition']['scale'][1] + ')',
-        'to': 'transform: scale(1, 1)'
-      };
-      // 构造css动画
-      transformAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](transformAnimationName, transformAnimationChange);
-      // 将css代码插入到style中
-      ModalLayer['_assistant']['css']['addCss'](transformAnimationName, transformAnimationCss);
-      ModalLayer['_assistant']['css']['addCss'](transformAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](transformAnimationName + '-reverse', {'from': transformAnimationChange.to, 'to': transformAnimationChange.from}));
-    }
+    option = {
+      'fill': 'both',
+      'id': 'modal-layer-transition-animation',
+      'easing': this['option']['transition']['easing'],
+      'duration': this['option']['transition']['duration'] * 1000
+    };
+
+    this['variable']['animation']['transition'] = Object.create(null);
+    Object.keys(nodes).forEach(k => {
+      if (k === 'container') {
+        if (animation instanceof Animation) {
+          animation.effect.target = nodes[k];
+        } else {
+          animation = Array.isArray(animation) ? animation : preset[k][animation];
+          animation = nodes[k].animate(animation, option);
+        }
+        this['variable']['animation']['transition'][k] = animation;
+      } else {
+        this['variable']['animation']['transition'][k] = nodes[k].animate(preset.other, option);
+      }
+      this['variable']['animation']['transition'][k].pause();
+    });
   }
 
   /**
@@ -695,47 +712,38 @@ class ModalLayer {
    */
   show () {
     let promise;
-    let nodes, zIndex;
     let showCls, hideCls;
-    let opacityAnimation, transformAnimation;
+    let nodes, zIndex, nodeKeys;
 
-    nodes = this['variable']['nodes'];
     showCls = 'modal-layer-show';
     hideCls = 'modal-layer-hide';
+    nodes = this['variable']['nodes'];
+    nodeKeys = Object.keys(nodes);
     zIndex = ModalLayer['_assistant']['element']['maxZIndex']();
     if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
 
-    // 过渡动画
-    opacityAnimation = this['variable']['animationName']['transition_opacity'] + ' ' + this['option']['transition']['time'] + 's ease forwards';
-    transformAnimation = this['variable']['animationName']['transition_scale'] + ' ' + this['option']['transition']['time'] + 's ease forwards';
-
-    // 置于最上层
-    Object.keys(nodes).forEach(k => {
-      nodes[k].style.zIndex = zIndex + 1;
-    });
-
     promise = new Promise(resolve => {
-      nodes['container']['onanimationend'] = e => {
+      let fn = e => {
         // 自动关闭模态层
         if (this['option']['popupTime'] > 0)
           this['event']['autoShutdown'].call(this);
-        
-        // 只执行一次.
-        nodes['container']['onanimationend'] = null;
 
         resolve();
-      }
+      };
+      if (this['option']['transition']['animation'] !== null)
+        this['variable']['animation']['transition']['container'].onfinish = fn;
+      else
+        fn();
     });
 
+    // 置于最上层
     // 执行过渡动画
-    if (nodes['mask'])
-      nodes['mask'].style.animation = opacityAnimation;
-    nodes['container'].style.animation = opacityAnimation + ', ' + transformAnimation;
-
-    Object.keys(nodes).forEach((key) => {
-      if (nodes[key].classList.contains(hideCls))
-        nodes[key].classList.replace(hideCls, showCls);
-    }, this);
+    nodeKeys.forEach(k => {
+      nodes[k].style.zIndex = zIndex + 1;
+      if (nodes[k].classList.contains(hideCls))
+        nodes[k].classList.replace(hideCls, showCls);
+      this['variable']['animation']['transition']?.[k]?.play();
+    });
 
     // 更改当前状态
     this['setStatus']('show');
@@ -751,49 +759,45 @@ class ModalLayer {
    * @return   {Promise}                 Promise对象
    */
   hide () {
-    let nodes;
     let promise;
+    let nodes, nodeKeys;
     let hideCls, showCls;
     let opacityAnimation, transformAnimation;
 
-    nodes = this['variable']['nodes'];
     hideCls = 'modal-layer-hide';
     showCls = 'modal-layer-show';
+    nodes = this['variable']['nodes'];
+    nodeKeys = Object.keys(nodes);
     if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
 
     // 取消自动关闭
     if (Number.isInteger(this['variable']['timeout']['auto_shutdown']))
       window.clearTimeout(this['variable']['timeout']['auto_shutdown']);
 
-    // 过渡动画
-    opacityAnimation = this['variable']['animationName']['transition_opacity'] + '-reverse ' + this['option']['transition']['time'] + 's ease forwards';
-    transformAnimation = this['variable']['animationName']['transition_scale'] + '-reverse ' + this['option']['transition']['time'] + 's ease forwards';
 
     promise = new Promise(resolve => {
-      nodes['container']['onanimationend'] = e => {
-        Object.keys(nodes).forEach((key) => {
-          if (nodes[key].classList.contains(showCls))
-            nodes[key].classList.replace(showCls, hideCls);
+      let fn = e => {
+        nodeKeys.forEach(k => {
+          if (nodes[k].classList.contains(showCls))
+            nodes[k].classList.replace(showCls, hideCls);
         });
-        
-        // 更改当前状态
-        this['setStatus']('hide');
-
-        // 只执行一次.
-        nodes['container']['onanimationend'] = null;
-
         // 如果父模态层存在则展示
         if (this['option']['parentModalLayer'] !== null)
           this['option']['parentModalLayer'].show();
 
+        // 更改当前状态
+        this['setStatus']('hide');
+
         resolve();
-      }
+      };
+      if (this['option']['transition']['animation'] !== null)
+        this['variable']['animation']['transition']['container'].onfinish = fn;
+      else
+        fn();
     });
 
-    // 执行动画
-    if (nodes['mask'])
-      nodes['mask'].style.animation = opacityAnimation;
-    nodes['container'].style.animation = opacityAnimation + ', ' + transformAnimation;
+    // 执行过渡动画
+    nodeKeys.forEach(k => this['variable']['animation']['transition']?.[k]?.reverse());
 
     return promise;
    }

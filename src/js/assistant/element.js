@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-17 03:02:10
+* @Last Modified time: 2020-12-01 02:51:41
 */
 
 class ElementAssistant {
@@ -143,7 +143,7 @@ class ElementAssistant {
 
     return parseInt(allNodes.reduce(function(prev, currNode) {
       let currNodeZIndex = getComputedStyle(currNode, null).zIndex;
-      return window.Math.max(prev, !isNaN(currNodeZIndex) ? currNodeZIndex : 0);
+      return window.Math.max(prev, !Number.isInteger(currNodeZIndex) ? currNodeZIndex : 0);
     }, 0));
   }
 

@@ -5,7 +5,7 @@
 * @Description         数字助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-14 02:00:54
+* @Last Modified time: 2020-12-01 02:52:05
 */
 
 class NumberAssistant {
@@ -122,7 +122,7 @@ class NumberAssistant {
 
     value += '';
 
-    if (window.isNaN(number = window.parseFloat(value)))
+    if (Number.isFinite(number = window.parseFloat(value)))
       return false;
 
     if (window.Math.floor(number) == number)

@@ -5,7 +5,7 @@
 * @Description         枚举
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-18 00:51:30
+* @Last Modified time: 2020-12-01 01:54:16
 */
 
 const ENUM = Object.create(null);
@@ -118,11 +118,10 @@ Object.defineProperty(ENUM, 'TRANSITION_ANIMATION_PRESET', {
   'enumerable': true,
   'value': {
     'CENTER_SCALE': 0,
-    'BOTTOM_TO_TOP': 1,
-    'TOP_TO_BOTTOM': 2,
-    'LEFT_TO_RIGHT': 3,
-    'RIGHT_TO_LEFT': 4,
-    'FLIP': 5,
+    'SHIFT_DOWN': 1,
+    'UNFOLD_X': 2,
+    'DIAGONAL_STRETCH': 3,
+    'POP_UP': 4
   }
 })
 
