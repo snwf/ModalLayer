@@ -5,11 +5,10 @@
 * @Description         ModalLayer默认皮肤样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 19:20:53
+* @Last Modified time: 2020-12-02 00:53:10
 */
 
-.modal-layer-skin-default.modal-layer-ui,
-.modal-layer-skin-default .modal-layer-ui {
+.modal-layer-skin-default {
   color: black;
   font-size: 16px;
   font-weight: normal;

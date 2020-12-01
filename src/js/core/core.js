@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 22:27:52
+* @Last Modified time: 2020-12-02 00:42:46
 */
 
 class ModalLayer {
@@ -200,8 +200,6 @@ class ModalLayer {
       if (!Array.isArray(options['position'])) {
         if (Number.isInteger(options['position']))
           options['position'] = [options['position'], options['position']];
-        else
-          options['position'] = null;
       }
     }
 
@@ -245,6 +243,12 @@ class ModalLayer {
         !(this['option']['transition']['animation'] instanceof Animation)
       )
         throw Error('Expects a css animation name or Animation object.');
+    }
+
+    // 检查定位配置
+    if (this['option']['position']) {
+      if (!Array.isArray(this['option']['position']) && !Object.values(ModalLayer['_enum']['POSITION']).includes(this['option']['position']))
+        throw Error('option.position does not meet the expected value.');
     }
   }
 
@@ -671,32 +675,36 @@ class ModalLayer {
     container = this['variable']['nodes']['container'];
     parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
 
-    if (this['option']['position']) {
+    if (Array.isArray(this['option']['position'])) {
       [posX, posY] = this['option']['position'];
     }
-    // 若 this.option.position 未设置或为Falsely则自动居中.
+    // 若 option.position 未设置或为预设值或为Falsely则自动居中.
     else {
-      width = this['variable']['defaultRect']['width'];
-      height = this['variable']['defaultRect']['height'];
+      if (ModalLayer['_enum']['POSITION']['LEFT_TOP'] === this['option']['position']) {
+        posX = posY = 0;
+      } else if (ModalLayer['_enum']['POSITION']['RIGHT_TOP'] === this['option']['position']) {
+        posY = 0;
+        posX = (parentNode ? parentNode.offsetWidth : window.innerWidth) - container.offsetWidth;
+      } else if (ModalLayer['_enum']['POSITION']['LEFT_BOTTOM'] === this['option']['position']) {
+        posX = 0;
+        posY = (parentNode ? parentNode.offsetHeight : window.innerHeight) - container.offsetHeight;
+      } else if (ModalLayer['_enum']['POSITION']['RIGHT_BOTTOM'] === this['option']['position']) {
+        posX = (parentNode ? parentNode.offsetWidth : window.innerWidth) - container.offsetWidth;
+        posY = (parentNode ? parentNode.offsetHeight : window.innerHeight) - container.offsetHeight;
+      } else {
+        width = this['variable']['defaultRect']['width'];
+        height = this['variable']['defaultRect']['height'];
 
-      parent = {
-        scrollY: parentNode?.scrollTop ?? 0,
-        scrollX: parentNode?.scrollLeft ?? 0,
-        width: parentNode ? parentNode.clientWidth : window.innerWidth,
-        height: parentNode ? parentNode.clientHeight : window.innerHeight
+        parent = {
+          scrollY: parentNode?.scrollTop ?? 0,
+          scrollX: parentNode?.scrollLeft ?? 0,
+          width: parentNode ? parentNode.clientWidth : window.innerWidth,
+          height: parentNode ? parentNode.clientHeight : window.innerHeight
+        }
+
+        posX = ModalLayer['_assistant']['number']['chain'](parent.width)['subtract'](width)['divide'](2)['add'](parent.scrollX).floor().done();
+        posY = ModalLayer['_assistant']['number']['chain'](parent.height)['subtract'](height)['divide'](2)['add'](parent.scrollY).floor().done();
       }
-
-      posX = ModalLayer['_assistant']['number']['chain'](parent.width)['subtract'](width)['divide'](2)['add'](parent.scrollX).floor().done();
-      posY = ModalLayer['_assistant']['number']['chain'](parent.height)['subtract'](height)['divide'](2)['add'](parent.scrollY).floor().done();
-
-      // 若父容器存在则直接计算当前屏幕的中心位置.
-      // 否则需要将滚动距离列入考虑.
-      // if (this['option']['window']) {
-        // posX += window.scrollX ?? window.pageXOffset;
-        // posY += window.scrollY ?? window.pageYOffset;
-        // posY += this['option']['window'].scrollTop;
-        // posX += this['option']['window'].scrollLeft;
-      // }
     }
 
     container.style.cssText += `top: ${posY}px; left: ${posX}px;`;

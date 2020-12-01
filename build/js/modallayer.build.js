@@ -1046,7 +1046,7 @@ var ModalLayer = function () {
 
       if (options['position']) {
         if (!Array.isArray(options['position'])) {
-          if (Number.isInteger(options['position'])) options['position'] = [options['position'], options['position']];else options['position'] = null;
+          if (Number.isInteger(options['position'])) options['position'] = [options['position'], options['position']];
         }
       }
 
@@ -1072,6 +1072,10 @@ var ModalLayer = function () {
         if (!Object.values(ModalLayer['_enum']['TRANSITION_ANIMATION_PRESET']).includes(this['option']['transition']['animation'])) throw Error('No preset animation found.');
       } else if (this['option']['transition']['animation'] !== null) {
         if (!Array.isArray(this['option']['transition']['animation']) && !(this['option']['transition']['animation'] instanceof Animation)) throw Error('Expects a css animation name or Animation object.');
+      }
+
+      if (this['option']['position']) {
+        if (!Array.isArray(this['option']['position']) && !Object.values(ModalLayer['_enum']['POSITION']).includes(this['option']['position'])) throw Error('option.position does not meet the expected value.');
       }
     }
   }, {
@@ -1376,24 +1380,37 @@ var ModalLayer = function () {
       container = this['variable']['nodes']['container'];
       parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
 
-      if (this['option']['position']) {
+      if (Array.isArray(this['option']['position'])) {
         var _this$option$position = _slicedToArray(this['option']['position'], 2);
 
         posX = _this$option$position[0];
         posY = _this$option$position[1];
       } else {
-          var _parentNode$scrollTop2, _parentNode5, _parentNode$scrollLef2, _parentNode6;
+          if (ModalLayer['_enum']['POSITION']['LEFT_TOP'] === this['option']['position']) {
+            posX = posY = 0;
+          } else if (ModalLayer['_enum']['POSITION']['RIGHT_TOP'] === this['option']['position']) {
+            posY = 0;
+            posX = (parentNode ? parentNode.offsetWidth : window.innerWidth) - container.offsetWidth;
+          } else if (ModalLayer['_enum']['POSITION']['LEFT_BOTTOM'] === this['option']['position']) {
+            posX = 0;
+            posY = (parentNode ? parentNode.offsetHeight : window.innerHeight) - container.offsetHeight;
+          } else if (ModalLayer['_enum']['POSITION']['RIGHT_BOTTOM'] === this['option']['position']) {
+            posX = (parentNode ? parentNode.offsetWidth : window.innerWidth) - container.offsetWidth;
+            posY = (parentNode ? parentNode.offsetHeight : window.innerHeight) - container.offsetHeight;
+          } else {
+            var _parentNode$scrollTop2, _parentNode5, _parentNode$scrollLef2, _parentNode6;
 
-          width = this['variable']['defaultRect']['width'];
-          height = this['variable']['defaultRect']['height'];
-          parent = {
-            scrollY: (_parentNode$scrollTop2 = (_parentNode5 = parentNode) === null || _parentNode5 === void 0 ? void 0 : _parentNode5.scrollTop) !== null && _parentNode$scrollTop2 !== void 0 ? _parentNode$scrollTop2 : 0,
-            scrollX: (_parentNode$scrollLef2 = (_parentNode6 = parentNode) === null || _parentNode6 === void 0 ? void 0 : _parentNode6.scrollLeft) !== null && _parentNode$scrollLef2 !== void 0 ? _parentNode$scrollLef2 : 0,
-            width: parentNode ? parentNode.clientWidth : window.innerWidth,
-            height: parentNode ? parentNode.clientHeight : window.innerHeight
-          };
-          posX = ModalLayer['_assistant']['number']['chain'](parent.width)['subtract'](width)['divide'](2)['add'](parent.scrollX).floor().done();
-          posY = ModalLayer['_assistant']['number']['chain'](parent.height)['subtract'](height)['divide'](2)['add'](parent.scrollY).floor().done();
+            width = this['variable']['defaultRect']['width'];
+            height = this['variable']['defaultRect']['height'];
+            parent = {
+              scrollY: (_parentNode$scrollTop2 = (_parentNode5 = parentNode) === null || _parentNode5 === void 0 ? void 0 : _parentNode5.scrollTop) !== null && _parentNode$scrollTop2 !== void 0 ? _parentNode$scrollTop2 : 0,
+              scrollX: (_parentNode$scrollLef2 = (_parentNode6 = parentNode) === null || _parentNode6 === void 0 ? void 0 : _parentNode6.scrollLeft) !== null && _parentNode$scrollLef2 !== void 0 ? _parentNode$scrollLef2 : 0,
+              width: parentNode ? parentNode.clientWidth : window.innerWidth,
+              height: parentNode ? parentNode.clientHeight : window.innerHeight
+            };
+            posX = ModalLayer['_assistant']['number']['chain'](parent.width)['subtract'](width)['divide'](2)['add'](parent.scrollX).floor().done();
+            posY = ModalLayer['_assistant']['number']['chain'](parent.height)['subtract'](height)['divide'](2)['add'](parent.scrollY).floor().done();
+          }
         }
 
       container.style.cssText += "top: ".concat(posY, "px; left: ").concat(posX, "px;");
