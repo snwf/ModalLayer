@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 03:35:40
+* @Last Modified time: 2020-12-01 22:27:52
 */
 
 class ModalLayer {
@@ -199,9 +199,9 @@ class ModalLayer {
     if (options['position']) {
       if (!Array.isArray(options['position'])) {
         if (Number.isInteger(options['position']))
-          options['position'] = null;
-        else
           options['position'] = [options['position'], options['position']];
+        else
+          options['position'] = null;
       }
     }
 
@@ -365,9 +365,8 @@ class ModalLayer {
 
       // 设置样式类
       for (let i = 0; i < allNodes.length; i++) {
-        let classList = allNodes[i].classList;
-        if (!classList.contains(ui));
-          classList.add(ui);
+        if (allNodes[i].classList.contains(ui)) allNodes[i].classList.remove(ui);
+        allNodes[i].className = `${ui} ${allNodes[i].className}`;
       }
 
       // 设置默认class
@@ -448,7 +447,7 @@ class ModalLayer {
       } else {
         this['variable']['animation']['transition'][k] = nodes[k].animate(preset.other, option);
       }
-      this['variable']['animation']['transition'][k].pause();
+      this['variable']['animation']['transition'][k].cancel();
     });
   }
 
@@ -715,6 +714,7 @@ class ModalLayer {
    */
   show () {
     let promise;
+    let animations;
     let showCls, hideCls;
     let nodes, zIndex, nodeKeys;
 
@@ -722,6 +722,7 @@ class ModalLayer {
     hideCls = 'modal-layer-hide';
     nodes = this['variable']['nodes'];
     nodeKeys = Object.keys(nodes);
+    animations = this['variable']['animation']['transition'];
     zIndex = ModalLayer['_assistant']['element']['maxZIndex']();
     if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
 
@@ -734,7 +735,7 @@ class ModalLayer {
         resolve();
       };
       if (this['option']['transition']['animation'] !== null)
-        this['variable']['animation']['transition']['container'].onfinish = fn;
+        animations['container'].onfinish = fn;
       else
         fn();
     });
@@ -742,10 +743,11 @@ class ModalLayer {
     // 置于最上层
     // 执行过渡动画
     nodeKeys.forEach(k => {
+      let method = animations[k].playbackRate < 0 ? 'reverse' : 'play';
       nodes[k].style.zIndex = zIndex + 1;
       if (nodes[k].classList.contains(hideCls))
         nodes[k].classList.replace(hideCls, showCls);
-      this['variable']['animation']['transition']?.[k]?.play();
+      if (animations?.[k]) animations[k][method]();
     });
 
     // 更改当前状态
@@ -763,6 +765,7 @@ class ModalLayer {
    */
   hide () {
     let promise;
+    let animations;
     let nodes, nodeKeys;
     let hideCls, showCls;
     let opacityAnimation, transformAnimation;
@@ -771,12 +774,12 @@ class ModalLayer {
     showCls = 'modal-layer-show';
     nodes = this['variable']['nodes'];
     nodeKeys = Object.keys(nodes);
+    animations = this['variable']['animation']['transition'];
     if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
 
     // 取消自动关闭
     if (Number.isInteger(this['variable']['timeout']['auto_shutdown']))
       window.clearTimeout(this['variable']['timeout']['auto_shutdown']);
-
 
     promise = new Promise(resolve => {
       let fn = e => {
@@ -785,7 +788,7 @@ class ModalLayer {
             nodes[k].classList.replace(showCls, hideCls);
         });
         // 如果父模态层存在则展示
-        if (this['option']['parentModalLayer'] !== null)
+        if (this['option']['parentModalLayer'] instanceof ModalLayer)
           this['option']['parentModalLayer'].show();
 
         // 更改当前状态
@@ -794,13 +797,16 @@ class ModalLayer {
         resolve();
       };
       if (this['option']['transition']['animation'] !== null)
-        this['variable']['animation']['transition']['container'].onfinish = fn;
+        animations['container'].onfinish = fn;
       else
         fn();
     });
 
     // 执行过渡动画
-    nodeKeys.forEach(k => this['variable']['animation']['transition']?.[k]?.reverse());
+    nodeKeys.forEach(k => {
+      let method = animations[k].playbackRate > 0 ? 'reverse' : 'play';
+      if (animations?.[k]) animations[k][method]();
+    });
 
     return promise;
    }
@@ -812,15 +818,16 @@ class ModalLayer {
    * @DateTime 2020-09-03T23:35:17+0800
    */
   minimize () {
-    let index;
     let title;
-    let tmpClock, animationDur;
+    let keyframes, option;
     let queueNode, queueItemNode;
+    let animation, animations, animationDur;
 
     if (this['status'] === ModalLayer['_enum']['STATUS']['MINIMIZE']) return;
 
-    animationDur = 0.3;
+    animationDur = this['option']['transition']['duration'];
     queueNode = document.querySelector('#modal-layer-minimize-queue');
+
     if (!queueNode) {
       queueNode = ModalLayer['_assistant']['element']['objectToNode']([ModalLayer['_struct']['minimize_queue']])[0];
       queueNode.classList.add(this['option']['ui'], `modal-layer-skin-${this['option']['skin']}`);
@@ -837,12 +844,31 @@ class ModalLayer {
     queueItemNode.querySelector('.modal-layer-minimize-queue-item-title').innerHTML = title;
     queueNode.insertAdjacentElement('beforeend', queueItemNode);
 
-    tmpClock = setInterval(() => {
-      if (queueItemNode.parentNode) {
-        queueItemNode.style.animation = 'opacity ' + animationDur + 's ease forwards, ' + this['variable']['animationName']['minimize_queue_transition_scale'] + ' ' + animationDur + 's ease forwards';
-        clearInterval(tmpClock);
-      }
-    }, 10);
+    if (!(animations = ModalLayer['_assistant']['cache']['get']('minimizeQueueAnimations'))) {
+      animations = new Map;
+      ModalLayer['_assistant']['cache']['set']('minimizeQueueAnimations', animations);
+    }
+
+    if (animation = (animations.get(this['option']['index']))) {
+      animation.reverse();
+    } else {
+      // 动画关键帧
+      keyframes = [
+        {'opacity': 0, 'transform': 'scale(.45)'},
+        {'opacity': 1, 'transform': 'scale(1)'}
+      ];
+
+      // 动画设定
+      option = {
+        'fill': 'both',
+        'id': 'modal-layer-minimize-queue-transition-animation',
+        'easing': this['option']['transition']['easing'],
+        'duration': animationDur * 1000
+      };
+
+      animation = queueItemNode.animate(keyframes, option);
+      animations.set(this['option']['index'], animation);
+    }
 
     this['hide']().then(() => void this['setStatus']('minimize'));
    }
@@ -857,34 +883,34 @@ class ModalLayer {
   revert () {
     let promise;
     let queueNode, queueItemNode;
-    let animationDur, animationHalfDur;
+    let animation, animationDur, animationHalfDur;
 
-    animationDur = 0.3;
-    animationHalfDur = animationDur * 100 / 2 / 100;
+    animationDur = this['option']['transition']['duration'];
     queueNode = document.querySelector('#modal-layer-minimize-queue');
+    animationHalfDur = ModalLayer['_assistant']['number']['divide'](animationDur, 2);
     queueItemNode = queueNode.querySelector('.modal-layer-minimize-queue-item[modal-layer-index="' + this['option']['index'] + '"]');
 
     if (![ModalLayer['_enum']['STATUS']['MINIMIZE']].includes(this['status'])) return;
 
-    queueItemNode['onanimationstart'] = e => {
-      setTimeout(() => {
-        this.show();
-        queueItemNode['onanimationstart'] = null;
-      }, animationHalfDur * 1000);
-    }
+    animation = ModalLayer['_assistant']['cache']['get']('minimizeQueueAnimations').get(this['option']['index']);
+
+    setTimeout(() => {
+      this.show();
+    }, animationHalfDur * 1000);
 
     promise = new Promise(resolve => {
-      queueItemNode['onanimationend'] = e => {
+      animation.onfinish = e => {
         queueItemNode.remove();
         if (ModalLayer['_minimizeQueue'].length <= 0) {
           queueNode.remove();
           ModalLayer['_assistant']['cache']['has']('minimizeQueueEvent') && ModalLayer['_assistant']['event']['remove'](ModalLayer['_assistant']['cache']['get']('minimizeQueueEvent'));
         }
+        animation.onfinish = null;
         resolve();
-      }
+      };
     });
 
-    queueItemNode.style.animation = 'opacity-reverse ' + animationDur + 's ease forwards, ' + this['variable']['animationName']['minimize_queue_transition_scale'] + '-reverse ' + animationDur + 's ease forwards';
+    animation.reverse();
 
     return promise;
   }
@@ -1193,7 +1219,7 @@ class ModalLayer {
     // 初始化模态层位置
     .then(() => {
       layer['positioning']();
-      layer['variable']['image']['layer'].positioning();
+      layer['variable']['image']['layer']['positioning']();
     })
 
     // 显示

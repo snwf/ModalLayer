@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 02:52:43
+* @Last Modified time: 2020-12-01 19:58:20
 */
 
 class ImageLayer extends ModalLayer {
@@ -161,12 +161,12 @@ class ImageLayer extends ModalLayer {
       throw new Error('layer.size does not meet expectations.');
 
     if (
-      !this['option']['layer']['size'] && 
+      !this['option']['layer']['size'] &&
       (
-        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['min'][0])) ||
-        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['min'][1])) ||
-        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['max'][0])) ||
-        Number.isInteger(parseInt(this['option']['layer']['sizeRange']['max'][1]))
+        !Number.isFinite(parseInt(this['option']['layer']['sizeRange']['min'][0])) ||
+        !Number.isFinite(parseInt(this['option']['layer']['sizeRange']['min'][1])) ||
+        !Number.isFinite(parseInt(this['option']['layer']['sizeRange']['max'][0])) ||
+        !Number.isFinite(parseInt(this['option']['layer']['sizeRange']['max'][1]))
       )
     )
       throw new Error('layer.sizeRange does not meet expectations.');
@@ -406,8 +406,11 @@ class ImageLayer extends ModalLayer {
     this['variable']['defaultRect']['height'] = defaultArea[1];
 
     // 判断是否允许超出屏幕, 若不允许且已经超出则需要进行修正
-    if (!this['option']['drag']['overflow'] && ModalLayer['_assistant']['element']['isOverflow'](container, this['option']['window'] ?? document.body))
-      container.style.cssText += 'margin-top: auto; margin-left: auto';
+    if (
+      !this['option']['drag']['overflow'] &&
+      ModalLayer['_assistant']['element']['isOverflow'](container, this['option']['window'])
+    )
+      this['positioning']();
   }
 
   /**
@@ -773,21 +776,21 @@ class ImageLayer extends ModalLayer {
         } else if (operation === 'resize') {
           backup = [...repaintVariable];
           // 调整起始坐标位置与大小
-          if (direction.includes(ModalLayer['_enum']['POSITION']['WEST'])) {
+          if (direction.includes(ModalLayer['_enum']['DIRECTION']['WEST'])) {
             repaintVariable[0] += mEvent.movementX;
             repaintVariable[2] -= mEvent.movementX;
           }
 
-          if (direction.includes(ModalLayer['_enum']['POSITION']['EAST'])) {
+          if (direction.includes(ModalLayer['_enum']['DIRECTION']['EAST'])) {
             repaintVariable[2] += mEvent.movementX;
           }
 
-          if (direction.includes(ModalLayer['_enum']['POSITION']['NORTH'])) {
+          if (direction.includes(ModalLayer['_enum']['DIRECTION']['NORTH'])) {
             repaintVariable[1] += mEvent.movementY;
             repaintVariable[3] -= mEvent.movementY;
           }
 
-          if (direction.includes(ModalLayer['_enum']['POSITION']['SOUTH'])) {
+          if (direction.includes(ModalLayer['_enum']['DIRECTION']['SOUTH'])) {
             repaintVariable[3] += mEvent.movementY;
           }
 
@@ -844,19 +847,19 @@ class ImageLayer extends ModalLayer {
           cursor = direction = '';
           // 上边
           if (mPoint[1] > resizeRect[1] && mPoint[1] < cropRect[1]) {
-            cursor = direction += ModalLayer['_enum']['POSITION']['NORTH'];
+            cursor = direction += ModalLayer['_enum']['DIRECTION']['NORTH'];
           }
           // 下边
           if (mPoint[1] > cropRect[1] + cropRect[3] && mPoint[1] < resizeRect[1] + resizeRect[3]) {
-            cursor = direction += ModalLayer['_enum']['POSITION']['SOUTH'];
+            cursor = direction += ModalLayer['_enum']['DIRECTION']['SOUTH'];
           }
           // 左边
           if (mPoint[0] > resizeRect[0] && mPoint[0] < cropRect[0]) {
-            cursor = direction += ModalLayer['_enum']['POSITION']['WEST'];
+            cursor = direction += ModalLayer['_enum']['DIRECTION']['WEST'];
           }
           // 右边
           if (mPoint[0] > cropRect[0] + cropRect[2] && mPoint[0] < resizeRect[0] + resizeRect[2]) {
-            cursor = direction += ModalLayer['_enum']['POSITION']['EAST'];
+            cursor = direction += ModalLayer['_enum']['DIRECTION']['EAST'];
           }
           cursor += '-resize';
         } else {
@@ -887,7 +890,7 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-05T01:12:42+0800
    * @param    {Number}                 angle 旋转角度
    */
-  spin (angle = undefined) {
+  spin (angle) {
     let rect, radian;
     let cas, ctx, backup;
     let scale, newSize, newPoint;

@@ -152,22 +152,23 @@ Object.defineProperty(EVENT, 'drag', {
 
     window.getSelection().empty();
 
+    moveMethod = function moveMethod(movementX, movementY) {
+      targetRect.x += movementX;
+      targetRect.y += movementY;
+
+      if (!_this['option']['drag']['overflow']) {
+        if (targetRect.x < boundary[0] || targetRect.x > boundary[1] - targetRect.width) targetRect.x -= movementX;
+        if (targetRect.y < boundary[2] || targetRect.y > boundary[3] - targetRect.height) targetRect.y -= movementY;
+      }
+
+      _this.resizeBy(targetRect.x, targetRect.y, targetRect.width, targetRect.height);
+
+      _this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
+    };
+
     mousemoveEvent = function mousemoveEvent(e) {
       mEvent = e !== null && e !== void 0 ? e : window.event;
-
-      if (mEvent.buttons === 1) {
-        targetRect.x += mEvent.movementX;
-        targetRect.y += mEvent.movementY;
-
-        if (!_this['option']['drag']['overflow']) {
-          if (targetRect.x < boundary[0] || targetRect.x > boundary[1] - targetRect.width) targetRect.x -= mEvent.movementX;
-          if (targetRect.y < boundary[2] || targetRect.y > boundary[3] - targetRect.height) targetRect.y -= mEvent.movementY;
-        }
-
-        _this.resizeBy(targetRect.x, targetRect.y, targetRect.width, targetRect.height);
-
-        _this['setStatus'](ModalLayer['_enum']['STATUS']['DRAG']);
-      }
+      if (mEvent.buttons === 1) moveMethod(mEvent.movementX, mEvent.movementY);
     };
 
     keydownEvent = function keydownEvent(kEvent) {
@@ -541,9 +542,9 @@ Object.defineProperty(OPTION, 'common', {
       }
     },
     'transition': {
-      'time': 0.2,
-      'opacity': 0,
-      'scale': [0.45, 0.45]
+      'duration': 0.2,
+      'animation': 0,
+      'easing': 'ease'
     },
     'mask': {
       'enable': true,
@@ -952,13 +953,23 @@ Object.defineProperty(ENUM, 'ARROW', {
     'DOWN': 40
   }
 });
-Object.defineProperty(ENUM, 'POSITION', {
+Object.defineProperty(ENUM, 'DIRECTION', {
   'enumerable': true,
   'value': {
     'EAST': 'e',
     'WEST': 'w',
     'SOUTH': 's',
     'NORTH': 'n'
+  }
+});
+Object.defineProperty(ENUM, 'POSITION', {
+  'enumerable': true,
+  'value': {
+    'CENTER': null,
+    'LEFT_TOP': 'lt',
+    'RIGHT_TOP': 'rt',
+    'LEFT_BOTTOM': 'lb',
+    'RIGHT_BOTTOM': 'rb'
   }
 });
 Object.defineProperty(ENUM, 'TYPE', {
@@ -1006,6 +1017,16 @@ Object.defineProperty(ENUM, 'BROWSER_STORAGE', {
     'SESSIONSTORAGE': 'sessionStorage'
   }
 });
+Object.defineProperty(ENUM, 'TRANSITION_ANIMATION_PRESET', {
+  'enumerable': true,
+  'value': {
+    'CENTER_SCALE': 0,
+    'SHIFT_DOWN': 1,
+    'UNFOLD_X': 2,
+    'DIAGONAL_STRETCH': 3,
+    'POP_UP': 4
+  }
+});
 Object.freeze(ENUM);
 
 var ModalLayer = function () {
@@ -1025,7 +1046,7 @@ var ModalLayer = function () {
 
       if (options['position']) {
         if (!Array.isArray(options['position'])) {
-          if (window.isNaN(options['position'])) options['position'] = null;else options['position'] = [options['position'], options['position']];
+          if (Number.isInteger(options['position'])) options['position'] = [options['position'], options['position']];else options['position'] = null;
         }
       }
 
@@ -1033,7 +1054,7 @@ var ModalLayer = function () {
         'enable': Boolean(options['mask']),
         'clickRemove': true
       };
-      if (!options['content'] || ModalLayer['_assistant']['object']['isEmpty'](options['content']['value'])) options['content'] = {
+      if (!ModalLayer['_assistant']['object']['isOnlyObject'](options['content'])) options['content'] = {
         'value': options['content'],
         'fullContainer': (_options$content$full = (_options$content = options['content']) === null || _options$content === void 0 ? void 0 : _options$content['fullContainer']) !== null && _options$content$full !== void 0 ? _options$content$full : false
       };
@@ -1046,16 +1067,22 @@ var ModalLayer = function () {
     }
   }, {
     key: "checkOption",
-    value: function checkOption() {}
+    value: function checkOption() {
+      if (Number.isFinite(this['option']['transition']['animation'])) {
+        if (!Object.values(ModalLayer['_enum']['TRANSITION_ANIMATION_PRESET']).includes(this['option']['transition']['animation'])) throw Error('No preset animation found.');
+      } else if (this['option']['transition']['animation'] !== null) {
+        if (!Array.isArray(this['option']['transition']['animation']) && !(this['option']['transition']['animation'] instanceof Animation)) throw Error('Expects a css animation name or Animation object.');
+      }
+    }
   }, {
     key: "initVariable",
     value: function initVariable() {
       this['variable']['struct'] = Object.create(null);
       this['variable']['timeout'] = Object.create(null);
       this['variable']['interval'] = Object.create(null);
+      this['variable']['animation'] = Object.create(null);
       this['variable']['eventSymbol'] = Object.create(null);
       this['variable']['defaultRect'] = Object.create(null);
-      this['variable']['animationName'] = Object.create(null);
       this['variable']['struct']['_build'] = Object.create(null);
       this['variable']['struct']['_backup'] = Object.create(null);
     }
@@ -1123,55 +1150,92 @@ var ModalLayer = function () {
     key: "initNodeFinally",
     value: function initNodeFinally() {
       var ui, skinCls, hideCls, showCls, indexCls;
-      var opacityAnimationCss, transformAnimationCss;
-      var opacityAnimationName, transformAnimationName;
-      var opacityAnimationChange, transformAnimationChange;
       ui = this['option']['ui'];
       hideCls = 'modal-layer-hide';
       skinCls = 'modal-layer-skin-' + this['option']['skin'];
       indexCls = 'modal-layer-index-' + this['option']['index'];
-      opacityAnimationName = 'transition-opacity-' + this['option']['transition']['opacity'] * 100 + '-animation';
-      transformAnimationName = 'transition-scale-' + this['option']['transition']['scale'][0] * 100 + '-' + this['option']['transition']['scale'][1] * 100 + '-animation';
-      this['variable']['animationName']['transition_opacity'] = opacityAnimationName;
-      this['variable']['animationName']['transition_scale'] = transformAnimationName;
-
-      if (!ModalLayer['_assistant']['css']['hasCss'](opacityAnimationName)) {
-        opacityAnimationChange = {
-          'from': 'opacity: ' + this['option']['transition']['opacity'],
-          'to': 'opacity: 1'
-        };
-        opacityAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](opacityAnimationName, opacityAnimationChange);
-        ModalLayer['_assistant']['css']['addCss'](opacityAnimationName, opacityAnimationCss);
-        ModalLayer['_assistant']['css']['addCss'](opacityAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](opacityAnimationName + '-reverse', {
-          'from': opacityAnimationChange['to'],
-          'to': opacityAnimationChange['from']
-        }));
-      }
-
-      if (!ModalLayer['_assistant']['css']['hasCss'](transformAnimationName)) {
-        transformAnimationChange = {
-          'from': 'transform: scale(' + this['option']['transition']['scale'][0] + ', ' + this['option']['transition']['scale'][1] + ')',
-          'to': 'transform: scale(1, 1)'
-        };
-        transformAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](transformAnimationName, transformAnimationChange);
-        ModalLayer['_assistant']['css']['addCss'](transformAnimationName, transformAnimationCss);
-        ModalLayer['_assistant']['css']['addCss'](transformAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](transformAnimationName + '-reverse', {
-          'from': transformAnimationChange.to,
-          'to': transformAnimationChange.from
-        }));
-      }
-
       Object.keys(this['variable']['nodes']).forEach(function (key) {
         var allNodes = ModalLayer['_assistant']['element']['getAllElement'](this['variable']['nodes'][key]);
 
         for (var i = 0; i < allNodes.length; i++) {
-          var classList = allNodes[i].classList;
-          if (!classList.contains(ui)) ;
-          classList.add(ui);
+          if (allNodes[i].classList.contains(ui)) allNodes[i].classList.remove(ui);
+          allNodes[i].className = "".concat(ui, " ").concat(allNodes[i].className);
         }
 
         this['variable']['nodes'][key].className = ui + ' ' + skinCls + ' ' + indexCls + ' ' + this['variable']['nodes'][key].className.trim() + ' ' + hideCls;
       }, this);
+    }
+  }, {
+    key: "initAnimation",
+    value: function initAnimation() {
+      var _this5 = this;
+
+      var nodes;
+      var animation;
+      var preset, option;
+      preset = Object.create(null);
+      nodes = this['variable']['nodes'];
+      if (this['option']['transition']['animation'] === null) return;
+      animation = this['option']['transition']['animation'];
+      preset.other = [{
+        'opacity': 0
+      }, {
+        'opacity': 1
+      }];
+      preset['container'] = [[{
+        'opacity': 0,
+        'transform': 'scale(.45)'
+      }, {
+        'opacity': 1,
+        'transform': 'scale(1)'
+      }], [{
+        'opacity': 0,
+        'transform': 'translateY(-100%)'
+      }, {
+        'opacity': 1,
+        'transform': 'translateY(0)'
+      }], [{
+        'opacity': 0,
+        'transform': 'rotateY(-120deg)'
+      }, {
+        'opacity': 1,
+        'transform': 'rotateY(0)'
+      }], [{
+        'opacity': 0,
+        'transform': 'skewX(-100deg)'
+      }, {
+        'opacity': 1,
+        'transform': 'skewX(0deg)'
+      }], [{
+        'opacity': 0,
+        'transform': 'translateY(200%) scale(.45)'
+      }, {
+        'opacity': 1,
+        'transform': 'translateY(0) scale(1)'
+      }]];
+      option = {
+        'fill': 'both',
+        'id': 'modal-layer-transition-animation',
+        'easing': this['option']['transition']['easing'],
+        'duration': this['option']['transition']['duration'] * 1000
+      };
+      this['variable']['animation']['transition'] = Object.create(null);
+      Object.keys(nodes).forEach(function (k) {
+        if (k === 'container') {
+          if (animation instanceof Animation) {
+            animation.effect.target = nodes[k];
+          } else {
+            animation = Array.isArray(animation) ? animation : preset[k][animation];
+            animation = nodes[k].animate(animation, option);
+          }
+
+          _this5['variable']['animation']['transition'][k] = animation;
+        } else {
+          _this5['variable']['animation']['transition'][k] = nodes[k].animate(preset.other, option);
+        }
+
+        _this5['variable']['animation']['transition'][k].cancel();
+      });
     }
   }, {
     key: "initEvent",
@@ -1209,12 +1273,12 @@ var ModalLayer = function () {
     key: "insertNode",
     value: function insertNode() {
       var _this$option$window,
-          _this5 = this;
+          _this6 = this;
 
       var fragment = document.createDocumentFragment();
       var parentWindow = (_this$option$window = this['option']['window']) !== null && _this$option$window !== void 0 ? _this$option$window : window.document.body;
       Object.keys(this['variable']['nodes']).forEach(function (key) {
-        return fragment.appendChild(_this5['variable']['nodes'][key]);
+        return fragment.appendChild(_this6['variable']['nodes'][key]);
       }, this);
       parentWindow.appendChild(fragment);
     }
@@ -1247,6 +1311,7 @@ var ModalLayer = function () {
       this['initStruct']();
       this['initNode']();
       this['initNodeFinally']();
+      this['initAnimation']();
       this['initEvent']();
       this['bindEvent']();
       (_this$option$hook = this['option']['hook']) === null || _this$option$hook === void 0 ? void 0 : (_this$option$hook$ini = _this$option$hook['initEnded']) === null || _this$option$hook$ini === void 0 ? void 0 : (_this$option$hook$ini2 = _this$option$hook$ini.call) === null || _this$option$hook$ini2 === void 0 ? void 0 : _this$option$hook$ini2.call(_this$option$hook$ini, this);
@@ -1338,81 +1403,88 @@ var ModalLayer = function () {
   }, {
     key: "show",
     value: function show() {
-      var _this6 = this;
+      var _this7 = this;
 
       var promise;
-      var nodes, zIndex;
+      var animations;
       var showCls, hideCls;
-      var opacityAnimation, transformAnimation;
-      nodes = this['variable']['nodes'];
+      var nodes, zIndex, nodeKeys;
       showCls = 'modal-layer-show';
       hideCls = 'modal-layer-hide';
+      nodes = this['variable']['nodes'];
+      nodeKeys = Object.keys(nodes);
+      animations = this['variable']['animation']['transition'];
       zIndex = ModalLayer['_assistant']['element']['maxZIndex']();
       if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
-      opacityAnimation = this['variable']['animationName']['transition_opacity'] + ' ' + this['option']['transition']['time'] + 's ease forwards';
-      transformAnimation = this['variable']['animationName']['transition_scale'] + ' ' + this['option']['transition']['time'] + 's ease forwards';
-      Object.keys(nodes).forEach(function (k) {
-        nodes[k].style.zIndex = zIndex + 1;
-      });
       promise = new Promise(function (resolve) {
-        nodes['container']['onanimationend'] = function (e) {
-          if (_this6['option']['popupTime'] > 0) _this6['event']['autoShutdown'].call(_this6);
-          nodes['container']['onanimationend'] = null;
+        var fn = function fn(e) {
+          if (_this7['option']['popupTime'] > 0) _this7['event']['autoShutdown'].call(_this7);
           resolve();
         };
+
+        if (_this7['option']['transition']['animation'] !== null) animations['container'].onfinish = fn;else fn();
       });
-      if (nodes['mask']) nodes['mask'].style.animation = opacityAnimation;
-      nodes['container'].style.animation = opacityAnimation + ', ' + transformAnimation;
-      Object.keys(nodes).forEach(function (key) {
-        if (nodes[key].classList.contains(hideCls)) nodes[key].classList.replace(hideCls, showCls);
-      }, this);
+      nodeKeys.forEach(function (k) {
+        var _animations;
+
+        var method = animations[k].playbackRate < 0 ? 'reverse' : 'play';
+        nodes[k].style.zIndex = zIndex + 1;
+        if (nodes[k].classList.contains(hideCls)) nodes[k].classList.replace(hideCls, showCls);
+        if ((_animations = animations) === null || _animations === void 0 ? void 0 : _animations[k]) animations[k][method]();
+      });
       this['setStatus']('show');
       return promise;
     }
   }, {
     key: "hide",
     value: function hide() {
-      var _this7 = this;
+      var _this8 = this;
 
-      var nodes;
       var promise;
+      var animations;
+      var nodes, nodeKeys;
       var hideCls, showCls;
       var opacityAnimation, transformAnimation;
-      nodes = this['variable']['nodes'];
       hideCls = 'modal-layer-hide';
       showCls = 'modal-layer-show';
+      nodes = this['variable']['nodes'];
+      nodeKeys = Object.keys(nodes);
+      animations = this['variable']['animation']['transition'];
       if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
       if (Number.isInteger(this['variable']['timeout']['auto_shutdown'])) window.clearTimeout(this['variable']['timeout']['auto_shutdown']);
-      opacityAnimation = this['variable']['animationName']['transition_opacity'] + '-reverse ' + this['option']['transition']['time'] + 's ease forwards';
-      transformAnimation = this['variable']['animationName']['transition_scale'] + '-reverse ' + this['option']['transition']['time'] + 's ease forwards';
       promise = new Promise(function (resolve) {
-        nodes['container']['onanimationend'] = function (e) {
-          Object.keys(nodes).forEach(function (key) {
-            if (nodes[key].classList.contains(showCls)) nodes[key].classList.replace(showCls, hideCls);
+        var fn = function fn(e) {
+          nodeKeys.forEach(function (k) {
+            if (nodes[k].classList.contains(showCls)) nodes[k].classList.replace(showCls, hideCls);
           });
+          if (_this8['option']['parentModalLayer'] instanceof ModalLayer) _this8['option']['parentModalLayer'].show();
 
-          _this7['setStatus']('hide');
+          _this8['setStatus']('hide');
 
-          nodes['container']['onanimationend'] = null;
-          if (_this7['option']['parentModalLayer'] !== null) _this7['option']['parentModalLayer'].show();
           resolve();
         };
+
+        if (_this8['option']['transition']['animation'] !== null) animations['container'].onfinish = fn;else fn();
       });
-      if (nodes['mask']) nodes['mask'].style.animation = opacityAnimation;
-      nodes['container'].style.animation = opacityAnimation + ', ' + transformAnimation;
+      nodeKeys.forEach(function (k) {
+        var _animations2;
+
+        var method = animations[k].playbackRate > 0 ? 'reverse' : 'play';
+        if ((_animations2 = animations) === null || _animations2 === void 0 ? void 0 : _animations2[k]) animations[k][method]();
+      });
       return promise;
     }
   }, {
     key: "minimize",
     value: function minimize() {
-      var _this8 = this;
+      var _this9 = this;
 
-      var index;
       var title;
-      var tmpClock, animationDur;
+      var keyframes, option;
       var queueNode, queueItemNode;
+      var animation, animations, animationDur;
       if (this['status'] === ModalLayer['_enum']['STATUS']['MINIMIZE']) return;
-      animationDur = 0.3;
+      animationDur = this['option']['transition']['duration'];
       queueNode = document.querySelector('#modal-layer-minimize-queue');
 
       if (!queueNode) {
@@ -1428,40 +1500,55 @@ var ModalLayer = function () {
       queueItemNode.setAttribute('modal-layer-index', this['option']['index']);
       queueItemNode.querySelector('.modal-layer-minimize-queue-item-title').innerHTML = title;
       queueNode.insertAdjacentElement('beforeend', queueItemNode);
-      tmpClock = setInterval(function () {
-        if (queueItemNode.parentNode) {
-          queueItemNode.style.animation = 'opacity ' + animationDur + 's ease forwards, ' + _this8['variable']['animationName']['minimize_queue_transition_scale'] + ' ' + animationDur + 's ease forwards';
-          clearInterval(tmpClock);
-        }
-      }, 10);
+
+      if (!(animations = ModalLayer['_assistant']['cache']['get']('minimizeQueueAnimations'))) {
+        animations = new Map();
+        ModalLayer['_assistant']['cache']['set']('minimizeQueueAnimations', animations);
+      }
+
+      if (animation = animations.get(this['option']['index'])) {
+        animation.reverse();
+      } else {
+        keyframes = [{
+          'opacity': 0,
+          'transform': 'scale(.45)'
+        }, {
+          'opacity': 1,
+          'transform': 'scale(1)'
+        }];
+        option = {
+          'fill': 'both',
+          'id': 'modal-layer-minimize-queue-transition-animation',
+          'easing': this['option']['transition']['easing'],
+          'duration': animationDur * 1000
+        };
+        animation = queueItemNode.animate(keyframes, option);
+        animations.set(this['option']['index'], animation);
+      }
+
       this['hide']().then(function () {
-        return void _this8['setStatus']('minimize');
+        return void _this9['setStatus']('minimize');
       });
     }
   }, {
     key: "revert",
     value: function revert() {
-      var _this9 = this;
+      var _this10 = this;
 
       var promise;
       var queueNode, queueItemNode;
-      var animationDur, animationHalfDur;
-      animationDur = 0.3;
-      animationHalfDur = animationDur * 100 / 2 / 100;
+      var animation, animationDur, animationHalfDur;
+      animationDur = this['option']['transition']['duration'];
       queueNode = document.querySelector('#modal-layer-minimize-queue');
+      animationHalfDur = ModalLayer['_assistant']['number']['divide'](animationDur, 2);
       queueItemNode = queueNode.querySelector('.modal-layer-minimize-queue-item[modal-layer-index="' + this['option']['index'] + '"]');
       if (![ModalLayer['_enum']['STATUS']['MINIMIZE']].includes(this['status'])) return;
-
-      queueItemNode['onanimationstart'] = function (e) {
-        setTimeout(function () {
-          _this9.show();
-
-          queueItemNode['onanimationstart'] = null;
-        }, animationHalfDur * 1000);
-      };
-
+      animation = ModalLayer['_assistant']['cache']['get']('minimizeQueueAnimations').get(this['option']['index']);
+      setTimeout(function () {
+        _this10.show();
+      }, animationHalfDur * 1000);
       promise = new Promise(function (resolve) {
-        queueItemNode['onanimationend'] = function (e) {
+        animation.onfinish = function (e) {
           queueItemNode.remove();
 
           if (ModalLayer['_minimizeQueue'].length <= 0) {
@@ -1469,16 +1556,17 @@ var ModalLayer = function () {
             ModalLayer['_assistant']['cache']['has']('minimizeQueueEvent') && ModalLayer['_assistant']['event']['remove'](ModalLayer['_assistant']['cache']['get']('minimizeQueueEvent'));
           }
 
+          animation.onfinish = null;
           resolve();
         };
       });
-      queueItemNode.style.animation = 'opacity-reverse ' + animationDur + 's ease forwards, ' + this['variable']['animationName']['minimize_queue_transition_scale'] + '-reverse ' + animationDur + 's ease forwards';
+      animation.reverse();
       return promise;
     }
   }, {
     key: "remove",
     value: function remove() {
-      var _this10 = this;
+      var _this11 = this;
 
       var nodes, status;
       status = this['status'];
@@ -1492,29 +1580,29 @@ var ModalLayer = function () {
       this['setStatus'](ModalLayer['_enum']['STATUS']['REMOVING']);
       if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['HIDE'], ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(status)) return Promise.resolve();
       return this['hide']().then(function () {
-        _this10['removeAllEvent']();
+        _this11['removeAllEvent']();
 
         Object.keys(nodes).forEach(function (key) {
           nodes[key].remove();
         });
 
-        _this10['setStatus']('removed');
+        _this11['setStatus']('removed');
       });
     }
   }, {
     key: "delete",
     value: function _delete() {
-      var _this11 = this;
+      var _this12 = this;
 
       this.remove().then(function () {
-        var index = ModalLayer._instance.indexOf(_this11);
+        var index = ModalLayer._instance.indexOf(_this12);
 
         ModalLayer._instance.splice(index, 1);
 
-        ModalLayer['_assistant']['object']['dereference'](_this11['event']);
-        ModalLayer['_assistant']['object']['dereference'](_this11['option']);
-        ModalLayer['_assistant']['object']['dereference'](_this11['variable']);
-        _this11['event'] = _this11['option'] = _this11['variable'] = null;
+        ModalLayer['_assistant']['object']['dereference'](_this12['event']);
+        ModalLayer['_assistant']['object']['dereference'](_this12['option']);
+        ModalLayer['_assistant']['object']['dereference'](_this12['variable']);
+        _this12['event'] = _this12['option'] = _this12['variable'] = null;
       });
     }
   }, {
@@ -1608,7 +1696,7 @@ var ModalLayer = function () {
         layer['variable']['image']['layer'].resize();
       }).then(function () {
         layer['positioning']();
-        layer['variable']['image']['layer'].positioning();
+        layer['variable']['image']['layer']['positioning']();
       }).then(function () {
         return layer.show();
       });
@@ -1707,64 +1795,6 @@ if (Object.is(window['ModalLayer'], ModalLayer)) {
     'value': ModalLayer
   });
 }
-
-var CssAssistant = function () {
-  function CssAssistant() {
-    _classCallCheck(this, CssAssistant);
-  }
-
-  _createClass(CssAssistant, null, [{
-    key: "createAnimation",
-    value: function createAnimation(name, change) {
-      var cssText = '@keyframes ' + name + ' {';
-      Object.keys(change).forEach(function (k) {
-        cssText += k + '{' + change[k] + '}';
-      });
-      return cssText + '}';
-    }
-  }, {
-    key: "hasCss",
-    value: function hasCss(name) {
-      return CssAssistant['cssList'].has(name);
-    }
-  }, {
-    key: "addCss",
-    value: function addCss(name, cssText) {
-      if (CssAssistant['hasCss'](name)) return false;
-
-      if (!CssAssistant['styleNode']) {
-        CssAssistant['styleNode'] = document.createElement('style');
-        document.head.appendChild(CssAssistant['styleNode']);
-      }
-
-      cssText = cssText.trim();
-      CssAssistant['cssList'].set(name, cssText);
-      CssAssistant['styleNode'].innerHTML += CssAssistant['delimiter'] + cssText;
-    }
-  }, {
-    key: "delCss",
-    value: function delCss(name) {
-      var regular;
-
-      if (CssAssistant['hasCss'](name)) {
-        regular = new RegExp(CssAssistant['delimiter'] + CssAssistant['cssList'].get(name), 'g');
-        CssAssistant['styleNode'].innerHTML = CssAssistant['styleNode'].innerHTML.replace(regular, '');
-      }
-    }
-  }]);
-
-  return CssAssistant;
-}();
-
-_defineProperty(CssAssistant, "cssList", new Map());
-
-_defineProperty(CssAssistant, "delimiter", '\n');
-
-_defineProperty(CssAssistant, "styleNode", null);
-
-Object.defineProperty(ModalLayer['_assistant'], 'css', {
-  value: CssAssistant
-});
 
 var FileAssistant = function () {
   function FileAssistant() {
@@ -2348,9 +2378,9 @@ var ObjectAssistant = function () {
           _k = _ref2[0];
           _v = _ref2[1];
           v = val[key.indexOf(_k)];
-          nCover = ObjectAssistant['isEmpty'](v);
+          nCover = v === undefined;
 
-          if ((ObjectAssistant['isEmpty'](v) || ObjectAssistant['isCollection'](v)) && ObjectAssistant['isCollection'](_v)) {
+          if ((nCover || ObjectAssistant['isCollection'](v)) && ObjectAssistant['isCollection'](_v)) {
             var _ref3, _ref4;
 
             var newEle = [];
@@ -2460,7 +2490,7 @@ var NumberAssistant = function () {
     value: function isFloat(value) {
       var number;
       value += '';
-      if (window.isNaN(number = window.parseFloat(value))) return false;
+      if (!Number.isFinite(number = window.parseFloat(value))) return false;
       if (window.Math.floor(number) == number) return false;
 
       if (value.endsWith('%')) {
@@ -2756,7 +2786,7 @@ var ElementAssistant = function () {
       if (node) allNodes = ElementAssistant.getAllElement(node);else allNodes = Array.from(document.all);
       return parseInt(allNodes.reduce(function (prev, currNode) {
         var currNodeZIndex = getComputedStyle(currNode, null).zIndex;
-        return window.Math.max(prev, !isNaN(currNodeZIndex) ? currNodeZIndex : 0);
+        return window.Math.max(prev, !Number.isInteger(currNodeZIndex) ? currNodeZIndex : 0);
       }, 0));
     }
   }, {
@@ -3505,7 +3535,7 @@ var PageLayer = function (_ModalLayer) {
   }, {
     key: "initNode",
     value: function initNode() {
-      var _this12 = this;
+      var _this13 = this;
 
       var container;
       var pageNode, pageStyle;
@@ -3517,49 +3547,30 @@ var PageLayer = function (_ModalLayer) {
       pageNode = container.querySelector('.modal-layer-page-content');
       pageStyle = 'display: block; width: ' + this['option']['layer']['area'][0] + 'px; height: ' + this['option']['layer']['area'][1] + 'px';
       Object.keys(this['option']['layer']).forEach(function (key) {
-        if (ModalLayer['_assistant']['object']['isEmpty'](_this12['option']['layer'][key])) return;
-        if (key === 'name') pageNode.setAttribute('name', _this12['option']['layer']['name'] + _this12['option']['index']);else pageNode.setAttribute(key, _this12['option']['layer'][key]);
+        if (ModalLayer['_assistant']['object']['isEmpty'](_this13['option']['layer'][key])) return;
+        if (key === 'name') pageNode.setAttribute('name', _this13['option']['layer']['name'] + _this13['option']['index']);else pageNode.setAttribute(key, _this13['option']['layer'][key]);
       });
-      pageNode.style = pageStyle;
-      scaleAnimationName = 'transition-scale-50-50-animation';
-      this['variable']['animationName']['minimize_queue_transition_scale'] = scaleAnimationName;
-
-      if (!ModalLayer['_assistant']['css']['hasCss'](scaleAnimationName)) {
-        scaleAnimationChange = {
-          'from': 'transform: scale(0.5, 0.5)',
-          'to': 'transform: scale(1, 1)'
-        };
-        scaleAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](scaleAnimationName, scaleAnimationChange);
-        ModalLayer['_assistant']['css']['addCss'](scaleAnimationName, scaleAnimationCss);
-        ModalLayer['_assistant']['css']['addCss'](scaleAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](scaleAnimationName + '-reverse', {
-          'from': scaleAnimationChange['to'],
-          'to': scaleAnimationChange['from']
-        }));
-      }
     }
   }, {
     key: "resize",
     value: function resize() {
-      var pageNode;
-      var containerNode, modalChildNodes;
-      var windowWidth, windowHeight, newModalWidth, newModalHeight;
-      windowWidth = window.innerWidth;
-      windowHeight = window.innerHeight;
-      newModalWidth = newModalHeight = 0;
-      containerNode = this['variable']['nodes']['container'];
-      modalChildNodes = containerNode.children;
-      pageNode = containerNode.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
-      newModalWidth = pageNode.offsetWidth + pageNode.parentNode.offsetLeft * 2;
+      var width, height;
+      var page, content, container, children;
+      height = 0;
+      container = this['variable']['nodes']['container'];
+      children = container.children;
+      page = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
+      page.style.cssText = "width: ".concat(this['option']['layer']['area'][0], "px; height: ").concat(this['option']['layer']['area'][1], "px;");
+      width = this['option']['layer']['area'][0] + page.parentNode.offsetLeft * 2;
 
-      for (var i = 0; i < modalChildNodes.length; i++) {
-        newModalHeight = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? newModalHeight : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), newModalHeight);
+      for (var i = 0; i < children.length; i++) {
+        height = getComputedStyle(children[i], null).position == 'absolute' ? height : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](children[i]), height);
       }
 
-      containerNode.style.width = newModalWidth + 'px';
-      containerNode.style.height = newModalHeight + 'px';
-      this['variable']['defaultRect']['width'] = newModalWidth;
-      this['variable']['defaultRect']['height'] = newModalHeight;
-      this['variable']['defaultArea'] = [newModalWidth, newModalHeight];
+      container.style.cssText += "width: ".concat(width, "px; height: ").concat(height, "px;");
+      this['variable']['defaultRect']['width'] = width;
+      this['variable']['defaultRect']['height'] = height;
+      this['variable']['defaultArea'] = [width, height];
     }
   }]);
 
@@ -3652,7 +3663,7 @@ var ImageLayer = function (_ModalLayer3) {
   _createClass(ImageLayer, [{
     key: "initOption",
     value: function initOption(options) {
-      var _this13 = this;
+      var _this14 = this;
 
       var base, wSize;
 
@@ -3669,8 +3680,8 @@ var ImageLayer = function (_ModalLayer3) {
       if (this['option']['layer']['sizeRange']['min'][0] > this['option']['layer']['sizeRange']['max'][0]) this['option']['layer']['sizeRange']['min'][0] = this['option']['layer']['sizeRange']['max'][0];
       if (this['option']['layer']['sizeRange']['min'][1] > this['option']['layer']['sizeRange']['max'][1]) this['option']['layer']['sizeRange']['min'][1] = this['option']['layer']['sizeRange']['max'][1];
       Object.keys(this['option']['layer']['toolbar']['config']).forEach(function (key, val) {
-        val = _this13['option']['layer']['toolbar']['config'][key];
-        if (typeof val == 'boolean') _this13['option']['layer']['toolbar']['config'][key] = {
+        val = _this14['option']['layer']['toolbar']['config'][key];
+        if (typeof val == 'boolean') _this14['option']['layer']['toolbar']['config'][key] = {
           'enable': val,
           'title': ModalLayer['_option']['image']['toolbar']['config'][key]['title'],
           'icon': ModalLayer['_option']['image']['toolbar']['config'][key]['icon']
@@ -3679,14 +3690,14 @@ var ImageLayer = function (_ModalLayer3) {
         if (ModalLayer['_assistant']['object']['isOnlyObject'](val['config'])) {
           Object.keys(val['config']).forEach(function (k, v) {
             v = val['config'][k];
-            if (typeof v == 'boolean') _this13['option']['layer']['toolbar']['config'][key]['config'][k] = {
+            if (typeof v == 'boolean') _this14['option']['layer']['toolbar']['config'][key]['config'][k] = {
               'enable': v,
               'title': ModalLayer['_option']['image']['toolbar']['config'][key]['config'][k]['title'],
               'icon': ModalLayer['_option']['image']['toolbar']['config'][key]['config'][k]['icon']
             };
           });
         } else if (ModalLayer['_option']['image']['toolbar']['config'][key]['config']) {
-          _this13['option']['layer']['toolbar']['config'][key]['config'] = JSON.parse(JSON.stringify(ModalLayer['_option']['image']['toolbar']['config'][key]['config']));
+          _this14['option']['layer']['toolbar']['config'][key]['config'] = JSON.parse(JSON.stringify(ModalLayer['_option']['image']['toolbar']['config'][key]['config']));
         }
       });
     }
@@ -3755,7 +3766,7 @@ var ImageLayer = function (_ModalLayer3) {
 
       if (ModalLayer['_assistant']['object']['isEmpty'](this['option']['layer']['image'])) throw new Error('layer.image can not be empty!');
       if (this['option']['layer']['size'] && !Array.isArray(this['option']['layer']['size'])) throw new Error('layer.size does not meet expectations.');
-      if (!this['option']['layer']['size'] && (window.isNaN(parseInt(this['option']['layer']['sizeRange']['min'][0])) || window.isNaN(parseInt(this['option']['layer']['sizeRange']['min'][1])) || window.isNaN(parseInt(this['option']['layer']['sizeRange']['max'][0])) || window.isNaN(parseInt(this['option']['layer']['sizeRange']['max'][1])))) throw new Error('layer.sizeRange does not meet expectations.');
+      if (!this['option']['layer']['size'] && (!Number.isFinite(parseInt(this['option']['layer']['sizeRange']['min'][0])) || !Number.isFinite(parseInt(this['option']['layer']['sizeRange']['min'][1])) || !Number.isFinite(parseInt(this['option']['layer']['sizeRange']['max'][0])) || !Number.isFinite(parseInt(this['option']['layer']['sizeRange']['max'][1])))) throw new Error('layer.sizeRange does not meet expectations.');
     }
   }, {
     key: "initVariable",
@@ -3781,7 +3792,7 @@ var ImageLayer = function (_ModalLayer3) {
   }, {
     key: "initStruct",
     value: function initStruct() {
-      var _this14 = this;
+      var _this15 = this;
 
       var action, actionButton;
       var tools, toolbar, toolChild, contentImage;
@@ -3802,10 +3813,10 @@ var ImageLayer = function (_ModalLayer3) {
       title.innerHTML.push(action);
       if (this['option']['title'] !== false) container.innerHTML.push(title);
       Object.keys(this['option']['layer']['toolbar']['config']).forEach(function (k) {
-        if (_this14['option']['layer']['toolbar']['config'][k]['enable']) toolbar.innerHTML.push(tools[k]);
+        if (_this15['option']['layer']['toolbar']['config'][k]['enable']) toolbar.innerHTML.push(tools[k]);
 
-        if (_this14['option']['layer']['toolbar']['config'][k]['config'] instanceof Object && _this14['option']['layer']['toolbar']['config'][k]['enable']) {
-          Object.keys(_this14['option']['layer']['toolbar']['config'][k]['config']).forEach(function (key) {
+        if (_this15['option']['layer']['toolbar']['config'][k]['config'] instanceof Object && _this15['option']['layer']['toolbar']['config'][k]['enable']) {
+          Object.keys(_this15['option']['layer']['toolbar']['config'][k]['config']).forEach(function (key) {
             tools[k].innerHTML[1].innerHTML.push(toolChild[k][key]);
           });
         }
@@ -3827,7 +3838,7 @@ var ImageLayer = function (_ModalLayer3) {
   }, {
     key: "initNode",
     value: function initNode() {
-      var _this15 = this;
+      var _this16 = this;
 
       var container, toolbar;
 
@@ -3838,7 +3849,7 @@ var ImageLayer = function (_ModalLayer3) {
 
       if (this['option']['layer']['toolbar']['enable']) {
         Object.keys(this['option']['layer']['toolbar']['config']).forEach(function (k, v) {
-          v = _this15['option']['layer']['toolbar']['config'][k];
+          v = _this16['option']['layer']['toolbar']['config'][k];
 
           if (v['enable']) {
             var _itemIconNode$classLi;
@@ -3869,15 +3880,15 @@ var ImageLayer = function (_ModalLayer3) {
       }
 
       this['variable']['image']['finish'] = this['load']().then(function (img) {
-        return _this15['loaded'](img);
+        return _this16['loaded'](img);
       })["catch"](function () {
-        return _this15['failed']();
+        return _this16['failed']();
       });
     }
   }, {
     key: "bindEvent",
     value: function bindEvent() {
-      var _this16 = this;
+      var _this17 = this;
 
       var options;
       var container;
@@ -3895,14 +3906,12 @@ var ImageLayer = function (_ModalLayer3) {
       failedText = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['LOAD_STATUS'], ModalLayer['_enum']['LOAD_STATUS']['FAILED']);
       this['variable']['eventSymbol']['imageReload'] = ModalLayer['_assistant']['event']['add'](container, 'click', '.modal-layer-image-canvas[load-status="' + failedText + '"]', this['reload'], this, null, options);
       Object.keys(this['event']['imageTools']).forEach(function (k) {
-        if (_this16['event']['imageTools'][k] && _this16['event']['imageTools'][k] instanceof Function) _this16['variable']['eventSymbol']["imageTool".concat(k)] = ModalLayer['_assistant']['event']['add'](container, 'click', ".modal-layer-toolbar-item[tool-type=\"".concat(k, "\"]"), _this16['event']['imageTools'][k], _this16, null, options);
+        if (_this17['event']['imageTools'][k] && _this17['event']['imageTools'][k] instanceof Function) _this17['variable']['eventSymbol']["imageTool".concat(k)] = ModalLayer['_assistant']['event']['add'](container, 'click', ".modal-layer-toolbar-item[tool-type=\"".concat(k, "\"]"), _this17['event']['imageTools'][k], _this17, null, options);
       });
     }
   }, {
     key: "resize",
     value: function resize() {
-      var _this$option$window2;
-
       var defaultArea;
       var canvas, canvasRect;
       var container, contentNode;
@@ -3934,12 +3943,12 @@ var ImageLayer = function (_ModalLayer3) {
       this['variable']['defaultArea'] = defaultArea;
       this['variable']['defaultRect']['width'] = defaultArea[0];
       this['variable']['defaultRect']['height'] = defaultArea[1];
-      if (!this['option']['drag']['overflow'] && ModalLayer['_assistant']['element']['isOverflow'](container, (_this$option$window2 = this['option']['window']) !== null && _this$option$window2 !== void 0 ? _this$option$window2 : document.body)) container.style.cssText += 'margin-top: auto; margin-left: auto';
+      if (!this['option']['drag']['overflow'] && ModalLayer['_assistant']['element']['isOverflow'](container, this['option']['window'])) this['positioning']();
     }
   }, {
     key: "load",
     value: function load() {
-      var _this17 = this;
+      var _this18 = this;
 
       var cas = this['variable']['nodes']['container'].querySelector('.modal-layer-image-canvas');
       this['variable']['image']['status'] = ModalLayer['_enum']['LOAD_STATUS']['LOADING'];
@@ -3960,11 +3969,11 @@ var ImageLayer = function (_ModalLayer3) {
       return this['variable']['image']['finish'] = new Promise(function (resolve, reject) {
         var node = new Image();
 
-        while (!_this17['variable']['image']['link'] && _this17['variable']['image']['reload'] < _this17['option']['layer']['image'].length) {
-          var _this17$variable$imag;
+        while (!_this18['variable']['image']['link'] && _this18['variable']['image']['reload'] < _this18['option']['layer']['image'].length) {
+          var _this18$variable$imag;
 
-          if ((_this17$variable$imag = _this17['variable']['image']['link']) === null || _this17$variable$imag === void 0 ? void 0 : _this17$variable$imag.startsWith('blob:')) URL.revokeObjectURL(_this17['variable']['image']['link']);
-          _this17['variable']['image']['link'] = ModalLayer['_assistant']['file']['getImage'](_this17['option']['layer']['image'][_this17['variable']['image']['reload']++]);
+          if ((_this18$variable$imag = _this18['variable']['image']['link']) === null || _this18$variable$imag === void 0 ? void 0 : _this18$variable$imag.startsWith('blob:')) URL.revokeObjectURL(_this18['variable']['image']['link']);
+          _this18['variable']['image']['link'] = ModalLayer['_assistant']['file']['getImage'](_this18['option']['layer']['image'][_this18['variable']['image']['reload']++]);
         }
 
         node['onload'] = function () {
@@ -3972,26 +3981,26 @@ var ImageLayer = function (_ModalLayer3) {
         };
 
         node['onerror'] = reject;
-        node.src = _this17['variable']['image']['link'];
+        node.src = _this18['variable']['image']['link'];
       });
     }
   }, {
     key: "reload",
     value: function reload() {
-      var _this18 = this;
+      var _this19 = this;
 
       this['variable']['image']['finish'] = this['load']().then(function (img) {
-        return _this18['loaded'](img);
+        return _this19['loaded'](img);
       })["catch"](function () {
-        return _this18['failed']();
+        return _this19['failed']();
       })["finally"](function () {
-        return _this18.resize();
+        return _this19.resize();
       });
     }
   }, {
     key: "loaded",
     value: function loaded(img) {
-      var _this19 = this;
+      var _this20 = this;
 
       var cas, container;
       var priority, aspectRatio;
@@ -4011,11 +4020,11 @@ var ImageLayer = function (_ModalLayer3) {
       window.requestAnimationFrame(function () {
         var _cas$getContext, _cas$getContext2;
 
-        if (_this19['variable']['image']['layer'] && _this19['variable']['image']['layer'] instanceof LoadingLayer) _this19['variable']['image']['layer']['hide']();
+        if (_this20['variable']['image']['layer'] && _this20['variable']['image']['layer'] instanceof LoadingLayer) _this20['variable']['image']['layer']['hide']();
 
-        (_cas$getContext = cas.getContext('2d')).drawImage.apply(_cas$getContext, [img, 0, 0, img.width, img.height, 0, 0].concat(_toConsumableArray(_this19['variable']['image']['default']['size'])));
+        (_cas$getContext = cas.getContext('2d')).drawImage.apply(_cas$getContext, [img, 0, 0, img.width, img.height, 0, 0].concat(_toConsumableArray(_this20['variable']['image']['default']['size'])));
 
-        _this19['variable']['image']['default']['imageData'] = (_cas$getContext2 = cas.getContext('2d')).getImageData.apply(_cas$getContext2, [0, 0].concat(_toConsumableArray(_this19['variable']['image']['default']['size'])));
+        _this20['variable']['image']['default']['imageData'] = (_cas$getContext2 = cas.getContext('2d')).getImageData.apply(_cas$getContext2, [0, 0].concat(_toConsumableArray(_this20['variable']['image']['default']['size'])));
       });
     }
   }, {
@@ -4077,20 +4086,20 @@ var ImageLayer = function (_ModalLayer3) {
   }, {
     key: "removeAllEvent",
     value: function removeAllEvent() {
-      var _this20 = this;
+      var _this21 = this;
 
       var container = this['variable']['nodes']['container'];
 
       _get(_getPrototypeOf(ImageLayer.prototype), "removeAllEvent", this).call(this);
 
       Object.keys(this['event']['imageTools']).forEach(function (k) {
-        if (_this20['event']['imageTools'][k] && _this20['event']['imageTools'][k] instanceof Function) container.removeEventListener('click', _this20['event']['imageTools'][k]);
+        if (_this21['event']['imageTools'][k] && _this21['event']['imageTools'][k] instanceof Function) container.removeEventListener('click', _this21['event']['imageTools'][k]);
       });
     }
   }, {
     key: "crop",
     value: function crop() {
-      var _this21 = this;
+      var _this22 = this;
 
       var sPic, cropCasCenter;
       var operation, mousedown, direction;
@@ -4168,7 +4177,7 @@ var ImageLayer = function (_ModalLayer3) {
             break;
 
           case 'Escape':
-            _this21.show();
+            _this22.show();
 
             cleanEvent();
             kEvent.preventDefault();
@@ -4191,8 +4200,8 @@ var ImageLayer = function (_ModalLayer3) {
         sPic.height = repaintVariable[3];
         sPic.getContext('2d').drawImage(sPicBackup, repaintVariable[0] - cropCasCenter[0], repaintVariable[1] - cropCasCenter[1], repaintVariable[2], repaintVariable[3], 0, 0, sPic.width, sPic.height);
 
-        _this21['show']().then(function () {
-          return _this21['resize']();
+        _this22['show']().then(function () {
+          return _this22['resize']();
         });
       };
 
@@ -4211,21 +4220,21 @@ var ImageLayer = function (_ModalLayer3) {
           } else if (operation === 'resize') {
             backup = _toConsumableArray(repaintVariable);
 
-            if (direction.includes(ModalLayer['_enum']['POSITION']['WEST'])) {
+            if (direction.includes(ModalLayer['_enum']['DIRECTION']['WEST'])) {
               repaintVariable[0] += mEvent.movementX;
               repaintVariable[2] -= mEvent.movementX;
             }
 
-            if (direction.includes(ModalLayer['_enum']['POSITION']['EAST'])) {
+            if (direction.includes(ModalLayer['_enum']['DIRECTION']['EAST'])) {
               repaintVariable[2] += mEvent.movementX;
             }
 
-            if (direction.includes(ModalLayer['_enum']['POSITION']['NORTH'])) {
+            if (direction.includes(ModalLayer['_enum']['DIRECTION']['NORTH'])) {
               repaintVariable[1] += mEvent.movementY;
               repaintVariable[3] -= mEvent.movementY;
             }
 
-            if (direction.includes(ModalLayer['_enum']['POSITION']['SOUTH'])) {
+            if (direction.includes(ModalLayer['_enum']['DIRECTION']['SOUTH'])) {
               repaintVariable[3] += mEvent.movementY;
             }
 
@@ -4262,19 +4271,19 @@ var ImageLayer = function (_ModalLayer3) {
             cursor = direction = '';
 
             if (mPoint[1] > resizeRect[1] && mPoint[1] < cropRect[1]) {
-              cursor = direction += ModalLayer['_enum']['POSITION']['NORTH'];
+              cursor = direction += ModalLayer['_enum']['DIRECTION']['NORTH'];
             }
 
             if (mPoint[1] > cropRect[1] + cropRect[3] && mPoint[1] < resizeRect[1] + resizeRect[3]) {
-              cursor = direction += ModalLayer['_enum']['POSITION']['SOUTH'];
+              cursor = direction += ModalLayer['_enum']['DIRECTION']['SOUTH'];
             }
 
             if (mPoint[0] > resizeRect[0] && mPoint[0] < cropRect[0]) {
-              cursor = direction += ModalLayer['_enum']['POSITION']['WEST'];
+              cursor = direction += ModalLayer['_enum']['DIRECTION']['WEST'];
             }
 
             if (mPoint[0] > cropRect[0] + cropRect[2] && mPoint[0] < resizeRect[0] + resizeRect[2]) {
-              cursor = direction += ModalLayer['_enum']['POSITION']['EAST'];
+              cursor = direction += ModalLayer['_enum']['DIRECTION']['EAST'];
             }
 
             cursor += '-resize';
@@ -4298,10 +4307,9 @@ var ImageLayer = function (_ModalLayer3) {
     }
   }, {
     key: "spin",
-    value: function spin() {
-      var _this22 = this;
+    value: function spin(angle) {
+      var _this23 = this;
 
-      var angle = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
       var rect, radian;
       var cas, ctx, backup;
       var scale, newSize, newPoint;
@@ -4312,15 +4320,15 @@ var ImageLayer = function (_ModalLayer3) {
       this['variable']['image']['finish'].then(function (img) {
         var _angle;
 
-        angle = (_angle = angle) !== null && _angle !== void 0 ? _angle : _this22['variable']['image']['spin']['angle'];
+        angle = (_angle = angle) !== null && _angle !== void 0 ? _angle : _this23['variable']['image']['spin']['angle'];
         cas.style.transform = 'rotate(' + angle + 'deg)';
         rect = cas.getBoundingClientRect();
-        cas.style.transform = "scale(".concat(_this22['variable']['image']['spin']['scale'], ")");
+        cas.style.transform = "scale(".concat(_this23['variable']['image']['spin']['scale'], ")");
 
-        if (_this22['option']['layer']['size'] || _this22['option']['layer']['sizeRange']['max'][0] >= rect.width && _this22['option']['layer']['sizeRange']['max'][1] >= rect.height) {
-          scale = _this22['variable']['image']['spin']['scale'];
+        if (_this23['option']['layer']['size'] || _this23['option']['layer']['sizeRange']['max'][0] >= rect.width && _this23['option']['layer']['sizeRange']['max'][1] >= rect.height) {
+          scale = _this23['variable']['image']['spin']['scale'];
         } else {
-          newSize = ModalLayer['_assistant']['number']['getMaxLegalSize']([rect.width, rect.height], _this22['option']['layer']['sizeRange']['max']);
+          newSize = ModalLayer['_assistant']['number']['getMaxLegalSize']([rect.width, rect.height], _this23['option']['layer']['sizeRange']['max']);
           scale = newSize[0] / rect.width;
         }
 
@@ -4334,13 +4342,13 @@ var ImageLayer = function (_ModalLayer3) {
         ctx.drawImage(backup, -backup.width / 2, -backup.height / 2);
         ctx.restore();
 
-        _this22.resize();
+        _this23.resize();
       });
     }
   }, {
     key: "filter",
     value: function filter(target) {
-      var _this23 = this,
+      var _this24 = this,
           _blur$gray$mirror$fil,
           _blur$gray$mirror;
 
@@ -4364,7 +4372,7 @@ var ImageLayer = function (_ModalLayer3) {
         ModalLayer['_assistant']['worker']['listener'](wKey).then(function (e) {
           if (e['data']['error'] == 0) ctx.putImageData(new ImageData(new Uint8ClampedArray(e['data']['buffer']), cas.width, cas.height), 0, 0);else console.error(Error(e['data']['message']));
           showPromise.then(function () {
-            return _this23['variable']['image']['layer']['hide']();
+            return _this24['variable']['image']['layer']['hide']();
           });
           ModalLayer['_assistant']['worker']['close'](wKey);
         });
@@ -4412,7 +4420,7 @@ var ImageLayer = function (_ModalLayer3) {
             imgData = ModalLayer['_assistant']['canvasFilter']['gaussianBlur'](imgData, radius, sigma);
             ctx.putImageData(imgData, 0, 0);
             showPromise.then(function () {
-              return _this23['variable']['image']['layer']['hide']();
+              return _this24['variable']['image']['layer']['hide']();
             });
           }
         },
@@ -4426,7 +4434,7 @@ var ImageLayer = function (_ModalLayer3) {
             imgData = ModalLayer['_assistant']['canvasFilter']['grayscale'](ctx.getImageData(0, 0, cas.width, cas.height));
             ctx.putImageData(imgData, 0, 0);
             showPromise.then(function () {
-              return _this23['variable']['image']['layer']['hide']();
+              return _this24['variable']['image']['layer']['hide']();
             });
           }
         },
@@ -4446,7 +4454,7 @@ var ImageLayer = function (_ModalLayer3) {
             imgData = ModalLayer['_assistant']['canvasFilter']['mirror'](ctx.getImageData(0, 0, cas.width, cas.height), axis);
             ctx.putImageData(imgData, 0, 0);
             showPromise.then(function () {
-              return _this23['variable']['image']['layer']['hide']();
+              return _this24['variable']['image']['layer']['hide']();
             });
           }
         }
@@ -4574,7 +4582,7 @@ var LoadingLayer = function (_ModalLayer4) {
           var _positionMap$options$;
 
           options['layer']['position'][i] = (_positionMap$options$ = positionMap[options['layer']['position'][i]]) !== null && _positionMap$options$ !== void 0 ? _positionMap$options$ : options['layer']['position'][i];
-          options['layer']['position'][i] = window.isNaN(options['layer']['position'][i]) ? options['layer']['position'][i] : options['layer']['position'][i] + 'px';
+          options['layer']['position'][i] = !Number.isInteger(options['layer']['position'][i]) ? options['layer']['position'][i] : options['layer']['position'][i] + 'px';
         }
       }
     }
@@ -4597,7 +4605,7 @@ var LoadingLayer = function (_ModalLayer4) {
       content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
       loading = this['variable']['struct']['_backup']['content_loading'] = ModalLayer['_struct']['content_loading'];
       loadingIcon = this['variable']['struct']['_backup']['content_loading_icon'] = ModalLayer['_struct']['content_loading_icon'];
-      if (window.isNaN(Number(this['option']['layer'].icon))) loading.innerHTML[0]["class"] += ' ' + this['option']['layer'].icon;else loading.innerHTML[0] = loadingIcon[this['option']['layer'].icon];
+      if (Number.isInteger(Number(this['option']['layer'].icon))) loading.innerHTML[0] = loadingIcon[this['option']['layer'].icon];else loading.innerHTML[0]["class"] += ' ' + this['option']['layer'].icon;
       content.innerHTML.push(loading);
       container.innerHTML.push(content);
     }
@@ -4895,18 +4903,18 @@ var SyncStorage = function (_StorageAbstract) {
   var _super8 = _createSuper(SyncStorage);
 
   function SyncStorage() {
-    var _this24;
+    var _this25;
 
     var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ModalLayer['_enum']['BROWSER_STORAGE']['SESSIONSTORAGE'];
 
     _classCallCheck(this, SyncStorage);
 
     if (!window[type]) throw Error("The current browser does not support ".concat(type, " function"));
-    _this24 = _super8.call(this);
-    _this24['_record'] = [];
-    _this24['_type'] = type;
-    _this24['_storage'] = window[type];
-    return _this24;
+    _this25 = _super8.call(this);
+    _this25['_record'] = [];
+    _this25['_type'] = type;
+    _this25['_storage'] = window[type];
+    return _this25;
   }
 
   _createClass(SyncStorage, [{

@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-16 03:25:30
+* @Last Modified time: 2020-12-01 19:23:59
 */
 
 class PageLayer extends ModalLayer {
@@ -102,24 +102,6 @@ class PageLayer extends ModalLayer {
       else
         pageNode.setAttribute(key, this['option']['layer'][key]);
     });
-    pageNode.style = pageStyle;
-
-    // 构造css代码准备工作
-    scaleAnimationName = 'transition-scale-50-50-animation';
-
-    this['variable']['animationName']['minimize_queue_transition_scale'] = scaleAnimationName;
-
-    if (!ModalLayer['_assistant']['css']['hasCss'](scaleAnimationName)) {
-      scaleAnimationChange = {
-        'from': 'transform: scale(0.5, 0.5)',
-        'to': 'transform: scale(1, 1)'
-      };
-      // 构造css动画
-      scaleAnimationCss = ModalLayer['_assistant']['css']['createAnimation'](scaleAnimationName, scaleAnimationChange);
-      // 将css代码插入到style中
-      ModalLayer['_assistant']['css']['addCss'](scaleAnimationName, scaleAnimationCss);
-      ModalLayer['_assistant']['css']['addCss'](scaleAnimationName + '-reverse', ModalLayer['_assistant']['css']['createAnimation'](scaleAnimationName + '-reverse', {'from': scaleAnimationChange['to'], 'to': scaleAnimationChange['from']}));
-    }
   }
 
  /**
@@ -129,27 +111,24 @@ class PageLayer extends ModalLayer {
   * @DateTime 2020-09-02T02:28:37+0800
   */
   resize () {
-    let pageNode;
-    let containerNode, modalChildNodes;
-    let windowWidth, windowHeight, newModalWidth, newModalHeight;
+    let width, height;
+    let page, content, container, children;
 
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
-    newModalWidth = newModalHeight = 0;
-    containerNode = this['variable']['nodes']['container'];
-    modalChildNodes = containerNode.children;
+    height = 0;
+    container = this['variable']['nodes']['container'];
+    children = container.children;
 
-    pageNode = containerNode.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
-    newModalWidth = pageNode.offsetWidth + (pageNode.parentNode.offsetLeft * 2);
-    for (let i = 0; i < modalChildNodes.length; i++)
-      newModalHeight = getComputedStyle(modalChildNodes[i], null).position == 'absolute' ? newModalHeight : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), newModalHeight);
-    containerNode.style.width = newModalWidth + 'px';
-    containerNode.style.height = newModalHeight + 'px';
+    page = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
+    page.style.cssText =  `width: ${this['option']['layer']['area'][0]}px; height: ${this['option']['layer']['area'][1]}px;`;
+    width = this['option']['layer']['area'][0] + (page.parentNode.offsetLeft * 2);
+    for (let i = 0; i < children.length; i++)
+      height = getComputedStyle(children[i], null).position == 'absolute' ? height : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](children[i]), height);
+    container.style.cssText += `width: ${width}px; height: ${height}px;`;
 
     // 记录初始化后的最小值
-    this['variable']['defaultRect']['width'] = newModalWidth;
-    this['variable']['defaultRect']['height'] = newModalHeight;
-    this['variable']['defaultArea'] = [newModalWidth, newModalHeight];
+    this['variable']['defaultRect']['width'] = width;
+    this['variable']['defaultRect']['height'] = height;
+    this['variable']['defaultArea'] = [width, height];
   }
 }
 

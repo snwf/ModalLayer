@@ -5,7 +5,7 @@
 * @Description         构建将要使用的js和css
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-28 01:07:17
+* @Last Modified time: 2020-12-01 21:53:31
 */
 
 const fs = require('fs');
@@ -41,7 +41,7 @@ buildList = {
     path.join(CORE_PATH, '/struct.js'),
     path.join(CORE_PATH, '/enum.js'),
     path.join(CORE_PATH, '/core.js'),
-    path.join(ASSISTANT_PATH, '/css.js'),
+    // path.join(ASSISTANT_PATH, '/css.js'),
     path.join(ASSISTANT_PATH, '/file.js'),
     path.join(ASSISTANT_PATH, '/cache.js'),
     path.join(ASSISTANT_PATH, '/event.js'),
@@ -70,7 +70,7 @@ buildList = {
   'css': [
     path.join(SOURCE_PATH, '/css/core.css'),
     path.join(SKIN_PATH, '/default.css'),
-    path.join(SOURCE_PATH, '/css/animation.css')
+    // path.join(SOURCE_PATH, '/css/animation.css')
   ]
 };
 

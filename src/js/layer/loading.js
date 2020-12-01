@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 02:53:29
+* @Last Modified time: 2020-12-01 04:01:58
 */
 
 class LoadingLayer extends ModalLayer {
@@ -54,7 +54,7 @@ class LoadingLayer extends ModalLayer {
 
       for (let i = 0; i < 2; i++) {
         options['layer']['position'][i] = positionMap[options['layer']['position'][i]] ?? options['layer']['position'][i];
-        options['layer']['position'][i] = Number.isInteger(options['layer']['position'][i]) ? options['layer']['position'][i] : options['layer']['position'][i] + 'px'
+        options['layer']['position'][i] = !Number.isInteger(options['layer']['position'][i]) ? options['layer']['position'][i] : options['layer']['position'][i] + 'px'
       }
     }
   }
@@ -90,9 +90,9 @@ class LoadingLayer extends ModalLayer {
     loadingIcon = this['variable']['struct']['_backup']['content_loading_icon'] = ModalLayer['_struct']['content_loading_icon'];
     
     if (Number.isInteger(Number(this['option']['layer'].icon)))
-      loading.innerHTML[0].class += ' ' + this['option']['layer'].icon;
-    else
       loading.innerHTML[0] = loadingIcon[this['option']['layer'].icon];
+    else
+      loading.innerHTML[0].class += ' ' + this['option']['layer'].icon;
 
     content.innerHTML.push(loading);
 

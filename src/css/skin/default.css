@@ -5,7 +5,7 @@
 * @Description         ModalLayer默认皮肤样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-17 03:28:02
+* @Last Modified time: 2020-12-01 19:20:53
 */
 
 .modal-layer-skin-default.modal-layer-ui,
@@ -146,6 +146,10 @@
   height: 100%;
   display: flex;
   pointer-events: none;
+}
+
+.modal-layer-skin-default[modal-layer-type=page] > .modal-layer-content {
+  font-size: 0px;
 }
 
 .modal-layer-skin-default[modal-layer-type=image] > .modal-layer-content {

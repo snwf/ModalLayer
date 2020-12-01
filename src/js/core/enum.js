@@ -5,7 +5,7 @@
 * @Description         枚举
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 01:54:16
+* @Last Modified time: 2020-12-01 03:45:28
 */
 
 const ENUM = Object.create(null);
@@ -47,13 +47,29 @@ Object.defineProperty(ENUM, 'TIPS_POSITION', {
  *
  * @type {Object}
  */
-Object.defineProperty(ENUM, 'POSITION', {
+Object.defineProperty(ENUM, 'DIRECTION', {
   'enumerable': true,
   'value': {
     'EAST': 'e', // 东
     'WEST': 'w', // 西
     'SOUTH': 's', // 南
     'NORTH': 'n' // 北
+  }
+})
+
+/**
+ * 定位预设值
+ *
+ * @type {Object}
+ */
+Object.defineProperty(ENUM, 'POSITION', {
+  'enumerable': true,
+  'value': {
+    'CENTER': null,
+    'LEFT_TOP': 'lt',
+    'RIGHT_TOP': 'rt',
+    'LEFT_BOTTOM': 'lb',
+    'RIGHT_BOTTOM': 'rb',
   }
 })
 
