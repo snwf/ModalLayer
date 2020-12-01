@@ -45,6 +45,7 @@
         <td>array</td>
         <td><code>null</code></td>
         <td>
+          <a class="code" target="_blank" href="javascript: void(0);">ENUM.POSITION</a><br>
           <span i18n-message="Specifies the position of the modal layer, expecting an integer array."></span><br>
           <span i18n-message="If it is not an array, the elements are automatically repeated to form an array."></span>
         </td>

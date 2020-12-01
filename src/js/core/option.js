@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 03:11:54
+* @Last Modified time: 2020-12-01 23:23:32
 */
 
 const OPTION = Object.create(null);
@@ -125,7 +125,7 @@ Object.defineProperty(OPTION, 'common', {
     'ui': 'modal-layer-ui', // 统一的class
     'title': null, // 标题(传入false则不显示标题栏)
     'window': null, // 父容器, 不能为static定位, 否则无法约束.
-    'position': null, // 模态层定位 [x, y]
+    'position': null, // 模态层定位 [x, y] 或 预设值ENUM.POSITION
     'popupTime': 5, // 模态层默认显示时间
     'skin': 'default', // 皮肤样式
     'parentModalLayer': null, // 父模态层
