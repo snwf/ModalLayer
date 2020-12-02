@@ -103,37 +103,49 @@
 }
 
 .modal-layer-skin-default[modal-layer-type=tips] {
-  background: rgba(7, 7, 7, 0.5);
-  color: white;
+  background: rgb(0, 0, 0);
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .modal-layer-content {
+  color: aliceblue;
 }
 .modal-layer-skin-default[modal-layer-type=tips] > .depend-icon {
+  width: 0px;
+  height: 0px;
+  margin: auto;
   position: absolute;
+  border: 0px solid transparent;
 }
-.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=left] {
-  top: 0px;
-  bottom: 0px;
-  margin: auto;
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-top,
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-bottom {
+  left: 0px;
   right: 0px;
 }
-.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=right] {
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-top {
+  top: 0px;
+  border-width: 0px 20px 20px 20px;
+  border-bottom-color: rgb(7, 7, 7);
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-bottom {
+  bottom: 0px;
+  border-width: 20px 20px 0px 20px;
+  border-top-color: rgb(7, 7, 7);
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-left {
   top: 0px;
   bottom: 0px;
-  margin: auto;
   left: 0px;
+  border-width: 20px 20px 20px 0px;
+  border-right-color: rgb(7, 7, 7);
+ 
 }
-.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=down] {
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-right {
   top: 0px;
-  left: 0px;
-  margin: auto;
-  right: 0px;
-}
-.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon[icon-position=up] {
   bottom: 0px;
-  left: 0px;
-  margin: auto;
   right: 0px;
+  border-width: 20px 0px 20px 20px;
+  border-left-color: rgb(7, 7, 7);
+  
 }
-
 
 
 .modal-layer-skin-default[modal-layer-type=loading] > .modal-layer-content {

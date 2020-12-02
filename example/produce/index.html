@@ -38,6 +38,7 @@
     <button id="page-button-1" type="button">测试page</button>
     <button id="page-button-2" type="button">测试page</button>
     <button id="image-button" type="button">测试image</button>
+    <button id="tips" type="button">测试tips</button>
     <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
   </div>
   <div id="test-box" style="width: 500px; height: 500px; position: relative;"></div>
@@ -321,5 +322,34 @@
     }
     inputNode.click();
   });
+  //测试tips
+  document.querySelector('#tips').onclick = function () {
+    let option = {
+      popupTime: 20,
+      layer: {
+        location:"#tips",
+        position: 2
+      },
+      content: '你是一个啦啦啦',
+    };
+    let option2 = {
+      popupTime: 20,
+      layer: {
+        location:"#tips",
+        position: 0
+      },
+      content: '你是一个dasdf',
+    };
+
+    ModalLayer.tips(option, function (error) {
+      console.error(error);
+    });
+    ModalLayer.tips(option2, function (error) {
+      console.error(error);
+    });
+  }
+
+
+
 </script>
 </html>

@@ -77,6 +77,7 @@
       <button id="prompt-button" type="button">测试prompt</button>
       <button id="page-button-1" type="button">测试page</button>
       <button id="page-button-2" type="button">测试page</button>
+      <button id="tips" type="button">测试tips</button>
       <button id="image-button" type="button">测试image</button>
       <button id="tips" type="button">tips层</button>
       <button id="delete-all-ModalLayer">删除所有模态层</button>
@@ -285,7 +286,7 @@
         src: 'https://baidu.com',
       }
     };
-    ModalLayer.page(option, e => console.error(e));
+    ModalLayer.page(option);
   }
   document.querySelector('#page-button-2').onclick = function () {
     let option = {
@@ -301,7 +302,7 @@
         src: 'https://www.hao123.com/',
       }
     };
-    ModalLayer.page(option, e => console.error(e));
+    ModalLayer.page(option);
   }
 
   // 测试Image
@@ -438,8 +439,7 @@ document.querySelector('#tips').onclick = function () {
     let option = {
       popupTime: 0,
       layer:{
-        location: '#tips',
-        position: 3
+        location: '#tips'
       },
       progress: {
         enable: true,

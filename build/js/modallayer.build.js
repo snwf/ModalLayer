@@ -439,6 +439,13 @@ Object.defineProperty(OPTION, 'page', {
     'name': 'modal-layer-page-'
   }
 });
+Object.defineProperty(OPTION, 'tips', {
+  'value': {
+    'location': null,
+    'position': 3,
+    'iconSize': 10
+  }
+});
 Object.defineProperty(OPTION, 'loading', {
   'value': {
     'icon': 0,
@@ -953,6 +960,15 @@ Object.defineProperty(ENUM, 'ARROW', {
     'DOWN': 40
   }
 });
+Object.defineProperty(ENUM, 'TIPS_POSITION', {
+  'enumerable': true,
+  'value': {
+    'LEFT': 1,
+    'UP': 0,
+    'RIGHT': 2,
+    'DOWN': 3
+  }
+});
 Object.defineProperty(ENUM, 'DIRECTION', {
   'enumerable': true,
   'value': {
@@ -984,7 +1000,8 @@ Object.defineProperty(ENUM, 'TYPE', {
     'LOADING': 5,
     'IMAGE': 6,
     'VIDEO': 7,
-    'AUTDIO': 8
+    'AUTDIO': 8,
+    'TIPS': 9
   }
 });
 Object.defineProperty(ENUM, 'STATUS', {
@@ -1653,6 +1670,20 @@ var ModalLayer = function () {
         'type': ModalLayer['_enum']['TYPE']['MESSAGE']
       };else options.type = ModalLayer['_enum']['TYPE']['MESSAGE'];
       layer = new (ModalLayer['_achieve'].get('message'))(options, reject);
+      layer.resize();
+      layer['positioning']();
+      layer.show();
+      return layer;
+    }
+  }, {
+    key: "tips",
+    value: function tips(options, reject) {
+      var layer = null;
+      if (typeof options === 'string') options = {
+        'content': options,
+        'type': ModalLayer['_enum']['TYPE']['TIPS']
+      };else options.type = ModalLayer['_enum']['TYPE']['TIPS'];
+      layer = new (ModalLayer['_achieve'].get('tips'))(options, reject);
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -4735,6 +4766,108 @@ var MessageLayer = function (_ModalLayer5) {
 ModalLayer['_achieve'].set('msg', MessageLayer);
 ModalLayer['_achieve'].set('message', MessageLayer);
 
+var TipsLayer = function (_MessageLayer) {
+  _inherits(TipsLayer, _MessageLayer);
+
+  var _super8 = _createSuper(TipsLayer);
+
+  function TipsLayer() {
+    _classCallCheck(this, TipsLayer);
+
+    return _super8.apply(this, arguments);
+  }
+
+  _createClass(TipsLayer, [{
+    key: "compatibleOption",
+    value: function compatibleOption(options) {
+      _get(_getPrototypeOf(TipsLayer.prototype), "compatibleOption", this).call(this, options);
+
+      if (ModalLayer['_assistant']['object']['isString'](options['layer']['location'])) options['layer']['location'] = document.querySelector(options['layer']['location']);
+    }
+  }, {
+    key: "checkOption",
+    value: function checkOption() {
+      _get(_getPrototypeOf(TipsLayer.prototype), "checkOption", this).call(this);
+
+      var tipsArray = Object.values(ModalLayer['_enum']['TIPS_POSITION']);
+      if (!this['option']['layer']['location'] instanceof Element) throw Error('option.layer.location does not meet the expected value');
+      if (!tipsArray.includes(this['option']['layer']['position'])) throw Error('option.layer.position does not meet the expected value.');
+    }
+  }, {
+    key: "initStruct",
+    value: function initStruct() {
+      _get(_getPrototypeOf(TipsLayer.prototype), "initStruct", this).call(this);
+
+      var container, iconPosition, position, iconSize;
+      container = this['variable']['struct']['_build']['container'];
+      iconPosition = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['TIPS_POSITION'], this['option']['layer']['position']);
+      iconSize = this['option']['layer']['iconSize'];
+      position = {
+        'left': 'right',
+        'right': 'left',
+        'up': 'bottom',
+        'down': 'top'
+      }[iconPosition.toLowerCase()];
+      container.innerHTML.push({
+        nodeType: 'span',
+        "class": "depend-icon triangle-".concat(position),
+        style: "".concat(position, ": -").concat(iconSize, "px;border-width: ").concat(iconSize, "px;border-").concat(position, "-width:0px")
+      });
+    }
+  }, {
+    key: "initOption",
+    value: function initOption(options) {
+      var _this25 = this;
+
+      _get(_getPrototypeOf(TipsLayer.prototype), "initOption", this).call(this, options);
+
+      this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], ModalLayer['_option']['tips']);
+      ModalLayer['_instance'].forEach(function (v) {
+        if (v instanceof TipsLayer && v !== _this25) if (v['option']['layer']['location'] == _this25['option']['layer']['location']) if (v['option']['layer']['position'] == _this25['option']['layer']['position']) v.remove();
+      });
+      this['option']['resize']['enable'] = false;
+      this['option']['progress']['enable'] = false;
+      this['option']['mask']['enable'] = false;
+    }
+  }, {
+    key: "positioning",
+    value: function positioning() {
+      var bindTips, bindTipsElement, tipsTop, tipsLeft, tipsPosition, containerPosition, iconBorder;
+      iconBorder = this['option']['layer']['iconSize'];
+      tipsPosition = this['option']['layer']['position'];
+      bindTips = this['option']['layer']['location'];
+      containerPosition = this['variable']['nodes']['container'].getBoundingClientRect();
+      bindTipsElement = bindTips.getBoundingClientRect();
+
+      if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['LEFT']) {
+        tipsLeft = bindTipsElement.left - containerPosition.width - iconBorder;
+        tipsTop = bindTipsElement.top + (bindTipsElement.height - containerPosition.height) / 2;
+      }
+
+      if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['UP']) {
+        tipsLeft = bindTipsElement.left - (containerPosition.width - bindTipsElement.width) / 2;
+        tipsTop = bindTipsElement.top - containerPosition.height - iconBorder;
+      }
+
+      if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['DOWN']) {
+        tipsLeft = bindTipsElement.left - (containerPosition.width - bindTipsElement.width) / 2;
+        tipsTop = bindTipsElement.top + bindTipsElement.height + iconBorder;
+      }
+
+      if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['RIGHT']) {
+        tipsLeft = bindTipsElement.width + bindTipsElement.left + iconBorder;
+        tipsTop = bindTipsElement.top + (bindTipsElement.height - containerPosition.height) / 2;
+      }
+
+      this['variable']['nodes']['container'].style.cssText += "top: ".concat(tipsTop, "px; left: ").concat(tipsLeft, "px;");
+    }
+  }]);
+
+  return TipsLayer;
+}(MessageLayer);
+
+ModalLayer['_achieve'].set('tips', TipsLayer);
+
 if (window.Worker) {
   ModalLayer['_worker'].set('canvasFilter', function () {
     function gray(args) {
@@ -4917,21 +5050,21 @@ var StorageAbstract = function () {
 var SyncStorage = function (_StorageAbstract) {
   _inherits(SyncStorage, _StorageAbstract);
 
-  var _super8 = _createSuper(SyncStorage);
+  var _super9 = _createSuper(SyncStorage);
 
   function SyncStorage() {
-    var _this25;
+    var _this26;
 
     var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ModalLayer['_enum']['BROWSER_STORAGE']['SESSIONSTORAGE'];
 
     _classCallCheck(this, SyncStorage);
 
     if (!window[type]) throw Error("The current browser does not support ".concat(type, " function"));
-    _this25 = _super8.call(this);
-    _this25['_record'] = [];
-    _this25['_type'] = type;
-    _this25['_storage'] = window[type];
-    return _this25;
+    _this26 = _super9.call(this);
+    _this26['_record'] = [];
+    _this26['_type'] = type;
+    _this26['_storage'] = window[type];
+    return _this26;
   }
 
   _createClass(SyncStorage, [{

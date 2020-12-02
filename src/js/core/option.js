@@ -34,7 +34,8 @@ Object.defineProperty(OPTION, 'page', {
 Object.defineProperty(OPTION, 'tips', {
   'value': {
     'location': null, // 获取用户绑定元素
-    'position': null, //  设置tips的位置 
+    'position': 3, // 设置tips的位置 
+    'iconSize': 10, // 设置tipsicon的大小
     }
 });
 

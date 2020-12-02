@@ -275,10 +275,10 @@
 * @Description         ModalLayer默认皮肤样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 23:10:45
+* @Last Modified time: 2020-12-02 00:53:10
 */
 
-.modal-layer-skin-default.modal-layer-ui {
+.modal-layer-skin-default {
   color: black;
   font-size: 16px;
   font-weight: normal;
@@ -371,6 +371,52 @@
 .modal-layer-skin-default .modal-layer-action-btn {
   cursor: pointer;
 }
+
+.modal-layer-skin-default[modal-layer-type=tips] {
+  background: rgb(0, 0, 0);
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .modal-layer-content {
+  color: aliceblue;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .depend-icon {
+  width: 0px;
+  height: 0px;
+  margin: auto;
+  position: absolute;
+  border: 0px solid transparent;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-top,
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-bottom {
+  left: 0px;
+  right: 0px;
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-top {
+  top: 0px;
+  border-width: 0px 20px 20px 20px;
+  border-bottom-color: rgb(7, 7, 7);
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-bottom {
+  bottom: 0px;
+  border-width: 20px 20px 0px 20px;
+  border-top-color: rgb(7, 7, 7);
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-left {
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  border-width: 20px 20px 20px 0px;
+  border-right-color: rgb(7, 7, 7);
+ 
+}
+.modal-layer-skin-default[modal-layer-type=tips] > .triangle-right {
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  border-width: 20px 0px 20px 20px;
+  border-left-color: rgb(7, 7, 7);
+  
+}
+
 
 .modal-layer-skin-default[modal-layer-type=loading] > .modal-layer-content {
   height: 100%;

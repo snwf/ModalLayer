@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 01:18:08
 * @Description         一些常用的窗体的封装
 *
-* @Last Modified by:   wolf
-* @Last Modified time: 2020-12-02 00:42:46
+* @Last Modified by:   Makeit
+* @Last Modified time: 2020-12-02 17:01:46
 */
 
 class ModalLayer {
@@ -1057,7 +1057,7 @@ class ModalLayer {
    *
    * @return  {ModalLayer}         模态层实例
    */
-  static tips(options,reject){
+  static tips (options,reject) {
     let layer = null;
     if(typeof options === 'string')
       options = {
@@ -1080,7 +1080,6 @@ class ModalLayer {
     layer.show();
 
     return layer;
-
   }
 
   /**

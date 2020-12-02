@@ -63,6 +63,7 @@ buildList = {
     path.join(LAYER_PATH, '/confirm.js'),
     path.join(LAYER_PATH, '/loading.js'),
     path.join(LAYER_PATH, '/message.js'),
+    path.join(LAYER_PATH, '/tips.js'),
     path.join(WORKER_PATH, '/canvas-filter.js'),
     path.join(STORAGE_PATH, '/abstract.js'),
     path.join(STORAGE_PATH, '/sync-storage.js'),

@@ -8,48 +8,65 @@
 * @Last Modified time: 2020-11-18 01:24:16
 */
 class TipsLayer extends MessageLayer {
-  //兼容配置
+  // 兼容性配置
   compatibleOption(options) {
     super.compatibleOption(options);
-    let tipsArray = Object.values(ModalLayer['_enum']['TIPS_POSITION']);
-    if (!tipsArray.includes(options['layer']['position']))
-      options['layer']['position'] = ModalLayer['_enum']['TIPS_POSITION']['RIGHT'];
+    // 父容器
+    if (ModalLayer['_assistant']['object']['isString'](options['layer']['location']))
+      options['layer']['location'] = document.querySelector(options['layer']['location']);
   }
-  //初始化结构
-  initStruct(){
+  // 检查配置
+  checkOption() {
+    super.checkOption();
+    let tipsArray = Object.values(ModalLayer['_enum']['TIPS_POSITION']);
+    if (!this['option']['layer']['location'] instanceof Element)
+      throw Error('option.layer.location does not meet the expected value');
+    if (!tipsArray.includes(this['option']['layer']['position']))
+      throw Error('option.layer.position does not meet the expected value.');
+  }
+  // 初始化结构
+  initStruct() {
     super.initStruct();
-    let container, iconPosition ,positionMap;
-    positionMap = {
-      left: 'right',
-      right: 'left',
-      up: 'down',
-      down: 'up' 
-    }
+
+    let container, iconPosition, position, iconSize;
 
     container = this['variable']['struct']['_build']['container'];
     iconPosition = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['TIPS_POSITION'], this['option']['layer']['position']);
+    iconSize = this['option']['layer']['iconSize'];
+    position = {
+      'left': 'right',
+      'right': 'left',
+      'up': 'bottom',
+      'down': 'top'
+    }[iconPosition.toLowerCase()];
+
     container.innerHTML.push({
-      nodeType: 'i',
-      'icon-position': `${iconPosition.toLowerCase()}`,
-      class: `fas fa-caret-${positionMap[iconPosition.toLowerCase()]}  fa-lg depend-icon`,
+      nodeType: 'span',
+      class: `depend-icon triangle-${position}`,
+      style: `${position}: -${iconSize}px; border-width: ${iconSize}px; border-${position}-width: 0px`
     });
   }
-  //初始化配置
+  // 初始化配置
   initOption(options) {
     super.initOption(options);
-    //防止出现多个tips 
-    ModalLayer._instance.forEach(v => {
+    // 初始化tips特有的属性
+    this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], ModalLayer['_option']['tips']);
+    // 防止出现多个tips，允许出现不同位置
+    ModalLayer['_instance'].forEach(v => {
       if (v instanceof TipsLayer && v !== this)
-        if (v.option.location = '#tips')
-          v.remove();
+        if (v['option']['layer']['location'] == this['option']['layer']['location'])
+          if (v['option']['layer']['position'] == this['option']['layer']['position'])
+            v.remove();
     })
     this['option']['resize']['enable'] = false;
     this['option']['progress']['enable'] = false;
     this['option']['mask']['enable'] = false;
   }
-  //tips定位
+  // tips定位
   positioning() {
-    let bindTips, bindTipsElement, tipsTop, tipsLeft, tipsPosition, containerPosition;
+    let bindTips, bindTipsElement, tipsTop, tipsLeft, tipsPosition, containerPosition, iconBorder;
+    // 图标的border
+    iconBorder = this['option']['layer']['iconSize'];
     // 获取tips层的位置
     tipsPosition = this['option']['layer']['position'];
     // 绑定元素的选择
@@ -57,26 +74,27 @@ class TipsLayer extends MessageLayer {
     // tips容器位置
     containerPosition = this['variable']['nodes']['container'].getBoundingClientRect();
     // 获取绑定元素的位置
-    bindTipsElement = document.querySelector(bindTips).getBoundingClientRect();
+    bindTipsElement = bindTips.getBoundingClientRect();
+    // 获取icon图标的位置
 
-    //绑定元素的左边
+    // 绑定元素的左边
     if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['LEFT']) {
-      tipsLeft = bindTipsElement.left - containerPosition.width;
+      tipsLeft = bindTipsElement.left - containerPosition.width - iconBorder;
       tipsTop = bindTipsElement.top + (bindTipsElement.height - containerPosition.height) / 2;
     }
-    //绑定元素的上边
+    // 绑定元素的上边
     if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['UP']) {
       tipsLeft = bindTipsElement.left - (containerPosition.width - bindTipsElement.width) / 2;
-      tipsTop = bindTipsElement.top - containerPosition.height;
+      tipsTop = bindTipsElement.top - containerPosition.height - iconBorder;
     }
-    //绑定元素下边
+    // 绑定元素下边
     if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['DOWN']) {
       tipsLeft = bindTipsElement.left - (containerPosition.width - bindTipsElement.width) / 2;
-      tipsTop = bindTipsElement.top + bindTipsElement.height;
+      tipsTop = bindTipsElement.top + bindTipsElement.height + iconBorder;
     }
-    //绑定元素右边
+    // 绑定元素右边
     if (tipsPosition == ModalLayer['_enum']['TIPS_POSITION']['RIGHT']) {
-      tipsLeft = bindTipsElement.width + bindTipsElement.left;
+      tipsLeft = bindTipsElement.width + bindTipsElement.left + iconBorder;
       tipsTop = bindTipsElement.top + (bindTipsElement.height - containerPosition.height) / 2;
     }
     this['variable']['nodes']['container'].style.cssText += `top: ${tipsTop}px; left: ${tipsLeft}px;`;
