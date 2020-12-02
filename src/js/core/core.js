@@ -4,8 +4,8 @@
 * @Date:               2020-09-01 01:18:08
 * @Description         一些常用的窗体的封装
 *
-* @Last Modified by:   Makeit
-* @Last Modified time: 2020-12-02 17:01:46
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-12-03 00:25:26
 */
 
 class ModalLayer {
@@ -350,12 +350,12 @@ class ModalLayer {
   }
 
   /**
-   * 初始化节点完成后执行的操作
+   * 初始化节点属性
    *
    * @Author   Wolf
    * @DateTime 2020-09-02T00:51:39+0800
    */
-  initNodeFinally () {
+  initAttribute () {
     let ui, skinCls, hideCls, showCls, indexCls;
 
     ui = this['option']['ui'];
@@ -570,8 +570,8 @@ class ModalLayer {
       // 构造节点
       this['initNode']();
 
-      // 构造节点后续处理
-      this['initNodeFinally']();
+      // 初始化节点属性
+      this['initAttribute']();
 
       // 设置过渡动画
       this['initAnimation']();

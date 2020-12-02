@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 04:01:58
+* @Last Modified time: 2020-12-03 00:24:44
 */
 
 class LoadingLayer extends ModalLayer {
@@ -100,15 +100,15 @@ class LoadingLayer extends ModalLayer {
   }
 
   /**
-   * 根据节点结构构造节点
+   * 初始化节点属性
    *
    * @Author   Wolf
    * @DateTime 2020-09-01T23:21:23+0800
    */
-  initNodeFinally () {
+  initAttribute () {
     let content, container, loadingBox, loadingIcon;
 
-    super.initNodeFinally();
+    super.initAttribute();
 
     // 根据参数进行设置.
     container = this['variable']['nodes']['container'];
