@@ -72,7 +72,10 @@
         <td>areaProportion</td>
         <td>array</td>
         <td><a href="#content-option-areaProportion" class="text-decoration-none">option.areaProportion</a></td>
-        <td i18n-message="This attribute controls the width and height of the modal layer."></td>
+        <td>
+          <span i18n-message="This attribute controls the width and height of the modal layer."></span><br>
+          <span i18n-message="If it is <code>null</code>, the content is adaptive."></span>
+        </td>
       </tr>
       <tr>
         <td>content</td>

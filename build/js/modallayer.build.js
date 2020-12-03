@@ -1068,6 +1068,8 @@ var ModalLayer = function () {
   }, {
     key: "checkOption",
     value: function checkOption() {
+      if (this['option']['window'] && !(this['option']['window'] instanceof Element)) throw new TypeError('option.window does not meet the expected value.');
+
       if (Number.isFinite(this['option']['transition']['animation'])) {
         if (!Object.values(ModalLayer['_enum']['TRANSITION_ANIMATION_PRESET']).includes(this['option']['transition']['animation'])) throw Error('No preset animation found.');
       } else if (this['option']['transition']['animation'] !== null) {
@@ -1151,8 +1153,8 @@ var ModalLayer = function () {
       cancelButton && (cancelButton.innerText = this['option']['text']['interaction']['cancel']);
     }
   }, {
-    key: "initNodeFinally",
-    value: function initNodeFinally() {
+    key: "initAttribute",
+    value: function initAttribute() {
       var ui, skinCls, hideCls, showCls, indexCls;
       ui = this['option']['ui'];
       hideCls = 'modal-layer-hide';
@@ -1314,15 +1316,16 @@ var ModalLayer = function () {
       this['initVariable']();
       this['initStruct']();
       this['initNode']();
-      this['initNodeFinally']();
+      this['initAttribute']();
       this['initAnimation']();
       this['initEvent']();
       this['bindEvent']();
       (_this$option$hook = this['option']['hook']) === null || _this$option$hook === void 0 ? void 0 : (_this$option$hook$ini = _this$option$hook['initEnded']) === null || _this$option$hook$ini === void 0 ? void 0 : (_this$option$hook$ini2 = _this$option$hook$ini.call) === null || _this$option$hook$ini2 === void 0 ? void 0 : _this$option$hook$ini2.call(_this$option$hook$ini, this);
       this['insertNode']();
     } catch (e) {
-      ModalLayer['_instance'].splice(ModalLayer['_instance'].indexOf(this), 1);
-      reject === null || reject === void 0 ? void 0 : reject.call(null, e);
+      reject === null || reject === void 0 ? void 0 : reject.call(this, e);
+      this["delete"]();
+      return e;
     }
   }
 
@@ -1348,15 +1351,21 @@ var ModalLayer = function () {
       var container, modalChildNodes;
       defaultArea = [0, 0];
       container = this['variable']['nodes']['container'];
-      modalChildNodes = container.children;
-      defaultArea[0] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, this['option']['areaProportion'][0]);
-      container.style.width = defaultArea[0] + 'px';
 
-      for (var i = 0; i < modalChildNodes.length; i++) {
-        defaultArea[1] = getComputedStyle(modalChildNodes[i]).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
+      if (this['option']['areaProportion'] === null) {
+        defaultArea = [container.offsetWidth, container.offsetHeight];
+      } else {
+        modalChildNodes = container.children;
+        defaultArea[0] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, this['option']['areaProportion'][0]);
+        container.style.width = defaultArea[0] + 'px';
+
+        for (var i = 0; i < modalChildNodes.length; i++) {
+          defaultArea[1] = getComputedStyle(modalChildNodes[i]).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
+        }
+
+        container.style.height = defaultArea[1] + 'px';
       }
 
-      container.style.height = defaultArea[1] + 'px';
       this['variable']['defaultArea'] = defaultArea;
       this['variable']['defaultRect']['width'] = defaultArea[0];
       this['variable']['defaultRect']['height'] = defaultArea[1];
@@ -1426,13 +1435,13 @@ var ModalLayer = function () {
       var animations;
       var showCls, hideCls;
       var nodes, zIndex, nodeKeys;
+      nodes = this['variable']['nodes'];
+      if (!nodes || Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
       showCls = 'modal-layer-show';
       hideCls = 'modal-layer-hide';
-      nodes = this['variable']['nodes'];
       nodeKeys = Object.keys(nodes);
       animations = this['variable']['animation']['transition'];
       zIndex = ModalLayer['_assistant']['element']['maxZIndex']();
-      if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
       promise = new Promise(function (resolve) {
         var fn = function fn(e) {
           if (_this7['option']['popupTime'] > 0) _this7['event']['autoShutdown'].call(_this7);
@@ -1462,12 +1471,12 @@ var ModalLayer = function () {
       var nodes, nodeKeys;
       var hideCls, showCls;
       var opacityAnimation, transformAnimation;
+      nodes = this['variable']['nodes'];
+      if (!nodes || Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
       hideCls = 'modal-layer-hide';
       showCls = 'modal-layer-show';
-      nodes = this['variable']['nodes'];
       nodeKeys = Object.keys(nodes);
       animations = this['variable']['animation']['transition'];
-      if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
       if (Number.isInteger(this['variable']['timeout']['auto_shutdown'])) window.clearTimeout(this['variable']['timeout']['auto_shutdown']);
       promise = new Promise(function (resolve) {
         var fn = function fn(e) {
@@ -1555,11 +1564,11 @@ var ModalLayer = function () {
       var promise;
       var queueNode, queueItemNode;
       var animation, animationDur, animationHalfDur;
+      if (![ModalLayer['_enum']['STATUS']['MINIMIZE']].includes(this['status'])) return;
       animationDur = this['option']['transition']['duration'];
       queueNode = document.querySelector('#modal-layer-minimize-queue');
       animationHalfDur = ModalLayer['_assistant']['number']['divide'](animationDur, 2);
       queueItemNode = queueNode.querySelector('.modal-layer-minimize-queue-item[modal-layer-index="' + this['option']['index'] + '"]');
-      if (![ModalLayer['_enum']['STATUS']['MINIMIZE']].includes(this['status'])) return;
       animation = ModalLayer['_assistant']['cache']['get']('minimizeQueueAnimations').get(this['option']['index']);
       setTimeout(function () {
         _this10.show();
@@ -1594,8 +1603,8 @@ var ModalLayer = function () {
         delete ModalLayer['_minimizeQueue'][index];
       }
 
+      if (!nodes || Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['HIDE'], ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(status)) return Promise.resolve();
       this['setStatus'](ModalLayer['_enum']['STATUS']['REMOVING']);
-      if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['HIDE'], ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(status)) return Promise.resolve();
       return this['hide']().then(function () {
         _this11['removeAllEvent']();
 
@@ -1642,7 +1651,7 @@ var ModalLayer = function () {
   }, {
     key: "msg",
     value: function msg(options, reject) {
-      ModalLayer['message'](options, reject);
+      return ModalLayer['message'](options, reject);
     }
   }, {
     key: "message",
@@ -1653,6 +1662,7 @@ var ModalLayer = function () {
         'type': ModalLayer['_enum']['TYPE']['MESSAGE']
       };else options.type = ModalLayer['_enum']['TYPE']['MESSAGE'];
       layer = new (ModalLayer['_achieve'].get('message'))(options, reject);
+      if (layer instanceof Error) return;
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -1664,6 +1674,7 @@ var ModalLayer = function () {
       var layer = null;
       options.type = ModalLayer['_enum']['TYPE']['ALERT'];
       layer = new (ModalLayer['_achieve'].get('alert'))(options, reject);
+      if (layer instanceof Error) return;
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -1675,6 +1686,7 @@ var ModalLayer = function () {
       var layer = null;
       options.type = ModalLayer['_enum']['TYPE']['CONFIRM'];
       layer = new (ModalLayer['_achieve'].get('confirm'))(options, reject);
+      if (layer instanceof Error) return;
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -1686,6 +1698,7 @@ var ModalLayer = function () {
       var layer = null;
       options.type = ModalLayer['_enum']['TYPE']['PROMPT'];
       layer = new (ModalLayer['_achieve'].get('prompt'))(options, reject);
+      if (layer instanceof Error) return;
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -1697,6 +1710,7 @@ var ModalLayer = function () {
       var layer = null;
       options.type = ModalLayer['_enum']['TYPE']['PAGE'];
       layer = new (ModalLayer['_achieve'].get('page'))(options, reject);
+      if (layer instanceof Error) return;
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -1708,6 +1722,7 @@ var ModalLayer = function () {
       var layer = null;
       options.type = ModalLayer['_enum']['TYPE']['IMAGE'];
       layer = new (ModalLayer['_achieve'].get('image'))(options, reject);
+      if (layer instanceof Error) return;
       layer['variable']['image']['finish'].then(function () {
         layer.resize();
         layer['variable']['image']['layer'].resize();
@@ -1725,6 +1740,7 @@ var ModalLayer = function () {
       var layer = null;
       options.type = ModalLayer['_enum']['TYPE']['LOADING'];
       layer = new (ModalLayer['_achieve'].get('loading'))(options, reject);
+      if (layer instanceof Error) return;
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -1803,8 +1819,8 @@ Object.seal(ModalLayer);
 
 if (Object.is(window['ModalLayer'], ModalLayer)) {
   console.group('ModalLayer already exists');
-  console.log("Already version ".concat(window['ModalLayer']['_version']));
-  console.log("Try to introduce version: ".concat(ModalLayer['_version']));
+  console.warn("Already version ".concat(window['ModalLayer']['_version']));
+  console.warn("Try to introduce version: ".concat(ModalLayer['_version']));
   console.groupEnd();
 } else {
   Object.preventExtensions(ModalLayer);
@@ -2232,7 +2248,7 @@ var ObjectAssistant = function () {
   _createClass(ObjectAssistant, null, [{
     key: "dereference",
     value: function dereference(v) {
-      Object.keys(v).forEach(function (_k) {
+      v && Object.keys(v).forEach(function (_k) {
         var _v = v[_k];
 
         if (ObjectAssistant['isCollection'](_v)) {
@@ -4627,11 +4643,11 @@ var LoadingLayer = function (_ModalLayer4) {
       container.innerHTML.push(content);
     }
   }, {
-    key: "initNodeFinally",
-    value: function initNodeFinally() {
+    key: "initAttribute",
+    value: function initAttribute() {
       var content, container, loadingBox, loadingIcon;
 
-      _get(_getPrototypeOf(LoadingLayer.prototype), "initNodeFinally", this).call(this);
+      _get(_getPrototypeOf(LoadingLayer.prototype), "initAttribute", this).call(this);
 
       container = this['variable']['nodes']['container'];
       content = container.querySelector('.modal-layer-content');
