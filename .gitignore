@@ -1,4 +1,6 @@
 /test
+/dist/*/*
+/build/*/*
 /unit/image
 /node_modules
 /package-lock.json
@@ -6,3 +8,4 @@
 /example/produce/*
 !/example/develop/index.html
 !/example/produce/index.html
+
