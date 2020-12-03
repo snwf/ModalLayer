@@ -374,9 +374,11 @@
 
 .modal-layer-skin-default[modal-layer-type=tips] {
   background: rgb(0, 0, 0);
+  border-radius: 10px;
 }
 .modal-layer-skin-default[modal-layer-type=tips] > .modal-layer-content {
   color: aliceblue;
+  margin: 16px 20px; 
 }
 .modal-layer-skin-default[modal-layer-type=tips] > .depend-icon {
   width: 0px;

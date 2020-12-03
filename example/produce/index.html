@@ -327,24 +327,12 @@
     let option = {
       popupTime: 20,
       layer: {
-        location:"#tips",
-        position: 2
+        location:"#tips"
       },
       content: '你是一个啦啦啦',
     };
-    let option2 = {
-      popupTime: 20,
-      layer: {
-        location:"#tips",
-        position: 0
-      },
-      content: '你是一个dasdf',
-    };
-
+  
     ModalLayer.tips(option, function (error) {
-      console.error(error);
-    });
-    ModalLayer.tips(option2, function (error) {
       console.error(error);
     });
   }

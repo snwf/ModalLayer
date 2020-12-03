@@ -79,7 +79,6 @@
       <button id="page-button-2" type="button">测试page</button>
       <button id="tips" type="button">测试tips</button>
       <button id="image-button" type="button">测试image</button>
-      <button id="tips" type="button">tips层</button>
       <button id="delete-all-ModalLayer">删除所有模态层</button>
       <button id="delete-all-cache">清空所有缓存(ModalLayer产生的)</button>
       <input type="file" accept="image/*" id="image-layer-test-input" style="display: none;">
@@ -440,7 +439,8 @@ document.querySelector('#tips').onclick = function () {
     let option = {
       popupTime: 0,
       layer:{
-        location: '#tips'
+        location: '#tips',
+        position: 0,
       },
       progress: {
         enable: true,
@@ -449,8 +449,24 @@ document.querySelector('#tips').onclick = function () {
       },
       content: '<span>Hi 我是tips层</span>'
     };
+    let option2 = {
+      popupTime: 0,
+      layer:{
+        location: '#page-button-1',
+        position: 0,
+      },
+      progress: {
+        enable: true,
+        color: 'red',
+        position: 'top',
+      },
+      content: '<span>Hi2323</span>'
+    };
 
     ModalLayer.tips(option, function (error) {
+      console.error(error);
+    });
+    ModalLayer.tips(option2, function (error) {
       console.error(error);
     });
     // ModalLayer.msg('测试一下', function (error) {

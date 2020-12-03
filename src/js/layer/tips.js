@@ -61,6 +61,7 @@ class TipsLayer extends MessageLayer {
     this['option']['resize']['enable'] = false;
     this['option']['progress']['enable'] = false;
     this['option']['mask']['enable'] = false;
+    this['option']['areaProportion'] = null;
   }
   // tips定位
   positioning() {

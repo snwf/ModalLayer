@@ -1694,6 +1694,7 @@ var ModalLayer = function () {
         'type': ModalLayer['_enum']['TYPE']['TIPS']
       };else options.type = ModalLayer['_enum']['TYPE']['TIPS'];
       layer = new (ModalLayer['_achieve'].get('tips'))(options, reject);
+      if (layer instanceof Error) return;
       layer.resize();
       layer['positioning']();
       layer.show();
@@ -4827,7 +4828,7 @@ var TipsLayer = function (_MessageLayer) {
       container.innerHTML.push({
         nodeType: 'span',
         "class": "depend-icon triangle-".concat(position),
-        style: "".concat(position, ": -").concat(iconSize, "px;border-width: ").concat(iconSize, "px;border-").concat(position, "-width:0px")
+        style: "".concat(position, ": -").concat(iconSize, "px; border-width: ").concat(iconSize, "px; border-").concat(position, "-width: 0px")
       });
     }
   }, {
@@ -4844,6 +4845,7 @@ var TipsLayer = function (_MessageLayer) {
       this['option']['resize']['enable'] = false;
       this['option']['progress']['enable'] = false;
       this['option']['mask']['enable'] = false;
+      this['option']['areaProportion'] = null;
     }
   }, {
     key: "positioning",

@@ -173,7 +173,7 @@ class ModalLayer {
    * @DateTime 2020-09-01T22:43:58+0800
    * @param    {Object}                 options 配置
    */
-  initOption (options) {
+  initOption(options) {
     // 设置ID
     options['index'] = ModalLayer['_instance'].length;
 
@@ -190,7 +190,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T14:14:23+0800
    */
-  compatibleOption (options) {
+  compatibleOption(options) {
     // 父容器
     if (ModalLayer['_assistant']['object']['isString'](options['window']))
       options['window'] = document.querySelector(options['window']);
@@ -205,11 +205,11 @@ class ModalLayer {
 
     // 遮罩层
     if (typeof options['mask'] === 'boolean' || ['true', 'false'].includes(options['mask']))
-      options['mask'] = {'enable': Boolean(options['mask']), 'clickRemove': true};
+      options['mask'] = { 'enable': Boolean(options['mask']), 'clickRemove': true };
 
     // 内容
     if (!ModalLayer['_assistant']['object']['isOnlyObject'](options['content']))
-      options['content'] = {'value': options['content'], 'fullContainer': options['content']?.['fullContainer'] ?? false};
+      options['content'] = { 'value': options['content'], 'fullContainer': options['content']?.['fullContainer'] ?? false };
   }
 
   /**
@@ -218,7 +218,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T14:15:59+0800
    */
-  linkageOption () {
+  linkageOption() {
     if (this['option']['popupTime'] <= 0)
       this['option']['progress']['enable'] = false;
 
@@ -232,7 +232,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T12:22:48+0800
    */
-  checkOption () {
+  checkOption() {
     // 检查父容器是否为期望值
     if (this['option']['window'] && !(this['option']['window'] instanceof Element))
       throw new TypeError('option.window does not meet the expected value.');
@@ -262,7 +262,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T12:05:52+0800
    */
-  initVariable () {
+  initVariable() {
     this['variable']['struct'] = Object.create(null);
     this['variable']['timeout'] = Object.create(null);
     this['variable']['interval'] = Object.create(null);
@@ -279,7 +279,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-01T22:45:37+0800
    */
-  initStruct () {
+  initStruct() {
     // 遮罩层
     if (this['option']['mask']?.['enable'])
       this['variable']['struct']['_build']['mask'] = ModalLayer['_struct']['mask'];
@@ -294,7 +294,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-01T23:21:23+0800
    */
-  initNode () {
+  initNode() {
     let okButton, noButton, cancelButton;
     let mask, container, titleNode, titleChild;
 
@@ -359,7 +359,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-02T00:51:39+0800
    */
-  initAttribute () {
+  initAttribute() {
     let ui, skinCls, hideCls, showCls, indexCls;
 
     ui = this['option']['ui'];
@@ -391,7 +391,7 @@ class ModalLayer {
    * @Author    wolf
    * @Datetime  2020-11-18T02:37:12+0800
    */
-  initAnimation () {
+  initAnimation() {
     let nodes;
     let animation;
     let preset, option;
@@ -404,34 +404,34 @@ class ModalLayer {
     animation = this['option']['transition']['animation'];
 
     preset.other = [
-      {'opacity': 0},
-      {'opacity': 1}
+      { 'opacity': 0 },
+      { 'opacity': 1 }
     ];
     preset['container'] = [
       // 正拉伸
       [
-        {'opacity': 0, 'transform': 'scale(.45)'},
-        {'opacity': 1, 'transform': 'scale(1)'}
+        { 'opacity': 0, 'transform': 'scale(.45)' },
+        { 'opacity': 1, 'transform': 'scale(1)' }
       ],
       // 向下位移
       [
-        {'opacity': 0, 'transform': 'translateY(-100%)'},
-        {'opacity': 1, 'transform': 'translateY(0)'}
+        { 'opacity': 0, 'transform': 'translateY(-100%)' },
+        { 'opacity': 1, 'transform': 'translateY(0)' }
       ],
       // 展开X轴
       [
-        {'opacity': 0, 'transform': 'rotateY(-120deg)'},
-        {'opacity': 1, 'transform': 'rotateY(0)'}
+        { 'opacity': 0, 'transform': 'rotateY(-120deg)' },
+        { 'opacity': 1, 'transform': 'rotateY(0)' }
       ],
       // 对角拉伸
       [
-        {'opacity': 0, 'transform': 'skewX(-100deg)'},
-        {'opacity': 1, 'transform': 'skewX(0deg)'}
+        { 'opacity': 0, 'transform': 'skewX(-100deg)' },
+        { 'opacity': 1, 'transform': 'skewX(0deg)' }
       ],
       // 向上弹出
       [
-        {'opacity': 0, 'transform': 'translateY(200%) scale(.45)'},
-        {'opacity': 1, 'transform': 'translateY(0) scale(1)'}
+        { 'opacity': 0, 'transform': 'translateY(200%) scale(.45)' },
+        { 'opacity': 1, 'transform': 'translateY(0) scale(1)' }
       ]
     ];
 
@@ -465,7 +465,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-02T01:17:32+0800
    */
-  initEvent () {
+  initEvent() {
     this['event'] = ModalLayer['_assistant']['object']['merge'](this['option']['event'] ?? {}, ModalLayer['_event']);
   }
 
@@ -475,7 +475,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-21T00:15:00+0800
    */
-  bindEvent () {
+  bindEvent() {
     let options;
     let okButton, noButton, cancelButton;
 
@@ -529,7 +529,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-02T00:58:14+0800
    */
-  insertNode () {
+  insertNode() {
     let fragment = document.createDocumentFragment();
     let parentWindow = this['option']['window'] ?? window.document.body;
     Object.keys(this['variable']['nodes']).forEach(key => fragment.appendChild(this['variable']['nodes'][key]), this);
@@ -542,7 +542,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-01T20:14:28+0800
    */
-  constructor (options, reject) {
+  constructor(options, reject) {
     try {
       // 初始化开始时给用户介入的机会
       options['hook']?.['initStart']?.call?.(options);
@@ -602,7 +602,7 @@ class ModalLayer {
    * @DateTime 2020-09-02T02:26:20+0800
    * @param    {Mixed}             status 模态层状态
    */
-  setStatus (status) {
+  setStatus(status) {
     let text;
     if (!Object.values(ModalLayer['_enum']['STATUS']).includes(status)) {
       text = status.toUpperCase();
@@ -615,13 +615,13 @@ class ModalLayer {
     this['variable']['nodes']['container'].setAttribute('modal-layer-status', text.toLowerCase());
   }
 
- /**
-  * 根据屏幕大小重绘模态层大小
-  *
-  * @Author   Wolf
-  * @DateTime 2020-09-02T02:28:37+0800
-  */
-  resize () {
+  /**
+   * 根据屏幕大小重绘模态层大小
+   *
+   * @Author   Wolf
+   * @DateTime 2020-09-02T02:28:37+0800
+   */
+  resize() {
     let defaultArea;
     let container, modalChildNodes;
 
@@ -657,7 +657,7 @@ class ModalLayer {
    * @param    {Number}                   w 容器宽
    * @param    {Number}                   h 容器高
    */
-  resizeBy (x, y, w, h) {
+  resizeBy(x, y, w, h) {
     let container = this['variable']['nodes']['container'];
     container.style.cssText += `top: ${y}px; left: ${x}px; width: ${w}px; height: ${h}px;`;
 
@@ -674,7 +674,7 @@ class ModalLayer {
    * @Author    wolf
    * @Datetime  2020-11-16T02:55:39+0800
    */
-  positioning () {
+  positioning() {
     let container, parentNode;
     let posX, posY, width, height, parent;
 
@@ -726,7 +726,7 @@ class ModalLayer {
    * @DateTime 2020-09-02T02:31:44+0800
    * @return   {Promise}                Promise对象
    */
-  show () {
+  show() {
     let promise;
     let animations;
     let showCls, hideCls;
@@ -779,7 +779,7 @@ class ModalLayer {
    * @DateTime 2020-09-03T00:55:32+0800
    * @return   {Promise}                 Promise对象
    */
-  hide () {
+  hide() {
     let promise;
     let animations;
     let nodes, nodeKeys;
@@ -827,7 +827,7 @@ class ModalLayer {
     });
 
     return promise;
-   }
+  }
 
   /**
    * 最小化模态层
@@ -835,7 +835,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-03T23:35:17+0800
    */
-  minimize () {
+  minimize() {
     let title;
     let keyframes, option;
     let queueNode, queueItemNode;
@@ -872,8 +872,8 @@ class ModalLayer {
     } else {
       // 动画关键帧
       keyframes = [
-        {'opacity': 0, 'transform': 'scale(.45)'},
-        {'opacity': 1, 'transform': 'scale(1)'}
+        { 'opacity': 0, 'transform': 'scale(.45)' },
+        { 'opacity': 1, 'transform': 'scale(1)' }
       ];
 
       // 动画设定
@@ -889,7 +889,7 @@ class ModalLayer {
     }
 
     this['hide']().then(() => void this['setStatus']('minimize'));
-   }
+  }
 
   /**
    * 将模态层状态还原
@@ -898,7 +898,7 @@ class ModalLayer {
    * @DateTime 2020-09-03T23:36:22+0800
    * @return   {Promise}                Promise对象
    */
-  revert () {
+  revert() {
     let promise;
     let queueNode, queueItemNode;
     let animation, animationDur, animationHalfDur;
@@ -939,7 +939,7 @@ class ModalLayer {
    * @DateTime 2020-09-24T23:42:52+0800
    * @return   {Promise}                 Promise对象
    */
-  remove () {
+  remove() {
     let nodes, status;
 
     status = this['status'];
@@ -978,20 +978,20 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-24T22:03:21+0800
    */
-  delete () {
+  delete() {
     // 移除节点以及移除监听事件
     this.remove()
-    .then(() => {
-      let index = ModalLayer._instance.indexOf(this);
-      // 删除实例
-      ModalLayer._instance.splice(index, 1);
+      .then(() => {
+        let index = ModalLayer._instance.indexOf(this);
+        // 删除实例
+        ModalLayer._instance.splice(index, 1);
 
-      // 解除相关变量引用.
-      ModalLayer['_assistant']['object']['dereference'](this['event']);
-      ModalLayer['_assistant']['object']['dereference'](this['option']);
-      ModalLayer['_assistant']['object']['dereference'](this['variable']);
-      this['event'] = this['option'] = this['variable'] = null;
-    });
+        // 解除相关变量引用.
+        ModalLayer['_assistant']['object']['dereference'](this['event']);
+        ModalLayer['_assistant']['object']['dereference'](this['option']);
+        ModalLayer['_assistant']['object']['dereference'](this['variable']);
+        this['event'] = this['option'] = this['variable'] = null;
+      });
   }
 
   /**
@@ -1000,7 +1000,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-03T01:56:21+0800
    */
-  static removeAll () {
+  static removeAll() {
     for (let i = 0; i < ModalLayer['_instance'].length; i++)
       ModalLayer['_instance'][i].remove();
   }
@@ -1011,7 +1011,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-03T02:03:40+0800
    */
-  removeAllEvent () {
+  removeAllEvent() {
     let nodes;
     let okButton, noButton, cancelButton;
 
@@ -1029,10 +1029,10 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static msg (options, reject) {
+  static msg(options, reject) {
     return ModalLayer['message'](options, reject);
   }
-  static message (options, reject) {
+  static message(options, reject) {
     let layer = null;
 
     if (typeof options === 'string')
@@ -1069,9 +1069,9 @@ class ModalLayer {
    *
    * @return  {ModalLayer}         模态层实例
    */
-  static tips (options,reject) {
+  static tips(options, reject) {
     let layer = null;
-    if(typeof options === 'string')
+    if (typeof options === 'string')
       options = {
         'content': options,
         'type': ModalLayer['_enum']['TYPE']['TIPS']
@@ -1080,7 +1080,10 @@ class ModalLayer {
       options.type = ModalLayer['_enum']['TYPE']['TIPS'];
 
     // 实例化
-    layer = new (ModalLayer['_achieve'].get('tips'))(options,reject);
+    layer = new (ModalLayer['_achieve'].get('tips'))(options, reject);
+
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
 
     // 重绘模态层大小
     layer.resize();
@@ -1102,7 +1105,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static alert (options, reject) {
+  static alert(options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1134,7 +1137,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static confirm (options, reject) {
+  static confirm(options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1166,7 +1169,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static prompt (options, reject) {
+  static prompt(options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1198,7 +1201,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static page (options, reject) {
+  static page(options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1230,7 +1233,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static image (options, reject) {
+  static image(options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1244,20 +1247,20 @@ class ModalLayer {
 
     layer['variable']['image']['finish']
 
-    // 初始化模态层大小
-    .then(() => {
-      layer.resize();
-      layer['variable']['image']['layer'].resize();
-    })
+      // 初始化模态层大小
+      .then(() => {
+        layer.resize();
+        layer['variable']['image']['layer'].resize();
+      })
 
-    // 初始化模态层位置
-    .then(() => {
-      layer['positioning']();
-      layer['variable']['image']['layer']['positioning']();
-    })
+      // 初始化模态层位置
+      .then(() => {
+        layer['positioning']();
+        layer['variable']['image']['layer']['positioning']();
+      })
 
-    // 显示
-    .then(() => layer.show());
+      // 显示
+      .then(() => layer.show());
 
     return layer;
   }
@@ -1270,7 +1273,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static loading (options, reject) {
+  static loading(options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1304,5 +1307,5 @@ if (Object.is(window['ModalLayer'], ModalLayer)) {
   console.groupEnd();
 } else {
   Object.preventExtensions(ModalLayer);
-  Object.defineProperty(window, 'ModalLayer', {'value': ModalLayer});
+  Object.defineProperty(window, 'ModalLayer', { 'value': ModalLayer });
 }
