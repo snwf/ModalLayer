@@ -5,7 +5,7 @@
 * @Description         手册
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-12 02:09:25
+* @Last Modified time: 2020-12-04 01:30:39
 */
 
 @charset 'utf-8';
@@ -26,3 +26,23 @@ body {
 .table tr > td:first-child {
   text-indent: .5rem;
 }
+
+#code-try-text {
+  width: 100%;
+  color: white;
+  resize: none;
+  border: none;
+  height: 200px;
+  text-indent: 1em;
+  overflow-y: auto;
+  background: #272822;
+}
+
+#code-try-text::placeholder {
+  color: rgba(255, 255, 255, .8);
+}
+
+#code-try-text:focus {
+  outline: none;
+}
+
