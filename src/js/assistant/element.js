@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 02:51:41
+* @Last Modified time: 2020-12-03 22:13:43
 */
 
 class ElementAssistant {
@@ -134,17 +134,18 @@ class ElementAssistant {
    * @return    {Number}                         最大的z-index值(只有通过position进行定位的元素z-index值才会被获取到)
    */
   static maxZIndex (node) {
-    let allNodes;
+    let max, allNodes;
 
-    if (node)
-      allNodes = ElementAssistant.getAllElement(node);
-    else
-      allNodes = Array.from(document.all);
+    if (node) allNodes = ElementAssistant.getAllElement(node);
+    else allNodes = Array.from(document.all);
 
-    return parseInt(allNodes.reduce(function(prev, currNode) {
-      let currNodeZIndex = getComputedStyle(currNode, null).zIndex;
-      return window.Math.max(prev, !Number.isInteger(currNodeZIndex) ? currNodeZIndex : 0);
-    }, 0));
+    max = 0;
+    allNodes.forEach(function (currNode) {
+      let zIndex = parseInt(getComputedStyle(currNode).zIndex);
+      max = window.Math.max(max, Number.isInteger(zIndex) ? zIndex : 0);
+    });
+
+    return max;
   }
 
   /**
