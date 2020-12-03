@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 15:47:59
+* @Last Modified time: 2020-12-03 20:54:26
 */
 
 class ModalLayer {
@@ -173,7 +173,7 @@ class ModalLayer {
    * @DateTime 2020-09-01T22:43:58+0800
    * @param    {Object}                 options 配置
    */
-  initOption(options) {
+  initOption (options) {
     // 设置ID
     options['index'] = ModalLayer['_instance'].length;
 
@@ -218,7 +218,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T14:15:59+0800
    */
-  linkageOption() {
+  linkageOption () {
     if (this['option']['popupTime'] <= 0)
       this['option']['progress']['enable'] = false;
 
@@ -262,7 +262,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T12:05:52+0800
    */
-  initVariable() {
+  initVariable () {
     this['variable']['struct'] = Object.create(null);
     this['variable']['timeout'] = Object.create(null);
     this['variable']['interval'] = Object.create(null);
@@ -279,7 +279,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-01T22:45:37+0800
    */
-  initStruct() {
+  initStruct () {
     // 遮罩层
     if (this['option']['mask']?.['enable'])
       this['variable']['struct']['_build']['mask'] = ModalLayer['_struct']['mask'];
@@ -294,7 +294,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-01T23:21:23+0800
    */
-  initNode() {
+  initNode () {
     let okButton, noButton, cancelButton;
     let mask, container, titleNode, titleChild;
 
@@ -359,7 +359,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-02T00:51:39+0800
    */
-  initAttribute() {
+  initAttribute () {
     let ui, skinCls, hideCls, showCls, indexCls;
 
     ui = this['option']['ui'];
@@ -465,7 +465,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-02T01:17:32+0800
    */
-  initEvent() {
+  initEvent () {
     this['event'] = ModalLayer['_assistant']['object']['merge'](this['option']['event'] ?? {}, ModalLayer['_event']);
   }
 
@@ -475,7 +475,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-21T00:15:00+0800
    */
-  bindEvent() {
+  bindEvent () {
     let options;
     let okButton, noButton, cancelButton;
 
@@ -529,7 +529,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-02T00:58:14+0800
    */
-  insertNode() {
+  insertNode () {
     let fragment = document.createDocumentFragment();
     let parentWindow = this['option']['window'] ?? window.document.body;
     Object.keys(this['variable']['nodes']).forEach(key => fragment.appendChild(this['variable']['nodes'][key]), this);
@@ -657,7 +657,7 @@ class ModalLayer {
    * @param    {Number}                   w 容器宽
    * @param    {Number}                   h 容器高
    */
-  resizeBy(x, y, w, h) {
+  resizeBy (x, y, w, h) {
     let container = this['variable']['nodes']['container'];
     container.style.cssText += `top: ${y}px; left: ${x}px; width: ${w}px; height: ${h}px;`;
 
@@ -674,7 +674,7 @@ class ModalLayer {
    * @Author    wolf
    * @Datetime  2020-11-16T02:55:39+0800
    */
-  positioning() {
+  positioning () {
     let container, parentNode;
     let posX, posY, width, height, parent;
 
@@ -726,7 +726,7 @@ class ModalLayer {
    * @DateTime 2020-09-02T02:31:44+0800
    * @return   {Promise}                Promise对象
    */
-  show() {
+  show () {
     let promise;
     let animations;
     let showCls, hideCls;
@@ -898,7 +898,7 @@ class ModalLayer {
    * @DateTime 2020-09-03T23:36:22+0800
    * @return   {Promise}                Promise对象
    */
-  revert() {
+  revert () {
     let promise;
     let queueNode, queueItemNode;
     let animation, animationDur, animationHalfDur;
@@ -939,7 +939,7 @@ class ModalLayer {
    * @DateTime 2020-09-24T23:42:52+0800
    * @return   {Promise}                 Promise对象
    */
-  remove() {
+  remove () {
     let nodes, status;
 
     status = this['status'];
@@ -978,13 +978,13 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-24T22:03:21+0800
    */
-  delete() {
+  delete () {
     // 移除节点以及移除监听事件
     this.remove()
       .then(() => {
-        let index = ModalLayer._instance.indexOf(this);
+        let index = ModalLayer['_instance'].indexOf(this);
         // 删除实例
-        ModalLayer._instance.splice(index, 1);
+        ModalLayer['_instance'].splice(index, 1);
 
         // 解除相关变量引用.
         ModalLayer['_assistant']['object']['dereference'](this['event']);
@@ -1000,7 +1000,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-03T01:56:21+0800
    */
-  static removeAll() {
+  static removeAll () {
     for (let i = 0; i < ModalLayer['_instance'].length; i++)
       ModalLayer['_instance'][i].remove();
   }
@@ -1011,7 +1011,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-03T02:03:40+0800
    */
-  removeAllEvent() {
+  removeAllEvent () {
     let nodes;
     let okButton, noButton, cancelButton;
 
@@ -1032,7 +1032,7 @@ class ModalLayer {
   static msg (options, reject) {
     return ModalLayer['message'](options, reject);
   }
-  static message(options, reject) {
+  static message (options, reject) {
     let layer = null;
 
     if (typeof options === 'string')
@@ -1069,7 +1069,7 @@ class ModalLayer {
    *
    * @return  {ModalLayer}         模态层实例
    */
-  static tips(options, reject) {
+  static tips (options, reject) {
     let layer = null;
     if (typeof options === 'string')
       options = {
@@ -1105,7 +1105,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static alert(options, reject) {
+  static alert (options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1137,7 +1137,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static confirm(options, reject) {
+  static confirm (options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1169,7 +1169,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static prompt(options, reject) {
+  static prompt (options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1201,7 +1201,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static page(options, reject) {
+  static page (options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1233,7 +1233,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static image(options, reject) {
+  static image (options, reject) {
     let layer = null;
 
     // 设置模态层类型
@@ -1273,7 +1273,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static loading(options, reject) {
+  static loading (options, reject) {
     let layer = null;
 
     // 设置模态层类型

@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 19:58:20
+* @Last Modified time: 2020-12-03 20:45:07
 */
 
 class ImageLayer extends ModalLayer {
@@ -624,6 +624,7 @@ class ImageLayer extends ModalLayer {
    * @Datetime  2020-10-12T22:27:09+0800
    */
   crop () {
+    let layer;
     let sPic, cropCasCenter;
     let operation, mousedown, direction;
     let repaint, animationFrame, repaintVariable;
@@ -687,15 +688,6 @@ class ImageLayer extends ModalLayer {
 
       cropCtx.globalCompositeOperation = 'destination-over';
       cropCtx.drawImage(sPic, ...cropCasCenter);
-
-      // TODO:
-      // 提示用户相关操作展示注释, 后续使用Tips层处理.
-      // cropCtx.fillStyle = 'white';
-      // cropCtx.font = fontSize + 'px serif';
-      // cropCtx.fillText(text, ...cropTextPoint);
-
-      // cropCtx.drawImage(sPic, ...cropVariable);
-
       cropCtx.restore();
 
       if (repaint)
@@ -705,6 +697,9 @@ class ImageLayer extends ModalLayer {
     }
 
     cleanEvent = () => {
+      // 移除消息提示层
+      layer && layer.delete();
+
       // 移除键盘监听
       document.removeEventListener('keyup', keyupEvent);
 
@@ -881,6 +876,17 @@ class ImageLayer extends ModalLayer {
     cropCas.addEventListener('dblclick', cropEvent);
 
     document.body.appendChild(cropCas);
+
+    // 提示用户相关操作展示.
+    layer = ModalLayer['msg']({
+      'mask': false,
+      'popupTime': 15,
+      'resize': false,
+      'position': 'lb',
+      'areaProportion': null,
+      'transition': {'animation': [{'transform': 'translateX(-100%)'}, {'transform': 'translateX(0)'}]},
+      'content': '按 <span style="color: red">ESC</span> 退出裁剪模式.<br>双击裁剪框或者按下 <span style="color: red">空格(space)</span> 进行裁剪.<br>'
+    });
   }
 
   /**

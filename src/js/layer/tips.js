@@ -4,8 +4,8 @@
 * @Date:               2020-11-15 17:33:58
 * @Description
 *
-* @Last Modified by:   Makeit
-* @Last Modified time: 2020-11-18 01:24:16
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-12-03 20:47:53
 */
 class TipsLayer extends MessageLayer {
   // 兼容性配置
@@ -15,6 +15,7 @@ class TipsLayer extends MessageLayer {
     if (ModalLayer['_assistant']['object']['isString'](options['layer']['location']))
       options['layer']['location'] = document.querySelector(options['layer']['location']);
   }
+  
   // 检查配置
   checkOption() {
     super.checkOption();
@@ -24,6 +25,7 @@ class TipsLayer extends MessageLayer {
     if (!tipsArray.includes(this['option']['layer']['position']))
       throw Error('option.layer.position does not meet the expected value.');
   }
+
   // 初始化结构
   initStruct() {
     super.initStruct();
@@ -46,6 +48,7 @@ class TipsLayer extends MessageLayer {
       style: `${position}: -${iconSize}px; border-width: ${iconSize}px; border-${position}-width: 0px`
     });
   }
+
   // 初始化配置
   initOption(options) {
     super.initOption(options);
@@ -63,6 +66,7 @@ class TipsLayer extends MessageLayer {
     this['option']['mask']['enable'] = false;
     this['option']['areaProportion'] = null;
   }
+
   // tips定位
   positioning() {
     let bindTips, bindTipsElement, tipsTop, tipsLeft, tipsPosition, containerPosition, iconBorder;
