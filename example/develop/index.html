@@ -286,7 +286,7 @@
         src: 'https://baidu.com',
       }
     };
-    ModalLayer.page(option);
+    ModalLayer.page(option, e => console.error(e));
   }
   document.querySelector('#page-button-2').onclick = function () {
     let option = {
@@ -302,7 +302,7 @@
         src: 'https://www.hao123.com/',
       }
     };
-    ModalLayer.page(option);
+    ModalLayer.page(option, e => console.error(e));
   }
 
   // 测试Image
