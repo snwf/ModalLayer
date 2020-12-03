@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 00:25:26
+* @Last Modified time: 2020-12-03 14:10:41
 */
 
 class ModalLayer {
@@ -233,6 +233,10 @@ class ModalLayer {
    * @DateTime 2020-09-04T12:22:48+0800
    */
   checkOption () {
+    // 检查父容器是否为期望值
+    if (this['option']['window'] && !(this['option']['window'] instanceof Element))
+      throw new TypeError('option.window does not meet the expected value.');
+
     // 检查过渡动画是否正确设置
     if (Number.isFinite(this['option']['transition']['animation'])) {
       if (!Object.values(ModalLayer['_enum']['TRANSITION_ANIMATION_PRESET']).includes(this['option']['transition']['animation']))
