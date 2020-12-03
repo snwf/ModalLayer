@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 14:10:41
+* @Last Modified time: 2020-12-03 15:47:59
 */
 
 class ModalLayer {
@@ -550,9 +550,6 @@ class ModalLayer {
       this['type'] = options['type'];
       this['status'] = ModalLayer['_enum']['STATUS']['HIDE'];
 
-      // // 创建配置副本
-      // options = ModalLayer['_assistant']['object']['deepCopy'](options);
-
       // 配置兼容性处理
       this['compatibleOption'](options);
 
@@ -592,8 +589,9 @@ class ModalLayer {
       // 插入节点
       this['insertNode']();
     } catch (e) {
-      ModalLayer['_instance'].splice(ModalLayer['_instance'].indexOf(this), 1);
-      reject?.call(null, e);
+      reject?.call(this, e);
+      this.delete();
+      return e;
     }
   }
 
@@ -629,15 +627,19 @@ class ModalLayer {
 
     defaultArea = [0, 0];
     container = this['variable']['nodes']['container'];
-    modalChildNodes = container.children;
+    if (this['option']['areaProportion'] === null) {
+      defaultArea = [container.offsetWidth, container.offsetHeight];
+    } else {
+      modalChildNodes = container.children;
 
-    // 先设置宽度, 不然会出现高度不正确的现象
-    defaultArea[0] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, this['option']['areaProportion'][0]);
-    container.style.width = defaultArea[0] + 'px';
+      // 先设置宽度, 不然会出现高度不正确的现象
+      defaultArea[0] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, this['option']['areaProportion'][0]);
+      container.style.width = defaultArea[0] + 'px';
 
-    for (let i = 0; i < modalChildNodes.length; i++)
-      defaultArea[1] = getComputedStyle(modalChildNodes[i]).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
-    container.style.height = defaultArea[1] + 'px';
+      for (let i = 0; i < modalChildNodes.length; i++)
+        defaultArea[1] = getComputedStyle(modalChildNodes[i]).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
+      container.style.height = defaultArea[1] + 'px';
+    }
 
     // 记录初始化后的最小值
     this['variable']['defaultArea'] = defaultArea;
@@ -730,13 +732,15 @@ class ModalLayer {
     let showCls, hideCls;
     let nodes, zIndex, nodeKeys;
 
+    nodes = this['variable']['nodes'];
+
+    if (!nodes || Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
+
     showCls = 'modal-layer-show';
     hideCls = 'modal-layer-hide';
-    nodes = this['variable']['nodes'];
     nodeKeys = Object.keys(nodes);
     animations = this['variable']['animation']['transition'];
     zIndex = ModalLayer['_assistant']['element']['maxZIndex']();
-    if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['SHOW']) return Promise.resolve();
 
     promise = new Promise(resolve => {
       let fn = e => {
@@ -782,12 +786,14 @@ class ModalLayer {
     let hideCls, showCls;
     let opacityAnimation, transformAnimation;
 
+    nodes = this['variable']['nodes'];
+
+    if (!nodes || Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
+
     hideCls = 'modal-layer-hide';
     showCls = 'modal-layer-show';
-    nodes = this['variable']['nodes'];
     nodeKeys = Object.keys(nodes);
     animations = this['variable']['animation']['transition'];
-    if (Object.keys(nodes).length === 0 || this['status'] === ModalLayer['_enum']['STATUS']['HIDE']) return Promise.resolve();
 
     // 取消自动关闭
     if (Number.isInteger(this['variable']['timeout']['auto_shutdown']))
@@ -897,13 +903,12 @@ class ModalLayer {
     let queueNode, queueItemNode;
     let animation, animationDur, animationHalfDur;
 
+    if (![ModalLayer['_enum']['STATUS']['MINIMIZE']].includes(this['status'])) return;
+
     animationDur = this['option']['transition']['duration'];
     queueNode = document.querySelector('#modal-layer-minimize-queue');
     animationHalfDur = ModalLayer['_assistant']['number']['divide'](animationDur, 2);
     queueItemNode = queueNode.querySelector('.modal-layer-minimize-queue-item[modal-layer-index="' + this['option']['index'] + '"]');
-
-    if (![ModalLayer['_enum']['STATUS']['MINIMIZE']].includes(this['status'])) return;
-
     animation = ModalLayer['_assistant']['cache']['get']('minimizeQueueAnimations').get(this['option']['index']);
 
     setTimeout(() => {
@@ -946,10 +951,10 @@ class ModalLayer {
       delete ModalLayer['_minimizeQueue'][index];
     }
 
+    if (!nodes || Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['HIDE'], ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(status)) return Promise.resolve();
+
     // 将当前状态更改为removing.
     this['setStatus'](ModalLayer['_enum']['STATUS']['REMOVING']);
-
-    if (Object.keys(nodes).length === 0 || [ModalLayer['_enum']['STATUS']['HIDE'], ModalLayer['_enum']['STATUS']['REMOVING'], ModalLayer['_enum']['STATUS']['REMOVED']].includes(status)) return Promise.resolve();
 
     // 隐藏模态层
     return this['hide']().then(() => {
@@ -1025,7 +1030,7 @@ class ModalLayer {
    * @return {ModalLayer}         模态层实例
    */
   static msg (options, reject) {
-    ModalLayer['message'](options, reject);
+    return ModalLayer['message'](options, reject);
   }
   static message (options, reject) {
     let layer = null;
@@ -1040,6 +1045,9 @@ class ModalLayer {
 
     // 实例化
     layer = new (ModalLayer['_achieve'].get('message'))(options, reject);
+
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
 
     // 初始化模态层大小
     layer.resize();
@@ -1103,6 +1111,9 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('alert'))(options, reject);
 
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
+
     // 初始化模态层大小
     layer.resize();
 
@@ -1131,6 +1142,9 @@ class ModalLayer {
 
     // 实例化
     layer = new (ModalLayer['_achieve'].get('confirm'))(options, reject);
+
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
 
     // 初始化模态层大小
     layer.resize();
@@ -1161,6 +1175,9 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('prompt'))(options, reject);
 
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
+
     // 初始化模态层大小
     layer.resize();
 
@@ -1190,6 +1207,9 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('page'))(options, reject);
 
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
+
     // 初始化模态层大小
     layer.resize();
 
@@ -1218,6 +1238,9 @@ class ModalLayer {
 
     // 实例化
     layer = new (ModalLayer['_achieve'].get('image'))(options, reject);
+
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
 
     layer['variable']['image']['finish']
 
@@ -1256,6 +1279,9 @@ class ModalLayer {
     // 实例化
     layer = new (ModalLayer['_achieve'].get('loading'))(options, reject);
 
+    // 实例化出错则直接返回
+    if (layer instanceof Error) return;
+
     // 初始化模态层大小
     layer.resize();
 
@@ -1273,8 +1299,8 @@ Object.seal(ModalLayer);
 
 if (Object.is(window['ModalLayer'], ModalLayer)) {
   console.group('ModalLayer already exists');
-  console.log(`Already version ${window['ModalLayer']['_version']}`);
-  console.log(`Try to introduce version: ${ModalLayer['_version']}`);
+  console.warn(`Already version ${window['ModalLayer']['_version']}`);
+  console.warn(`Try to introduce version: ${ModalLayer['_version']}`);
   console.groupEnd();
 } else {
   Object.preventExtensions(ModalLayer);

@@ -5,7 +5,7 @@
 * @Description         国际化
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 02:58:24
+* @Last Modified time: 2020-12-03 15:57:35
 */
 
 'use strict';
@@ -193,6 +193,7 @@ message['zh-CN'] = {
   'Modal layer title.<br>When this property is set to <code>false</code>, the title bar is not displayed.': '模态层标题.<br>当该属性设置 <code>false</code> 时则不显示标题栏.',
   'The position of the text/icon, can be left, center, right or specific pixel value.': '文本/图标的位置, 可以为left, center, right或具体像素值.',
   'The modal layer displays the relevant settings of the countdown progress bar.': '模态层显示倒计时进度条相关设置.',
+  'If it is <code>null</code>, the content is adaptive.': '若为 <code>null</code> 则自适应内容.',
   'The CSS files are compressed using CleanCSS, and the final generated files are located in the': 'CSS文件使用CleanCSS进行压缩, 最终生成文件位于',
   'You can use HTML code and the objects required by the <a href="#" class="link-secondary">ElementAssistant.objectToNode</a> method.': '可以使用HTML代码以及<a href="#" class="link-secondary"> ElementAssistant.objectToNode </a>方法所需对象.',
   'If this property is set, the parent modal layer will be automatically called out after the current modal layer is hidden.': '如果设置了该属性则当前模态层隐藏后会自动呼出父模态层.',

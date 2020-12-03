@@ -5,7 +5,7 @@
 * @Description         对象助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 02:34:18
+* @Last Modified time: 2020-12-03 14:56:20
 */
 
 class ObjectAssistant {
@@ -17,7 +17,7 @@ class ObjectAssistant {
    * @param    {Object}                  v 需要释放引用的对象
    */
   static dereference (v) {
-    Object.keys(v).forEach(_k => {
+    v && Object.keys(v).forEach(_k => {
       let _v = v[_k];
       if (ObjectAssistant['isCollection'](_v)) {
         ObjectAssistant['dereference'](_v);
