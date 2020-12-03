@@ -20,10 +20,16 @@ class TipsLayer extends MessageLayer {
   checkOption() {
     super.checkOption();
     let tipsArray = Object.values(ModalLayer['_enum']['TIPS_POSITION']);
-    if (!this['option']['layer']['location'] instanceof Element)
+    if (!(this['option']['layer']['location'] instanceof Element))
       throw Error('option.layer.location does not meet the expected value');
     if (!tipsArray.includes(this['option']['layer']['position']))
       throw Error('option.layer.position does not meet the expected value.');
+    // 防止出现多个tips，允许出现不同位置
+    ModalLayer['_instance'].forEach(v => {
+      if (v instanceof TipsLayer && v !== this)
+        if ((v['option']['layer']['location'] == this['option']['layer']['location']) && (v['option']['layer']['position'] == this['option']['layer']['position']))
+          v.remove();  
+    });
   }
 
   // 初始化结构
@@ -31,7 +37,6 @@ class TipsLayer extends MessageLayer {
     super.initStruct();
 
     let container, iconPosition, position, iconSize;
-
     container = this['variable']['struct']['_build']['container'];
     iconPosition = ModalLayer['_assistant']['object']['getKeyByValue'](ModalLayer['_enum']['TIPS_POSITION'], this['option']['layer']['position']);
     iconSize = this['option']['layer']['iconSize'];
@@ -41,12 +46,19 @@ class TipsLayer extends MessageLayer {
       'up': 'bottom',
       'down': 'top'
     }[iconPosition.toLowerCase()];
-
     container.innerHTML.push({
       nodeType: 'span',
       class: `depend-icon triangle-${position}`,
       style: `${position}: -${iconSize}px; border-width: ${iconSize}px; border-${position}-width: 0px`
     });
+  };
+  //初始化结构
+  initNode() {
+    let radius, container;
+    super.initNode();
+    radius = this['option']['layer']['radius'];
+    container = this['variable']['nodes']['container'];
+    container.style.cssText += `border-radius: ${radius}px`;
   }
 
   // 初始化配置
@@ -54,13 +66,6 @@ class TipsLayer extends MessageLayer {
     super.initOption(options);
     // 初始化tips特有的属性
     this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], ModalLayer['_option']['tips']);
-    // 防止出现多个tips，允许出现不同位置
-    ModalLayer['_instance'].forEach(v => {
-      if (v instanceof TipsLayer && v !== this)
-        if (v['option']['layer']['location'] == this['option']['layer']['location'])
-          if (v['option']['layer']['position'] == this['option']['layer']['position'])
-            v.remove();
-    })
     this['option']['resize']['enable'] = false;
     this['option']['progress']['enable'] = false;
     this['option']['mask']['enable'] = false;

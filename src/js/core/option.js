@@ -36,6 +36,7 @@ Object.defineProperty(OPTION, 'tips', {
     'location': null, // 获取用户绑定元素
     'position': 3, // 设置tips的位置 
     'iconSize': 10, // 设置tipsicon的大小
+    'radius': 20 // 设置tips的圆弧度
     }
 });
 

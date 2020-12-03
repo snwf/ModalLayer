@@ -437,10 +437,11 @@
 document.querySelector('#tips').onclick = function () {
     
     let option = {
-      popupTime: 0,
+      popupTime: 5,
       layer:{
         location: '#tips',
         position: 0,
+        radius: 15
       },
       progress: {
         enable: true,
@@ -452,22 +453,20 @@ document.querySelector('#tips').onclick = function () {
     let option2 = {
       popupTime: 0,
       layer:{
-        location: '#page-button-1',
-        position: 0,
+        location: '#tips',
+        position: 1,
+        radius: 15
       },
       progress: {
         enable: true,
         color: 'red',
         position: 'top',
       },
-      content: '<span>Hi2323</span>'
+      content: '<span>Hi asdfasdf</span>'
     };
-
     ModalLayer.tips(option, function (error) {
-      console.error(error);
     });
     ModalLayer.tips(option2, function (error) {
-      console.error(error);
     });
     // ModalLayer.msg('测试一下', function (error) {
     //   console.error(error);

@@ -190,7 +190,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T14:14:23+0800
    */
-  compatibleOption (options) {
+  compatibleOption(options) {
     // 父容器
     if (ModalLayer['_assistant']['object']['isString'](options['window']))
       options['window'] = document.querySelector(options['window']);
@@ -232,7 +232,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T12:22:48+0800
    */
-  checkOption () {
+  checkOption() {
     // 检查父容器是否为期望值
     if (this['option']['window'] && !(this['option']['window'] instanceof Element))
       throw new TypeError('option.window does not meet the expected value.');
@@ -391,7 +391,7 @@ class ModalLayer {
    * @Author    wolf
    * @Datetime  2020-11-18T02:37:12+0800
    */
-  initAnimation () {
+  initAnimation() {
     let nodes;
     let animation;
     let preset, option;
@@ -404,34 +404,34 @@ class ModalLayer {
     animation = this['option']['transition']['animation'];
 
     preset.other = [
-      {'opacity': 0},
-      {'opacity': 1}
+      { 'opacity': 0 },
+      { 'opacity': 1 }
     ];
     preset['container'] = [
       // 正拉伸
       [
-        {'opacity': 0, 'transform': 'scale(.45)'},
-        {'opacity': 1, 'transform': 'scale(1)'}
+        { 'opacity': 0, 'transform': 'scale(.45)' },
+        { 'opacity': 1, 'transform': 'scale(1)' }
       ],
       // 向下位移
       [
-        {'opacity': 0, 'transform': 'translateY(-100%)'},
-        {'opacity': 1, 'transform': 'translateY(0)'}
+        { 'opacity': 0, 'transform': 'translateY(-100%)' },
+        { 'opacity': 1, 'transform': 'translateY(0)' }
       ],
       // 展开X轴
       [
-        {'opacity': 0, 'transform': 'rotateY(-120deg)'},
-        {'opacity': 1, 'transform': 'rotateY(0)'}
+        { 'opacity': 0, 'transform': 'rotateY(-120deg)' },
+        { 'opacity': 1, 'transform': 'rotateY(0)' }
       ],
       // 对角拉伸
       [
-        {'opacity': 0, 'transform': 'skewX(-100deg)'},
-        {'opacity': 1, 'transform': 'skewX(0deg)'}
+        { 'opacity': 0, 'transform': 'skewX(-100deg)' },
+        { 'opacity': 1, 'transform': 'skewX(0deg)' }
       ],
       // 向上弹出
       [
-        {'opacity': 0, 'transform': 'translateY(200%) scale(.45)'},
-        {'opacity': 1, 'transform': 'translateY(0) scale(1)'}
+        { 'opacity': 0, 'transform': 'translateY(200%) scale(.45)' },
+        { 'opacity': 1, 'transform': 'translateY(0) scale(1)' }
       ]
     ];
 
@@ -779,7 +779,7 @@ class ModalLayer {
    * @DateTime 2020-09-03T00:55:32+0800
    * @return   {Promise}                 Promise对象
    */
-  hide () {
+  hide() {
     let promise;
     let animations;
     let nodes, nodeKeys;
@@ -835,7 +835,7 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-03T23:35:17+0800
    */
-  minimize () {
+  minimize() {
     let title;
     let keyframes, option;
     let queueNode, queueItemNode;
@@ -872,8 +872,8 @@ class ModalLayer {
     } else {
       // 动画关键帧
       keyframes = [
-        {'opacity': 0, 'transform': 'scale(.45)'},
-        {'opacity': 1, 'transform': 'scale(1)'}
+        { 'opacity': 0, 'transform': 'scale(.45)' },
+        { 'opacity': 1, 'transform': 'scale(1)' }
       ];
 
       // 动画设定
@@ -1029,7 +1029,7 @@ class ModalLayer {
    *
    * @return {ModalLayer}         模态层实例
    */
-  static msg (options, reject) {
+  static msg(options, reject) {
     return ModalLayer['message'](options, reject);
   }
   static message (options, reject) {
@@ -1066,18 +1066,26 @@ class ModalLayer {
    *
    * @param   {Mixed}      options 模态层设置
    * @param   {Function}   reject  当出现错误时调用方法
-   *
    * @return  {ModalLayer}         模态层实例
    */
-  static tips (options, reject) {
+  static tips(options, position, reject) {
     let layer = null;
-    if (typeof options === 'string')
+    if (typeof options === 'string') {
       options = {
         'content': options,
+        'layer': {'location': null},
         'type': ModalLayer['_enum']['TYPE']['TIPS']
       }
-    else
+    } else {
       options.type = ModalLayer['_enum']['TYPE']['TIPS'];
+    }
+    
+    if (position instanceof Function) {
+      reject = position;
+    } else {
+      options['layer']['location'] = position;
+    }
+
 
     // 实例化
     layer = new (ModalLayer['_achieve'].get('tips'))(options, reject);
@@ -1253,11 +1261,11 @@ class ModalLayer {
         layer['variable']['image']['layer'].resize();
       })
 
-    // 初始化模态层位置
-    .then(() => {
-      layer['positioning']();
-      layer['variable']['image']['layer']['positioning']();
-    })
+      // 初始化模态层位置
+      .then(() => {
+        layer['positioning']();
+        layer['variable']['image']['layer']['positioning']();
+      })
 
       // 显示
       .then(() => layer.show());
