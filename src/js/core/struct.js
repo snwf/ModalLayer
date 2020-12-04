@@ -5,7 +5,7 @@
 * @Description         构建ModalLayer所需的Node数据
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:25:37
+* @Last Modified time: 2020-12-04 23:52:15
 */
 
 const STRUCT = Object.create(null);
@@ -274,14 +274,17 @@ Object.defineProperty(STRUCT, 'interaction_button', {
     return JSON.parse(JSON.stringify({
       'ok': {
         'nodeType': 'span',
+        'innerText': 'Confirm',
         'class': 'modal-layer-interaction-btn modal-layer-interaction-btn-ok'
       },
       'no': {
         'nodeType': 'span',
+        'innerText': 'Reject',
         'class': 'modal-layer-interaction-btn modal-layer-interaction-btn-no'
       },
       'cancel': {
         'nodeType': 'span',
+        'innerText': 'Cancel',
         'class': 'modal-layer-interaction-btn modal-layer-interaction-btn-cancel'
       }
     }));

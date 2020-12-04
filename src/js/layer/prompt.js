@@ -5,7 +5,7 @@
 * @Description         输入层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:27:04
+* @Last Modified time: 2020-12-04 23:55:15
 */
 
 class PromptLayer extends AlertLayer {
@@ -18,7 +18,28 @@ class PromptLayer extends AlertLayer {
   initStruct () {
     super.initStruct();
 
-    this['variable']['struct']['_backup']['interaction'].innerHTML.push(this['variable']['struct']['_backup']['interaction_button']['cancel']);
+    let interaction, interactionButton;
+    
+    interaction = this['variable']['struct']['_backup']['interaction'];
+    interactionButton = this['variable']['struct']['_backup']['interaction_button'];
+
+    if (interaction.innerHTML.includes(interactionButton['ok'])) {
+      interactionButton['cancel']['data-index'] = interaction.innerHTML.length;
+      interaction.innerHTML.push(interactionButton['cancel']);
+    }
+  }
+
+  /**
+   * 初始化事件
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-04T23:32:32+0800
+   */
+  initEvent () {
+    super.initEvent();
+
+    let index = this['variable']['struct']['_backup']['interaction'].innerHTML.indexOf(this['variable']['struct']['_backup']['interaction_button']['cancel']);
+    if (!this['event']['interaction'][index]) this['event']['interaction'][index] = this.remove;
   }
 }
 

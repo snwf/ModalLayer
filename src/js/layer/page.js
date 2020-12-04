@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-01 19:23:59
+* @Last Modified time: 2020-12-05 00:03:53
 */
 
 class PageLayer extends ModalLayer {
@@ -49,10 +49,10 @@ class PageLayer extends ModalLayer {
 
     super.initStruct();
 
+    content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
     action = this['variable']['struct']['_backup']['action'] = ModalLayer['_struct']['action'];
-    content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
     contentPage = this['variable']['struct']['_backup']['content_page'] = ModalLayer['_struct']['content_page'];
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
 

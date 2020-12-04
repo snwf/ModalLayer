@@ -5,7 +5,7 @@
 * @Description         提示层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:25:48
+* @Last Modified time: 2020-12-05 00:04:37
 */
 
 class AlertLayer extends ModalLayer {
@@ -22,11 +22,11 @@ class AlertLayer extends ModalLayer {
 
    super.initStruct();
 
+    content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
+    interaction = this['variable']['struct']['_backup']['interaction'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
     action = this['variable']['struct']['_backup']['action'] = ModalLayer['_struct']['action'];
-    content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
-    interaction = this['variable']['struct']['_backup']['interaction'] = ModalLayer['_struct']['interaction'];
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'] = ModalLayer['_struct']['interaction_button'];
 
@@ -49,7 +49,10 @@ class AlertLayer extends ModalLayer {
       container.innerHTML.push(progress);
     }
 
-    interaction.innerHTML.push(interactionButton.ok);
+    if (interaction.innerHTML.length === 0) {
+      interactionButton.ok['data-index'] = 0;
+      interaction.innerHTML.push(interactionButton.ok);
+    }
 
     container.innerHTML.push(interaction);
   }
@@ -76,6 +79,19 @@ class AlertLayer extends ModalLayer {
     } else {
       contentNode.innerHTML = this['option']['content']['value'];
     }
+  }
+
+  /**
+   * 初始化事件
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-04T22:32:39+0800
+   */
+  initEvent () {
+    super.initEvent();
+
+    let index = this['variable']['struct']['_backup']['interaction'].innerHTML.indexOf(this['variable']['struct']['_backup']['interaction_button']['ok']);
+    if (!this['event']['interaction'][index]) this['event']['interaction'][index] = this.remove;
   }
 }
 

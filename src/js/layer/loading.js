@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 00:24:44
+* @Last Modified time: 2020-12-05 00:05:06
 */
 
 class LoadingLayer extends ModalLayer {
@@ -84,8 +84,8 @@ class LoadingLayer extends ModalLayer {
 
     super.initStruct();
 
+    content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
-    content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
     loading = this['variable']['struct']['_backup']['content_loading'] = ModalLayer['_struct']['content_loading'];
     loadingIcon = this['variable']['struct']['_backup']['content_loading_icon'] = ModalLayer['_struct']['content_loading_icon'];
     

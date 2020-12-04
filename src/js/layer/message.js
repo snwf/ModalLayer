@@ -5,7 +5,7 @@
 * @Description         消息层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:26:21
+* @Last Modified time: 2020-12-05 00:05:14
 */
 
 class MessageLayer extends ModalLayer {
@@ -34,8 +34,8 @@ class MessageLayer extends ModalLayer {
 
     super.initStruct();
 
+    content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
-    content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
 
     container.innerHTML.push(content);
     if (this['option']['resize']['enable']) {

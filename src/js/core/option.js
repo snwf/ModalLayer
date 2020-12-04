@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 15:52:54
+* @Last Modified time: 2020-12-04 22:14:59
 */
 
 const OPTION = Object.create(null);
@@ -28,13 +28,13 @@ Object.defineProperty(OPTION, 'page', {
 });
 /**
  * tips 默认配置
- * 
+ *
  * @type {object}
  */
 Object.defineProperty(OPTION, 'tips', {
   'value': {
     'location': null, // 获取用户绑定元素
-    'position': 3, // 设置tips的位置 
+    'position': 3, // 设置tips的位置
     'iconSize': 10, // 设置tipsicon的大小
     'radius': 20 // 设置tips的圆弧度
     }
@@ -147,18 +147,10 @@ Object.defineProperty(OPTION, 'common', {
       'value': null, // 容器内容, 可以为文本或String Node
       'fullContainer': false // 是否将内容填充整个模态层
     },
-    'text': { // 文本描述
-      'action': { // 响应按钮文本描述
-        'close': '关闭', // 关闭按钮文本描述
-        'expand': '全屏', // 全屏按钮文本描述
-        'minimize': '最小化' // 最小化按钮文本描述
-      },
-      'interaction': { // 交互按钮文本描述
-        'ok': '确定', // 确定按钮文本描述
-        'no': '拒绝', // 拒绝按钮文本描述
-        'cancel': '取消' // 取消按钮文本描述
-      }
-    },
+    // 响应按钮
+    'action': [],
+    // 交互按钮
+    'interaction': [],
     'transition': { // 过渡动画设置
       'duration': 0.2, // 持续时间
       'animation': 0, // 动画名称或Animation对象或预设方案

@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-18 02:22:57
+* @Last Modified time: 2020-12-05 00:09:35
 */
 
 /**
@@ -31,12 +31,8 @@ Object.defineProperty(EVENT, 'clickMask', {
  * @type {Object}
  */
 Object.defineProperty(EVENT, 'interaction', {
-  'enumerable': true,
-  'value': {
-    'ok': null,
-    'no': null,
-    'cancel': function () {void this.remove();}
-  }
+  'value': [],
+  'enumerable': true
 });
 
 /**

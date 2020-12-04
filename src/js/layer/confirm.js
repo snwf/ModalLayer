@@ -5,7 +5,7 @@
 * @Description         确认层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-13 23:26:06
+* @Last Modified time: 2020-12-04 23:42:12
 */
 
 class ConfirmLayer extends AlertLayer {
@@ -18,7 +18,15 @@ class ConfirmLayer extends AlertLayer {
   initStruct () {
     super.initStruct();
 
-    this['variable']['struct']['_backup']['interaction'].innerHTML.push(this['variable']['struct']['_backup']['interaction_button']['no']);
+    let interaction, interactionButton;
+    
+    interaction = this['variable']['struct']['_backup']['interaction'];
+    interactionButton = this['variable']['struct']['_backup']['interaction_button'];
+
+    if (interaction.innerHTML.includes(interactionButton['ok'])) {
+      interactionButton['no']['data-index'] = interaction.innerHTML.length;
+      interaction.innerHTML.push(interactionButton['no']);
+    }
   }
 }
 ModalLayer['_achieve'].set('confirm', ConfirmLayer);

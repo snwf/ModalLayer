@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 21:42:03
+* @Last Modified time: 2020-12-05 00:14:29
 */
 
 class ModalLayer {
@@ -87,6 +87,7 @@ class ModalLayer {
   static _instance = new Proxy([], {
     set: (obj, attr, val) => {
       if (val instanceof ModalLayer || attr === 'length') {
+        if (obj.includes(val)) throw new Error('Cannot add repeatedly');
         obj[attr] = val;
         return true;
       }
@@ -203,6 +204,12 @@ class ModalLayer {
       }
     }
 
+    // 交互相关
+    if (options['interaction']) {
+      if (!Array.isArray(options['interaction']) && ModalLayer['_assistant']['object']['isOnlyObject'](options['interaction']))
+        options['interaction'] = [options['interaction']];
+    }
+
     // 拖拽
     if (typeof options['drag'] === 'boolean')
       options['drag'] = {'enable': options['drag']};
@@ -257,6 +264,10 @@ class ModalLayer {
         throw Error('Expects a css animation name or Animation object.');
     }
 
+    // 检查交互配置
+    if (!Array.isArray(this['option']['interaction']))
+      throw TypeError('option.interaction must be an array.');
+
     // 检查定位配置
     if (this['option']['position']) {
       if (!Array.isArray(this['option']['position']) && !Object.values(ModalLayer['_enum']['POSITION']).includes(this['option']['position']))
@@ -288,12 +299,46 @@ class ModalLayer {
    * @DateTime 2020-09-01T22:45:37+0800
    */
   initStruct () {
+    let interaction;
+    let interactionClass, interactionButtonTemplate;
+
     // 遮罩层
     if (this['option']['mask']?.['enable'])
       this['variable']['struct']['_build']['mask'] = ModalLayer['_struct']['mask'];
 
-    // 容器
+    // 内容容器
+    this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
+    // 模态层容器
     this['variable']['struct']['_build']['container'] = ModalLayer['_struct']['container'];
+    // 交互栏
+    interaction = this['variable']['struct']['_backup']['interaction'] = ModalLayer['_struct']['interaction'];
+
+    // 交互栏
+    interactionClass = 'modal-layer-interaction-btn';
+    interactionButtonTemplate = {
+      'nodeType': 'span',
+      'data-index': null
+    };
+    this['option']['interaction'].forEach((o, i) => {
+      let template = ModalLayer['_assistant']['object']['deepCopy'](interactionButtonTemplate);
+      template['data-index'] = i;
+      template['innerText'] = o['text'] ?? 'Button';
+      template['class'] = `${interactionClass}${o['alias'] ? ' ' + o['alias'] : ''}`;
+      if (ModalLayer['_assistant']['object']['isOnlyObject'](o['attr']))
+        Object.keys(o['attr']).forEach(k => {
+          if (k === 'class') template[k] += ' ' + o['attr'][k];
+          else template[k] = o['attr'][k];
+        });
+
+      // 释放原对象
+      ModalLayer['_assistant']['object']['dereference'](o);
+
+      // 赋值新的对象
+      this['option']['interaction'][i] = template;
+    });
+
+    // 将处理完毕的节点结构传入交互栏
+    interaction.innerHTML = this['option']['interaction'];
   }
 
   /**
@@ -354,11 +399,6 @@ class ModalLayer {
         titleNode.innerHTML = this['option']['title'];
       }
     }
-
-    // 设置interaction按钮文本
-    okButton && (okButton.innerText = this['option']['text']['interaction']['ok']);
-    noButton && (noButton.innerText = this['option']['text']['interaction']['no']);
-    cancelButton && (cancelButton.innerText = this['option']['text']['interaction']['cancel']);
   }
 
   /**
@@ -484,9 +524,9 @@ class ModalLayer {
    * @DateTime 2020-09-21T00:15:00+0800
    */
   bindEvent () {
-    let options;
-    let okButton, noButton, cancelButton;
+    let options, container;
 
+    container = this['variable']['nodes']['container'];
     options = {
       'once': false,
       'capture': false,
@@ -500,34 +540,31 @@ class ModalLayer {
 
     // 拖拽模态层
     if (this['option']['drag']['enable'])
-      this['variable']['eventSymbol']['drag'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'].querySelector('.modal-layer-title'), 'mousedown', null, this['event']['drag'], this, null, options);
+      this['variable']['eventSymbol']['drag'] = ModalLayer['_assistant']['event']['add'](container.querySelector('.modal-layer-title'), 'mousedown', null, this['event']['drag'], this, null, options);
 
     // 模态层伸缩
     if (this['option']['resize']['enable'])
-      this['variable']['eventSymbol']['resize'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'mousedown', '.modal-layer-resize-bar', this['event']['resize'], this, null, options);
+      this['variable']['eventSymbol']['resize'] = ModalLayer['_assistant']['event']['add'](container, 'mousedown', '.modal-layer-resize-bar', this['event']['resize'], this, null, options);
 
     // 当点击模态层时如果有多个模态层为显示状态则点击的对象置于最上层
-    this['variable']['eventSymbol']['active'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'mousedown', null, this['event']['active'], this, null, options);
+    this['variable']['eventSymbol']['active'] = ModalLayer['_assistant']['event']['add'](container, 'mousedown', null, this['event']['active'], this, null, options);
 
     // action 由于action使用了Font Awesome, 最好使用事件委托
     if (this['event']['action']['close'] instanceof Function)
-      this['variable']['eventSymbol']['actionClose'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-close', this['event']['action']['close'], this, null, options);
+      this['variable']['eventSymbol']['actionClose'] = ModalLayer['_assistant']['event']['add'](container, 'click', '.modal-layer-action-btn-close', this['event']['action']['close'], this, null, options);
     if (this['event']['action']['expand'] instanceof Function)
-      this['variable']['eventSymbol']['actionExpand'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-expand', this['event']['action']['expand'], this, null, options);
+      this['variable']['eventSymbol']['actionExpand'] = ModalLayer['_assistant']['event']['add'](container, 'click', '.modal-layer-action-btn-expand', this['event']['action']['expand'], this, null, options);
     if (this['event']['action']['minimize'] instanceof Function)
-      this['variable']['eventSymbol']['actionMinimize'] = ModalLayer['_assistant']['event']['add'](this['variable']['nodes']['container'], 'click', '.modal-layer-action-btn-minimize', this['event']['action']['minimize'], this, null, options);
+      this['variable']['eventSymbol']['actionMinimize'] = ModalLayer['_assistant']['event']['add'](container, 'click', '.modal-layer-action-btn-minimize', this['event']['action']['minimize'], this, null, options);
 
-    // interaction 默认只绑定cancel
-    okButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-ok');
-    noButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-no');
-    cancelButton = this['variable']['nodes']['container'].querySelector('.modal-layer-interaction-btn-cancel');
-
-    if (this['event']['interaction']['ok'] && okButton)
-      this['variable']['eventSymbol']['interactionOk'] = ModalLayer['_assistant']['event']['add'](okButton, 'click', null, this['event']['interaction']['ok'], this, null, options);
-    if (this['event']['interaction']['no'] && noButton)
-      this['variable']['eventSymbol']['interactionNo'] = ModalLayer['_assistant']['event']['add'](noButton, 'click', null, this['event']['interaction']['no'], this, null, options);
-    if (cancelButton)
-      this['variable']['eventSymbol']['interactionCancel'] = ModalLayer['_assistant']['event']['add'](cancelButton, 'click', null, this['event']['interaction']['cancel'], this, null, options);
+    // 如果 option.event.interaction 中对应下标存在事件则绑定.
+    this['option']['interaction'].forEach((o, i) => {
+      if (this['event']['interaction'][i] instanceof Function) {
+        let interactionButton = container.querySelector('.modal-layer-interaction-btn[data-index="' + i + '"]');
+        if (interactionButton)
+          this['variable']['eventSymbol']['interacion-' + i] = ModalLayer['_assistant']['event']['add'](interactionButton, 'click', null, this['event']['interaction'][i], this, null, options);
+      }
+    });
   }
 
   /**
@@ -698,13 +735,13 @@ class ModalLayer {
         posX = posY = 0;
       } else if (ModalLayer['_enum']['POSITION']['RIGHT_TOP'] === this['option']['position']) {
         posY = 0;
-        posX = (parentNode ? parentNode.offsetWidth : window.innerWidth) - container.offsetWidth;
+        posX = (parentNode ? parentNode.offsetWidth : document.documentElement.clientWidth) - container.offsetWidth;
       } else if (ModalLayer['_enum']['POSITION']['LEFT_BOTTOM'] === this['option']['position']) {
         posX = 0;
-        posY = (parentNode ? parentNode.offsetHeight : window.innerHeight) - container.offsetHeight;
+        posY = (parentNode ? parentNode.offsetHeight : document.documentElement.clientHeight) - container.offsetHeight;
       } else if (ModalLayer['_enum']['POSITION']['RIGHT_BOTTOM'] === this['option']['position']) {
-        posX = (parentNode ? parentNode.offsetWidth : window.innerWidth) - container.offsetWidth;
-        posY = (parentNode ? parentNode.offsetHeight : window.innerHeight) - container.offsetHeight;
+        posX = (parentNode ? parentNode.offsetWidth : document.documentElement.clientWidth) - container.offsetWidth;
+        posY = (parentNode ? parentNode.offsetHeight : document.documentElement.clientHeight) - container.offsetHeight;
       } else {
         width = this['variable']['defaultRect']['width'];
         height = this['variable']['defaultRect']['height'];
@@ -792,7 +829,6 @@ class ModalLayer {
     let animations;
     let nodes, nodeKeys;
     let hideCls, showCls;
-    let opacityAnimation, transformAnimation;
 
     nodes = this['variable']['nodes'];
 
@@ -1020,13 +1056,13 @@ class ModalLayer {
    * @DateTime 2020-09-03T02:03:40+0800
    */
   removeAllEvent () {
-    let nodes;
-    let okButton, noButton, cancelButton;
-
-    if (Object.keys(nodes = this['variable']['nodes']).length === 0) return;
+    if (Object.keys(this['variable']['nodes']).length === 0) return;
 
     // 移除所有事件
-    Object.values(this['variable']['eventSymbol']).forEach(symbol => ModalLayer['_assistant']['event']['remove'](symbol));
+    Object.values(this['variable']['eventSymbol']).forEach(param => {
+      if (param instanceof Promise) param.then(v => ModalLayer['_assistant']['event']['remove'](v['symbol']));
+      else ModalLayer['_assistant']['event']['remove'](param);
+    });
   }
 
   /**

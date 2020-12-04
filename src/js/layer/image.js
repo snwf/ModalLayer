@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 20:45:07
+* @Last Modified time: 2020-12-05 00:04:53
 */
 
 class ImageLayer extends ModalLayer {
@@ -212,12 +212,12 @@ class ImageLayer extends ModalLayer {
 
     super.initStruct();
 
+    content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
     action = this['variable']['struct']['_backup']['action'] = ModalLayer['_struct']['action'];
     toolbar = this['variable']['struct']['_backup']['toolbar'] = ModalLayer['_struct']['toolbar'];
     tools = this['variable']['struct']['_backup']['tools'] = ModalLayer['_struct']['image_tools'];
-    content = this['variable']['struct']['_backup']['content'] = ModalLayer['_struct']['content'];
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
     contentImage = this['variable']['struct']['_backup']['content_image'] = ModalLayer['_struct']['content_image'];
     toolChild = this['variable']['struct']['_backup']['image_tools_child'] = ModalLayer['_struct']['image_tools_child'];

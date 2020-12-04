@@ -68,7 +68,7 @@
       hook: {
         initStart: function () {
           // 检查之前老旧实例如果存在则销毁
-          if (document.querySelector('#modal-layer-container'))
+          if (document.querySelector('.modal-layer-container'))
             ModalLayer.removeAll();
         }
       },
@@ -94,7 +94,7 @@
       hook: {
         initStart: function () {
           // 检查之前老旧实例如果存在则销毁
-          if (document.querySelector('#modal-layer-container'))
+          if (document.querySelector('.modal-layer-container'))
             ModalLayer.removeAll();
         }
       },
@@ -119,27 +119,20 @@
       hook: {
         initStart: function () {
           // 检查之前老旧实例如果存在则销毁
-          if (document.querySelector('#modal-layer-container'))
+          if (document.querySelector('.modal-layer-container'))
             ModalLayer.removeAll();
         }
       },
-      event: {
-        interaction: {}
-      },
+      event: {interaction: []},
+      interaction: [{text: '妥妥儿的!', alias: 'modal-layer-interaction-btn-ok'}, {text: '你在说个锤子?', alias: 'modal-layer-interaction-btn-no'}],
       progress: {
         enable: true,
         position: 'left',
       },
-      content: 'php是世界上最好的语言！',
-      text: {
-        interaction: {
-          ok: '妥妥儿的!',
-          no: '你在说个锤子?'
-        }
-      }
+      content: 'php是世界上最好的语言！'
     };
 
-    option.event.interaction.ok = function () {
+    option.event.interaction[0] = function () {
       this.hide();
       ModalLayer.alert({
         popupTime: 0,
@@ -160,7 +153,7 @@
       });
     };
 
-    option.event.interaction.no = function () {
+    option.event.interaction[1] = function () {
       ModalLayer.alert({
         content: '<i class="fas fa-window-close" style="color: red"></i> More Confidence!!<br>你再骂！(五秒后自动关闭该窗口)'
       });
@@ -179,14 +172,8 @@
       hook: {
         initStart: function () {
           // 检查之前老旧实例如果存在则销毁
-          if (document.querySelector('#modal-layer-container'))
+          if (document.querySelector('.modal-layer-container'))
             ModalLayer.removeAll();
-        }
-      },
-      text: {
-        interaction: {
-          ok: '提交',
-          no: '取消'
         }
       },
       progress: {
@@ -196,15 +183,15 @@
       },
       content: '<input type="text" style="width: calc(100% - 2px); height: 24px; font-size: 16px; color: red;" placeholder="输入内容进行测试">',
       event : {
-        interaction: {
-          ok: function () {
+        interaction: [
+          function () {
             this.hide();
             ModalLayer.alert({
               parentModalLayer: this,
               content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + this.variable.nodes.container.querySelector('input').value
             });
           }
-        }
+        ]
       }
     };
 
