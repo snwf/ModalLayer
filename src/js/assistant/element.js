@@ -5,10 +5,29 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 22:13:43
+* @Last Modified time: 2020-12-06 01:54:30
 */
 
 class ElementAssistant {
+  /**
+   * 判断当前
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-06T01:40:15+0800
+   * @param     {[type]}                  node  [description]
+   * @return    {Boolean}                 [description]
+   */
+  static isMarginFolding (node) {
+    let computedStyle = getComputedStyle(node, null);
+    if (computedStyle.position === 'absolute' || computedStyle.position === 'fixed') return false;
+    return (
+      parseInt(computedStyle.padding) === 0 &&
+      parseInt(computedStyle.borderWidth) === 0 &&
+      (node.offsetTop > 0 || node.offsetLeft > 0) &&
+      (computedStyle.overflow === 'unset' || computedStyle.overflow === 'visible')
+    )
+  }
+
   /**
    * 子元素尺寸是否超出父元素所在区域
    *

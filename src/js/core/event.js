@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 00:09:35
+* @Last Modified time: 2020-12-06 01:10:24
 */
 
 /**
@@ -83,50 +83,22 @@ Object.defineProperty(EVENT, 'drag', {
     let status, moveMethod;
     let boundary, parentNode;
     let target, trigger, mousePoint, targetRect;
-    let parentComputedStyle, parentComputedStyleObj;
     let mEvent, mouseupEvent, keydownEvent, mousemoveEvent;
 
     status = this['status'];
     dEvent = dEvent ?? window.event;
     // 目标元素
     target = this['variable']['nodes']['container'];
-    // 目标元素Rect
-    targetRect = target.getBoundingClientRect();
     // 鼠标按下时的坐标
     mousePoint = [dEvent.screenX, dEvent.screenY];
     // 触发元素
     trigger = target.querySelector('.modal-layer-title');
+    // 目标元素Rect
+    targetRect = {x: target.offsetLeft, y: target.offsetTop, width: target.offsetWidth, height: target.offsetHeight};
 
     if (this['option']['window']) {
       parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
-      // 父节点计算后的样式
-      parentComputedStyle = this['option']['window'] ? window.getComputedStyle(this['option']['window']) : null;
-      parentComputedStyleObj = {
-        marginTop: parseInt(parentComputedStyle?.marginTop ?? 0),
-        paddingTop: parseInt(parentComputedStyle?.paddingTop ?? 0),
-        marginLeft: parseInt(parentComputedStyle?.marginLeft ?? 0),
-        paddingLeft: parseInt(parentComputedStyle?.paddingLeft ?? 0),
-        marginRight: parseInt(parentComputedStyle?.marginRight ?? 0),
-        paddingRight: parseInt(parentComputedStyle?.paddingRight ?? 0),
-        marginBottom: parseInt(parentComputedStyle?.marginBottom ?? 0),
-        paddingBottom: parseInt(parentComputedStyle?.paddingBottom ?? 0)
-      }
-      // 父窗体边界值(左右边界值, 上下边界值)
-      boundary = [
-        0,
-        parentNode.offsetWidth - parentComputedStyleObj.marginLeft - parentComputedStyleObj.marginRight - parentComputedStyleObj.paddingLeft - parentComputedStyleObj.paddingRight,
-        0,
-        parentNode.offsetHeight - parentComputedStyleObj.marginTop - parentComputedStyleObj.marginBottom - parentComputedStyleObj.paddingTop - parentComputedStyleObj.paddingBottom
-      ];
-
-      // 若有滚动并且未定义position则加上.
-      if (this['option']['position']) {
-        targetRect.y = target.offsetTop;
-        targetRect.x = target.offsetLeft;
-      } else {
-        targetRect.y += parentNode?.scrollTop ?? 0;
-        targetRect.x += parentNode?.scrollLeft ?? 0;
-      }
+      boundary = [0, parentNode.scrollWidth, 0, parentNode.scrollHeight];
     } else {
       // 父窗体边界值(左右边界值, 上下边界值)
       boundary = [0, document.documentElement.clientWidth, 0, document.documentElement.clientHeight];
@@ -218,9 +190,8 @@ Object.defineProperty(EVENT, 'resize', {
   'value': function (dEvent) {
     let status;
     let boundary, parentNode;
-    let target, trigger, targetArea, targetRect;
+    let target, trigger, targetRect;
     let mousePoint, mouseupEvent, mousemoveEvent;
-    let parentComputedStyle, parentComputedStyleObj;
 
     status = this['status'];
     dEvent = dEvent ?? window.event;
@@ -230,34 +201,16 @@ Object.defineProperty(EVENT, 'resize', {
     mousePoint = [dEvent.x, dEvent.y];
     // 目标元素
     target = this['variable']['nodes']['container'];
-    // 目标元素Rect
-    targetRect = target.getBoundingClientRect();
-    // 目标元素长宽
-    targetArea = [targetRect.width, targetRect.height];
     // 父节点
     parentNode = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
-    // 父节点计算后的样式
-    parentComputedStyle = this['option']['window'] ? window.getComputedStyle(this['option']['window']) : null;
-    parentComputedStyleObj = {
-      marginTop: parseInt(parentComputedStyle?.marginTop ?? 0),
-      paddingTop: parseInt(parentComputedStyle?.paddingTop ?? 0),
-      marginLeft: parseInt(parentComputedStyle?.marginLeft ?? 0),
-      paddingLeft: parseInt(parentComputedStyle?.paddingLeft ?? 0)
-    }
+    // 目标元素Rect
+    targetRect = {x: target.offsetLeft, y: target.offsetTop, width: target.offsetWidth, height: target.offsetHeight};
     // 父节点Rect
-    boundary = {x: 0, y: 0, width: parentNode?.offsetWidth ?? window.innerWidth, height: parentNode?.offsetHeight ?? window.innerHeight};
+    boundary = {x: 0, y: 0, width: parentNode?.scollWidth ?? document.documentElement.clientWidth, height: parentNode?.scrollHeight ?? document.documentElement.clientHeight};
 
     // 取消文字选中
     window.getSelection().empty();
 
-    // 若有滚动则加上.
-    if (this['option']['position']) {
-      targetRect.y = target.offsetTop;
-      targetRect.x = target.offsetLeft;
-    } else {
-      targetRect.y += parentNode ? parentNode.scrollTop - parentComputedStyleObj.marginTop - parentComputedStyleObj.paddingTop : 0;
-      targetRect.x += parentNode ? parentNode.scrollLeft - parentComputedStyleObj.marginLeft - parentComputedStyleObj.paddingLeft  : 0;
-    }
     mousemoveEvent = mEvent => {
       let resizePos;
       let moveNow, movementX, movementY;

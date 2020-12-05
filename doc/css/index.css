@@ -5,7 +5,7 @@
 * @Description         手册
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-04 01:30:39
+* @Last Modified time: 2020-12-05 01:51:37
 */
 
 @charset 'utf-8';
@@ -32,9 +32,10 @@ body {
   color: white;
   resize: none;
   border: none;
+  padding: 1em;
   height: 200px;
-  text-indent: 1em;
   overflow-y: auto;
+  line-height: 1.5em;
   background: #272822;
 }
 

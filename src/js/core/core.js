@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 00:14:29
+* @Last Modified time: 2020-12-06 01:51:12
 */
 
 class ModalLayer {
@@ -201,6 +201,8 @@ class ModalLayer {
       if (!Array.isArray(options['position'])) {
         if (Number.isInteger(options['position']))
           options['position'] = [options['position'], options['position']];
+      } else if (options['position'].length === 1) {
+        options['position'].push(0);
       }
     }
 
@@ -364,7 +366,10 @@ class ModalLayer {
 
     // 设置属性
     if (this['option']['window'] !== null) {
-      mask?.setAttribute('has-window', '');
+      if (mask) {
+        mask.setAttribute('has-window', '');
+        mask.style.cssText += `height: ${ModalLayer['_assistant']['element']['isMarginFolding'](this['option']['window']) ? this['option']['window'].offsetHeight : this['option']['window'].scrollHeight}px`;
+      }
       container.setAttribute('has-window', '');
     }
     container.setAttribute('modal-layer-popup-time', this['option']['popupTime']);
@@ -749,8 +754,8 @@ class ModalLayer {
         parent = {
           scrollY: parentNode?.scrollTop ?? 0,
           scrollX: parentNode?.scrollLeft ?? 0,
-          width: parentNode ? parentNode.clientWidth : window.innerWidth,
-          height: parentNode ? parentNode.clientHeight : window.innerHeight
+          width: parentNode ? parentNode.clientWidth : document.documentElement.clientWidth,
+          height: parentNode ? parentNode.clientHeight : document.documentElement.clientHeight
         }
 
         posX = ModalLayer['_assistant']['number']['chain'](parent.width)['subtract'](width)['divide'](2)['add'](parent.scrollX).floor().done();

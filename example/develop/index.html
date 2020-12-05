@@ -46,9 +46,12 @@
   <script src="../../src/js/storage/abstract.js"></script>
   <script src="../../src/js/storage/sync-storage.js"></script>
   <style>
+    main {
+      position: relative;
+    }
     #test-button-container {
       width: 160px;
-      margin: 200px auto;
+      margin: 900px auto;
       text-align: center;
     }
     #test-button-container button {
@@ -85,6 +88,7 @@
     </div>
     <div id="test-box"></div>
   </main>
+  <div>1</div>
 </body>
 <script>
   // 绘制边框
@@ -118,6 +122,7 @@
   document.querySelector('#msg-button').onclick = function () {
     let option = {
       popupTime: 0,
+      window: 'main',
       transition: {
         duration: .5,
         easing: 'linear',
@@ -150,6 +155,7 @@
   document.querySelector('#alert-button').onclick = function () {
     let option = {
       popupTime: 0,
+      window: 'main',
       title: '测试喜喜',
       hook: {
         initStart: function () {

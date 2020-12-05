@@ -87,13 +87,13 @@ modallayer/src/
   <div>
     <h5 id="message" i18n-message="messagelayer"></h5>
     <div class="highlight">
-      <button type="button" class="btn btn-sm btn-outline-primary float-right" i18n-message="Click me to try" onclick="ModalLayer.msg('Hello!')"></button>
+      <button type="button" class="btn btn-sm btn-outline-primary float-right run-code-btn" i18n-message="Click me to try"></button>
       <p>// 弹出一个消息层</p>
       <code>ModalLayer.msg('Hello!')</code>
     </div>
     <h5 id="alert" i18n-message="alertlayer"></h5>
     <div class="highlight">
-      <button type="button" class="btn btn-sm btn-outline-primary float-right" i18n-message="Click me to try" onclick="ModalLayer.alert({content: 'Hello, World!'})"></button>
+      <button type="button" class="btn btn-sm btn-outline-primary float-right run-code-btn" i18n-message="Click me to try""></button>
       <p>// 弹出一个提示层</p>
       <code>ModalLayer.alert({content: 'Hello, World!'})</code>
     </div>
