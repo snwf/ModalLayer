@@ -5,7 +5,7 @@
 * @Description         文档
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 01:50:32
+* @Last Modified time: 2020-12-10 01:22:49
 */
 
 'use strict';
@@ -66,10 +66,19 @@ codeTextLayer = ModalLayer.prompt({
   position: [mainContent.offsetLeft + mainContent.offsetWidth, window.innerHeight - 301],
   title: '<span i18n-message="try it"></span>',
   transition: {animation: [
-    {transform: 'translateY(100%)'}, {transform: 'translateX(0)'}
+    {transform: 'translateY(85%)'}, {transform: 'translateX(0)'}
   ]},
+  action: [{text: 'hide', icon: 'fas fa-angle-down', attr: {'style':'font-size: 1.3em', 'data-fa-transform': 'rotate-0'}}],
   interaction: [{text: 'Run', alias: 'modal-layer-interaction-btn-ok', attr: {style: 'flex: 1'}}],
   event : {
+    action: [function () {
+      let rotate, target, animation;
+      animation = this.variable.animation.transition.container;
+      target = this.variable.nodes.container.querySelector('.modal-layer-action-btn');
+      rotate = parseInt(target.getAttribute('data-fa-transform').split('-')[1]) + 180;
+      target.setAttribute('data-fa-transform', 'rotate-' + (rotate > 360 ? 0 : rotate));
+      animation.reverse();
+    }],
     interaction: [
       function () {
         let code, textarea;
