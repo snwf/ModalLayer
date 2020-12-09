@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-04 22:14:59
+* @Last Modified time: 2020-12-09 21:09:07
 */
 
 const OPTION = Object.create(null);
@@ -147,7 +147,7 @@ Object.defineProperty(OPTION, 'common', {
       'value': null, // 容器内容, 可以为文本或String Node
       'fullContainer': false // 是否将内容填充整个模态层
     },
-    // 响应按钮
+    // 动作按钮
     'action': [],
     // 交互按钮
     'interaction': [],

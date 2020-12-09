@@ -5,7 +5,7 @@
 * @Description         提示层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 00:04:37
+* @Last Modified time: 2020-12-09 22:28:27
 */
 
 class AlertLayer extends ModalLayer {
@@ -22,15 +22,13 @@ class AlertLayer extends ModalLayer {
 
    super.initStruct();
 
+    action = this['variable']['struct']['_backup']['action'];
     content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
     interaction = this['variable']['struct']['_backup']['interaction'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
-    action = this['variable']['struct']['_backup']['action'] = ModalLayer['_struct']['action'];
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'] = ModalLayer['_struct']['interaction_button'];
-
-    action.innerHTML.push(actionButton.close);
 
     title.innerHTML.push(action);
 
@@ -47,6 +45,11 @@ class AlertLayer extends ModalLayer {
     if (this['option']['progress']['enable']) {
       progress = this['variable']['struct']['_backup']['progress_bar'] = ModalLayer['_struct']['progress_bar'];
       container.innerHTML.push(progress);
+    }
+
+    if (action.innerHTML.length === 0) {
+      actionButton.close['data-index'] = 0;
+      action.innerHTML.push(actionButton.close);
     }
 
     if (interaction.innerHTML.length === 0) {
@@ -72,10 +75,10 @@ class AlertLayer extends ModalLayer {
 
     // 设置内容
     if (Array.isArray(this['option']['content']['value'])) {
+      let fragment = document.createDocumentFragment();
       contentChild = ModalLayer['_assistant']['element']['objectToNode'](this['option']['content']['value'])
-      Object.keys(contentChild).forEach(function (k) {
-        contentNode.appendChild(contentChild[k]);
-      });
+      Object.keys(contentChild).forEach(k => fragment.append(contentChild[k]));
+      contentNode.appendChild(fragment);
     } else {
       contentNode.innerHTML = this['option']['content']['value'];
     }
@@ -88,11 +91,19 @@ class AlertLayer extends ModalLayer {
    * @Datetime  2020-12-04T22:32:39+0800
    */
   initEvent () {
+    let actionIndex, interactionIndex;
+
     super.initEvent();
 
-    let index = this['variable']['struct']['_backup']['interaction'].innerHTML.indexOf(this['variable']['struct']['_backup']['interaction_button']['ok']);
-    if (!this['event']['interaction'][index]) this['event']['interaction'][index] = this.remove;
+    actionIndex = this['variable']['struct']['_backup']['action'].innerHTML.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
+    interactionIndex = this['variable']['struct']['_backup']['interaction'].innerHTML.indexOf(this['variable']['struct']['_backup']['interaction_button']['ok']);
+
+    if (!this['event']['action'][actionIndex]) this['event']['action'][actionIndex] = this.remove;
+    if (!this['event']['interaction'][interactionIndex]) this['event']['interaction'][interactionIndex] = this.remove;
   }
 }
+
+
+
 
 ModalLayer['_achieve'].set('alert', AlertLayer);

@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 00:03:53
+* @Last Modified time: 2020-12-09 22:41:38
 */
 
 class PageLayer extends ModalLayer {
@@ -49,19 +49,26 @@ class PageLayer extends ModalLayer {
 
     super.initStruct();
 
+    action = this['variable']['struct']['_backup']['action']
     content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
-    action = this['variable']['struct']['_backup']['action'] = ModalLayer['_struct']['action'];
     contentPage = this['variable']['struct']['_backup']['content_page'] = ModalLayer['_struct']['content_page'];
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
-
-    action.innerHTML.push(actionButton['minimize'], actionButton['expand'], actionButton['close']);
 
     title.innerHTML.push(action);
 
     if (this['option']['title'] !== false)
       container.innerHTML.push(title);
+
+    if (action.innerHTML.length === 0) {
+      actionButton['minimize']['data-index'] = 0;
+      action.innerHTML.push(actionButton['minimize']);
+      actionButton['expand']['data-index'] = 1;
+      action.innerHTML.push(actionButton['expand']);
+      actionButton['close']['data-index'] = 2;
+      action.innerHTML.push(actionButton['close']);
+    }
 
     content.innerHTML.push(contentPage);
 
@@ -101,6 +108,21 @@ class PageLayer extends ModalLayer {
         pageNode.setAttribute('name', this['option']['layer']['name'] + this['option']['index']);
       else
         pageNode.setAttribute(key, this['option']['layer'][key]);
+    });
+  }
+
+  /**
+   * 初始化事件
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-09T22:32:57+0800
+   */
+  initEvent () {
+    super.initEvent();
+
+    Object.keys(this['event']['presetAction']).forEach(k => {
+      let index = this['variable']['struct']['_backup']['action'].innerHTML.indexOf(this['variable']['struct']['_backup']['action_button'][k]);
+      if (!this['event']['action'][index]) this['event']['action'][index] = this['event']['presetAction'][k];
     });
   }
 

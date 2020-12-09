@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-03 20:47:53
+* @Last Modified time: 2020-12-09 22:26:53
 */
 class TipsLayer extends MessageLayer {
   // 兼容性配置
@@ -28,7 +28,7 @@ class TipsLayer extends MessageLayer {
     ModalLayer['_instance'].forEach(v => {
       if (v instanceof TipsLayer && v !== this)
         if ((v['option']['layer']['location'] == this['option']['layer']['location']) && (v['option']['layer']['position'] == this['option']['layer']['position']))
-          v.remove();  
+          v.remove();
     });
   }
 

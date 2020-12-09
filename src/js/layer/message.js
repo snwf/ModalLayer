@@ -5,7 +5,7 @@
 * @Description         消息层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 00:05:14
+* @Last Modified time: 2020-12-09 21:52:22
 */
 
 class MessageLayer extends ModalLayer {
@@ -62,11 +62,11 @@ class MessageLayer extends ModalLayer {
     contentNode = this['variable']['nodes']['container'].querySelector('.modal-layer-content');
 
     // 设置内容
-    if (this['option']['content']['value'] instanceof Object) {
+    if (Array.isArray(this['option']['content']['value'])) {
+      let fragment = document.createDocumentFragment();
       contentChild = ModalLayer['_assistant']['element']['objectToNode'](this['option']['content']['value'])
-      Object.keys(contentChild).forEach(function (k) {
-        contentNode.appendChild(contentChild[k]);
-      });
+      Object.keys(contentChild).forEach(k => fragment.append(contentChild[k]));
+      contentNode.appendChild(fragment);
     } else {
       contentNode.innerHTML = this['option']['content']['value'];
     }

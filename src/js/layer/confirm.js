@@ -5,7 +5,7 @@
 * @Description         确认层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-04 23:42:12
+* @Last Modified time: 2020-12-09 22:31:03
 */
 
 class ConfirmLayer extends AlertLayer {
@@ -16,9 +16,9 @@ class ConfirmLayer extends AlertLayer {
    * @DateTime 2020-09-01T23:10:16+0800
    */
   initStruct () {
-    super.initStruct();
-
     let interaction, interactionButton;
+
+    super.initStruct();
     
     interaction = this['variable']['struct']['_backup']['interaction'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'];

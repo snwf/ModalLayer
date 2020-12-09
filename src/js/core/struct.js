@@ -5,7 +5,7 @@
 * @Description         构建ModalLayer所需的Node数据
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-04 23:52:15
+* @Last Modified time: 2020-12-09 21:08:54
 */
 
 const STRUCT = Object.create(null);
@@ -44,7 +44,7 @@ Object.defineProperty(STRUCT, 'container', {
 });
 
 /**
- * 响应栏
+ * 动作栏
  *
  * @type {Object}
  */
@@ -61,7 +61,7 @@ Object.defineProperty(STRUCT, 'action', {
 });
 
 /**
- * 响应按钮
+ * 动作按钮
  *
  * @type {Object}
  */

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../../src/css/core.css">
   <link rel="stylesheet" href="../../src/css/skin/default.css">
   <script src="../../static/fontawesome-free-5.14.0/js/all.min.js"></script>
-  <script src="../../static/mathjs-7.5.1/math.js"></script>
+  <script src="../../static/mathjs/math.min.js"></script>
   <script src="../../src/js/core/env.js"></script>
   <script src="../../src/js/core/event.js"></script>
   <script src="../../src/js/core/option.js"></script>
@@ -121,7 +121,7 @@
   // 测试msg
   document.querySelector('#msg-button').onclick = function () {
     let option = {
-      popupTime: 0,
+      popupTime: 5,
       window: 'main',
       transition: {
         duration: .5,
@@ -155,7 +155,6 @@
   document.querySelector('#alert-button').onclick = function () {
     let option = {
       popupTime: 0,
-      window: 'main',
       title: '测试喜喜',
       hook: {
         initStart: function () {

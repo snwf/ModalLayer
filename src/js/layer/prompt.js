@@ -5,7 +5,7 @@
 * @Description         输入层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-04 23:55:15
+* @Last Modified time: 2020-12-09 22:31:26
 */
 
 class PromptLayer extends AlertLayer {
@@ -16,10 +16,10 @@ class PromptLayer extends AlertLayer {
    * @DateTime 2020-09-01T23:10:16+0800
    */
   initStruct () {
+    let interaction, interactionButton;
+
     super.initStruct();
 
-    let interaction, interactionButton;
-    
     interaction = this['variable']['struct']['_backup']['interaction'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'];
 

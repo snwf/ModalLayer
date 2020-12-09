@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-06 01:54:30
+* @Last Modified time: 2020-12-09 21:41:07
 */
 
 class ElementAssistant {
@@ -260,15 +260,6 @@ class ElementAssistant {
 
     return node;
   }
-  /**
-   * 获取元素的位置
-   *
-   * @Author   makeit66
-   * @DateTime 
-   * @param    {node}                           node
-   * @return   {Element}                        数组
-   */
-
 }
 
 Object.defineProperty(ModalLayer['_assistant'], 'element', {value: ElementAssistant});

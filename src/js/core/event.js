@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-06 01:10:24
+* @Last Modified time: 2020-12-09 22:25:37
 */
 
 /**
@@ -340,11 +340,11 @@ Object.defineProperty(EVENT, 'autoShutdown', {
 });
 
 /**
- * action事件
+ * 预设动作事件
  *
  * @type {Object}
  */
-Object.defineProperty(EVENT, 'action', {
+Object.defineProperty(EVENT, 'presetAction', {
   'enumerable': true,
   'value': {
     'close': function (e) {void this.remove()},
@@ -390,6 +390,16 @@ Object.defineProperty(EVENT, 'action', {
         ModalLayer['_minimizeQueue'].splice(index, 1);
     },
   }
+});
+
+/**
+ * 动作事件
+ *
+ * @type {Object}
+ */
+Object.defineProperty(EVENT, 'action', {
+  'enumerable': true,
+  'value': []
 });
 
 /**

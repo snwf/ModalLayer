@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 00:04:53
+* @Last Modified time: 2020-12-09 22:43:21
 */
 
 class ImageLayer extends ModalLayer {
@@ -212,28 +212,31 @@ class ImageLayer extends ModalLayer {
 
     super.initStruct();
 
+    action = this['variable']['struct']['_backup']['action'];
     content = this['variable']['struct']['_backup']['content'];
     container = this['variable']['struct']['_build']['container'];
     title = this['variable']['struct']['_backup']['title'] = ModalLayer['_struct']['title'];
-    action = this['variable']['struct']['_backup']['action'] = ModalLayer['_struct']['action'];
     toolbar = this['variable']['struct']['_backup']['toolbar'] = ModalLayer['_struct']['toolbar'];
     tools = this['variable']['struct']['_backup']['tools'] = ModalLayer['_struct']['image_tools'];
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
     contentImage = this['variable']['struct']['_backup']['content_image'] = ModalLayer['_struct']['content_image'];
     toolChild = this['variable']['struct']['_backup']['image_tools_child'] = ModalLayer['_struct']['image_tools_child'];
 
-    action.innerHTML.push(actionButton['close']);
-
     title.innerHTML.push(action);
 
     if (this['option']['title'] !== false)
       container.innerHTML.push(title);
 
+    if (action.innerHTML.length === 0) {
+      actionButton.close['data-index'] = 0;
+      action.innerHTML.push(actionButton.close);
+    }
+
     // 工具
     Object.keys(this['option']['layer']['toolbar']['config']).forEach(k => {
       if (this['option']['layer']['toolbar']['config'][k]['enable'])
         toolbar.innerHTML.push(tools[k]);
-      if (this['option']['layer']['toolbar']['config'][k]['config'] instanceof Object && this['option']['layer']['toolbar']['config'][k]['enable']) {
+      if (ModalLayer['_assistant']['object']['isOnlyObject'](this['option']['layer']['toolbar']['config'][k]['config']) && this['option']['layer']['toolbar']['config'][k]['enable']) {
         Object.keys(this['option']['layer']['toolbar']['config'][k]['config']).forEach(key => {
             tools[k].innerHTML[1].innerHTML.push(toolChild[k][key]);
         });
@@ -286,7 +289,7 @@ class ImageLayer extends ModalLayer {
           itemNode.setAttribute('title', v['title']);
           itemIconNode.classList.add(...v['icon'].split(' '));
 
-          if (v['config'] instanceof Object) {
+          if (ModalLayer['_assistant']['object']['isOnlyObject'](v['config'])) {
             Object.entries(v['config']).forEach((val, key) => {
               key = val[0];
               val = val[1];
@@ -315,6 +318,20 @@ class ImageLayer extends ModalLayer {
 
     // 图片加载失败
     .catch(() => this['failed']());
+  }
+
+  /**
+   * 初始化事件
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-09T22:32:57+0800
+   */
+  initEvent () {
+    super.initEvent();
+
+    let index = this['variable']['struct']['_backup']['action'].innerHTML.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
+
+    if (!this['event']['action'][index]) this['event']['action'][index] = this.remove;
   }
 
   /**
