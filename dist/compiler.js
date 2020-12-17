@@ -4,8 +4,8 @@
 * @Date:               2020-09-15 21:31:36
 * @Description         压缩/编译构建好的js和css文件
 *
-* @Last Modified by:   Wolf
-* @Last Modified time: 2020-09-17 02:58:31
+* @Last Modified by:   wolf
+* @Last Modified time: 2020-12-18 03:16:18
 */
 
 const fs = require('fs');
@@ -42,7 +42,7 @@ var options = {
       all: true,
       removeUnusedAtRules: false
     }
-  }  
+  }
 };
 var output = new CleanCSS(options).minify(fs.readFileSync(buildCSS, 'utf-8'));
 fs.writeFileSync(compilerCSS, output.styles);

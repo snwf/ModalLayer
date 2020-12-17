@@ -5,7 +5,7 @@
 * @Description         性能助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-27 01:18:52
+* @Last Modified time: 2020-12-18 03:01:15
 */
 
 class PerformanceAssistant {
@@ -68,8 +68,8 @@ class PerformanceAssistant {
     analysis['totalTime'] = totalTime;
 
     analysis['avgTime'] = totalTime / list.length;
-    analysis['modeTime'] = NumberAssistant['getMode'](analysis['duration']);
-    analysis['medianTime'] = NumberAssistant['getMedian'](analysis['duration']);
+    analysis['modeTime'] = NumberAssistant['mode'](analysis['duration']);
+    analysis['medianTime'] = NumberAssistant['median'](analysis['duration']);
 
     return analysis;
   }
