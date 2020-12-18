@@ -3,32 +3,133 @@
 * @Email:              dd112389@gmail.com
 * @Date:               2020-09-02 00:16:13
 * @Description         数字助手
+*                      兼容的运算无法处理过大的数字
+*                      如果需要处理大数字请引入mathjs
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-18 03:25:15
+* @Last Modified time: 2020-12-18 20:24:18
 */
 class NumberAssistant {
+  _value;
+
+  constructor (n) {
+    this._value = n;
+  }
+
+  add (n) {
+    this._value = NumberAssistant['add'](this._value, n);
+    return this;
+  }
+
+  subtract (n) {
+    this._value = NumberAssistant['subtract'](this._value, n);
+    return this;
+  }
+
+  multiply (n) {
+    this._value = NumberAssistant['multiply'](this._value, n);
+    return this;
+  }
+
+  divide (n) {
+    this._value = NumberAssistant['divide'](this._value, n);
+    return this;
+  }
+
+  floor () {
+    this._value = NumberAssistant['floor'](this._value);
+    return this;
+  }
+
+  /**
+   * 获取结果
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-18T19:45:18+0800
+   * @return    {Number}
+   */
+  done () {
+    return this._value;
+  }
+
+  /**
+   * 获取化整乘数
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-18T20:08:56+0800
+   * @param    {Number}                 n1 数1
+   * @param    {Number}                 n2 数2
+   * @return   {Number}                    10的x次幂
+   */
+  static carry (n1, n2) {
+    let s1, s2;
+
+    s1 = n1.toString();
+    s2 = n2.toString();
+
+    return window.Math.pow(10, window.Math.max(s1.substring(s1.indexOf('.') + 1).length, s2.substring(s2.indexOf('.') + 1).length));
+  }
+
+  /**
+   * 链式调用
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-18T19:42:16+0800
+   * @param     {Number}                  n  数字
+   * @return    {NumberAssistant}            NumberAssistant实例
+   */
+  static chain (n) {
+    if (Number.isFinite(n))
+      return new NumberAssistant(n);
+    else
+      throw TypeError('must a number.');
+  }
+
+  /**
+   * 加法
+   * 规避js处理浮点数不精确的问题.
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-18T19:52:11+0800
+   * @param    {Number}                 n1 数1
+   * @param    {Number}                 n2 数2
+   * @return   {Number}                    和
+   */
+  static add (n1, n2) {
+    let carry = NumberAssistant['carry'](n1, n2);
+
+    return (n1 * carry + n2 * carry) / carry;
+  }
+
+  /**
+   * 减法
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-18T19:51:39+0800
+   * @param    {Number}                 n1 数1
+   * @param    {Number}                 n2 数2
+   * @return   {Number}                    差
+   */
+  static subtract (n1, n2) {
+    let carry = NumberAssistant['carry'](n1, n2);
+
+    return (n1 * carry - n2 * carry) / carry;
+  }
+
   /**
    * 乘法
    * 规避js处理浮点数不精确的问题.
    *
    * @Author   Wolf
    * @DateTime 2020-09-22T03:07:57+0800
-   * @param    {Number}                 mul1 乘数
-   * @param    {Number}                 mul2 乘数
-   * @return   {Number}                      乘积
+   * @param    {Number}                 n1 数1
+   * @param    {Number}                 n2 数2
+   * @return   {Number}                    积
    */
-  static multiply (mul1, mul2) {
-    let carry, floatLen;
+  static multiply (n1, n2) {
+    let carry = NumberAssistant['carry'](n1, n2);
 
-    floatLen = 0;
-    mul1 = mul1.toString();
-    mul2 = mul2.toString();
-    floatLen += mul1.split('.')[1]?.length ?? 0
-    floatLen = mul2.split('.')[1]?.length ?? 0;
-    carry = window.Math.pow(10, floatLen);
-
-    return Number(mul1.replace('.', '')) * Number(mul2.replace('.', '')) / carry;
+    return ((n1 * carry) * (n2 * carry)) / window.Math.pow(carry, 2);
   }
 
   /**
@@ -42,14 +143,21 @@ class NumberAssistant {
    * @return   {Number}                          商
    */
   static divide (dividend, divisor) {
-    let carry;
-
-    carry = window.Math.pow(10, window.Math.max(
-      dividend.toString().split('.')[1]?.length ?? 0,
-      divisor.toString().split('.')[1]?.length ?? 0
-    ));
+    let carry = NumberAssistant['carry'](dividend, divisor);
 
     return (dividend * carry) / (divisor * carry);
+  }
+
+  /**
+   * 舍去化整
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-18T20:23:15+0800
+   * @param     {Number}                  num  数字
+   * @return    {Number}                       整数
+   */
+  static floor (num) {
+    return window.Math.floor(num);
   }
 
   /**
