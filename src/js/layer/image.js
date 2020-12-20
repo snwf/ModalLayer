@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 22:43:21
+* @Last Modified time: 2020-12-21 05:34:18
 */
 
 class ImageLayer extends ModalLayer {
@@ -222,43 +222,43 @@ class ImageLayer extends ModalLayer {
     contentImage = this['variable']['struct']['_backup']['content_image'] = ModalLayer['_struct']['content_image'];
     toolChild = this['variable']['struct']['_backup']['image_tools_child'] = ModalLayer['_struct']['image_tools_child'];
 
-    title.innerHTML.push(action);
+    title.child.push(action);
 
     if (this['option']['title'] !== false)
-      container.innerHTML.push(title);
+      container.child.push(title);
 
-    if (action.innerHTML.length === 0) {
-      actionButton.close['data-index'] = 0;
-      action.innerHTML.push(actionButton.close);
+    if (action.child.length === 0) {
+      actionButton['close']['attribute'].push({'key': 'data-index', 'value': 0});
+      action.child.push(actionButton.close);
     }
 
     // 工具
     Object.keys(this['option']['layer']['toolbar']['config']).forEach(k => {
       if (this['option']['layer']['toolbar']['config'][k]['enable'])
-        toolbar.innerHTML.push(tools[k]);
+        toolbar.child.push(tools[k]);
       if (ModalLayer['_assistant']['object']['isOnlyObject'](this['option']['layer']['toolbar']['config'][k]['config']) && this['option']['layer']['toolbar']['config'][k]['enable']) {
         Object.keys(this['option']['layer']['toolbar']['config'][k]['config']).forEach(key => {
-            tools[k].innerHTML[1].innerHTML.push(toolChild[k][key]);
+            tools[k].child[1].child.push(toolChild[k][key]);
         });
       }
     });
 
     // 工具栏
     if (this['option']['layer']['toolbar']['enable'])
-      container.innerHTML.push(toolbar);
+      container.child.push(toolbar);
 
-    content.innerHTML.push(contentImage);
+    content.child.push(contentImage);
 
-    container.innerHTML.push(content);
+    container.child.push(content);
     
     if (this['option']['resize']['enable']) {
       resize = this['variable']['struct']['_backup']['resize_box'] = ModalLayer['_struct']['resize_box'];
-      container.innerHTML.push(resize);
+      container.child.push(resize);
     }
     
     if (this['option']['progress']['enable']) {
       progress = this['variable']['struct']['_backup']['progress_bar'] = ModalLayer['_struct']['progress_bar'];
-      container.innerHTML.push(progress);
+      container.child.push(progress);
     }
   }
 
@@ -329,7 +329,7 @@ class ImageLayer extends ModalLayer {
   initEvent () {
     super.initEvent();
 
-    let index = this['variable']['struct']['_backup']['action'].innerHTML.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
+    let index = this['variable']['struct']['_backup']['action'].child.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
 
     if (!this['event']['action'][index]) this['event']['action'][index] = this.remove;
   }

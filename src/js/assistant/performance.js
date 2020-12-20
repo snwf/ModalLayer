@@ -5,7 +5,7 @@
 * @Description         性能助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-18 03:01:15
+* @Last Modified time: 2020-12-20 02:13:56
 */
 
 class PerformanceAssistant {
@@ -54,22 +54,20 @@ class PerformanceAssistant {
     let analysis;
     let totalTime;
 
-    totalTime = 0;
 
     analysis = Object.create(null);
     analysis['measures'] = list;
     analysis['duration'] = [];
+    analysis['totalTime'] = 0;
 
     for (let i = 0; i < list.length; i++) {
-      totalTime += list[i].duration;
       analysis['duration'][i] = list[i].duration;
+      analysis['totalTime'] = NumberAssistant['add'](analysis['totalTime'], list[i].duration);
     }
 
-    analysis['totalTime'] = totalTime;
-
-    analysis['avgTime'] = totalTime / list.length;
     analysis['modeTime'] = NumberAssistant['mode'](analysis['duration']);
     analysis['medianTime'] = NumberAssistant['median'](analysis['duration']);
+    analysis['avgTime'] = NumberAssistant['divide'](analysis['totalTime'], list.length);
 
     return analysis;
   }

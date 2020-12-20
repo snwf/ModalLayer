@@ -5,7 +5,7 @@
 * @Description         预设动画
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-10 00:47:06
+* @Last Modified time: 2020-12-21 05:20:25
 */
 
 /**
@@ -22,4 +22,20 @@
 @keyframes heightFull {
   from {height: 0px;}
   to {height: 100%;}
+}
+
+/**
+ * 图片层滤镜
+ */
+@keyframes filterChild {
+  from {
+    top: 0px;
+    opacity: 0;
+    z-index: -1;
+  }
+  to {
+    top: 100%;
+    opacity: 1;
+    z-index: 2;
+  }
 }

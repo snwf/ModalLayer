@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-05 00:05:06
+* @Last Modified time: 2020-12-21 04:16:16
 */
 
 class LoadingLayer extends ModalLayer {
@@ -90,13 +90,13 @@ class LoadingLayer extends ModalLayer {
     loadingIcon = this['variable']['struct']['_backup']['content_loading_icon'] = ModalLayer['_struct']['content_loading_icon'];
     
     if (Number.isInteger(Number(this['option']['layer'].icon)))
-      loading.innerHTML[0] = loadingIcon[this['option']['layer'].icon];
+      loading.child[0] = loadingIcon[this['option']['layer'].icon];
     else
-      loading.innerHTML[0].class += ' ' + this['option']['layer'].icon;
+      loading.child[0].class += ' ' + this['option']['layer'].icon;
 
-    content.innerHTML.push(loading);
+    content.child.push(loading);
 
-    container.innerHTML.push(content);
+    container.child.push(content);
   }
 
   /**

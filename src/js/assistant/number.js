@@ -7,7 +7,7 @@
 *                      如果需要处理大数字请引入mathjs
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-18 20:24:18
+* @Last Modified time: 2020-12-21 05:12:39
 */
 class NumberAssistant {
   _value;
@@ -38,6 +38,11 @@ class NumberAssistant {
 
   floor () {
     this._value = NumberAssistant['floor'](this._value);
+    return this;
+  }
+
+  round () {
+    this._value = NumberAssistant['round'](this._value);
     return this;
   }
 
@@ -158,6 +163,18 @@ class NumberAssistant {
    */
   static floor (num) {
     return window.Math.floor(num);
+  }
+
+  /**
+   * 四舍五入
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-18T20:23:15+0800
+   * @param     {Number}                  num  数字
+   * @return    {Number}                       整数
+   */
+  static round (num) {
+    return window.Math.round(num);
   }
 
   /**

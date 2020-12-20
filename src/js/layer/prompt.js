@@ -5,7 +5,7 @@
 * @Description         输入层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 22:31:26
+* @Last Modified time: 2020-12-21 05:33:32
 */
 
 class PromptLayer extends AlertLayer {
@@ -23,9 +23,10 @@ class PromptLayer extends AlertLayer {
     interaction = this['variable']['struct']['_backup']['interaction'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'];
 
-    if (interaction.innerHTML.includes(interactionButton['ok'])) {
-      interactionButton['cancel']['data-index'] = interaction.innerHTML.length;
-      interaction.innerHTML.push(interactionButton['cancel']);
+    if (interaction.child.includes(interactionButton['ok'])) {
+      if (!interactionButton['cancel']['attribute']) interactionButton['cancel']['attribute'] = [];
+      interactionButton['cancel']['attribute'].push({'key': 'data-index', 'value': interaction.child.length});
+      interaction.child.push(interactionButton['cancel']);
     }
   }
 
@@ -38,7 +39,7 @@ class PromptLayer extends AlertLayer {
   initEvent () {
     super.initEvent();
 
-    let index = this['variable']['struct']['_backup']['interaction'].innerHTML.indexOf(this['variable']['struct']['_backup']['interaction_button']['cancel']);
+    let index = this['variable']['struct']['_backup']['interaction'].child.indexOf(this['variable']['struct']['_backup']['interaction_button']['cancel']);
     if (!this['event']['interaction'][index]) this['event']['interaction'][index] = this.remove;
   }
 }

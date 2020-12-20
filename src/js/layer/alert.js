@@ -5,7 +5,7 @@
 * @Description         提示层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 22:28:27
+* @Last Modified time: 2020-12-21 05:33:09
 */
 
 class AlertLayer extends ModalLayer {
@@ -30,34 +30,35 @@ class AlertLayer extends ModalLayer {
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'] = ModalLayer['_struct']['interaction_button'];
 
-    title.innerHTML.push(action);
+    title.child.push(action);
 
     if (this['option']['title'] !== false)
-      container.innerHTML.push(title);
+      container.child.push(title);
 
-    container.innerHTML.push(content);
+    container.child.push(content);
     
     if (this['option']['resize']['enable']) {
       resize = this['variable']['struct']['_backup']['resize_box'] = ModalLayer['_struct']['resize_box'];
-      container.innerHTML.push(resize);
+      container.child.push(resize);
     }
     
     if (this['option']['progress']['enable']) {
       progress = this['variable']['struct']['_backup']['progress_bar'] = ModalLayer['_struct']['progress_bar'];
-      container.innerHTML.push(progress);
+      container.child.push(progress);
     }
 
-    if (action.innerHTML.length === 0) {
-      actionButton.close['data-index'] = 0;
-      action.innerHTML.push(actionButton.close);
+    if (action.child.length === 0) {
+      actionButton.close['attribute'].push({'key': 'data-index', 'value': 0});
+      action.child.push(actionButton.close);
     }
 
-    if (interaction.innerHTML.length === 0) {
-      interactionButton.ok['data-index'] = 0;
-      interaction.innerHTML.push(interactionButton.ok);
+    if (interaction.child.length === 0) {
+      if (!interactionButton['ok']['attribute']) interactionButton['ok']['attribute'] = [];
+      interactionButton['ok']['attribute'].push({'key': 'data-index', 'value': 0});
+      interaction.child.push(interactionButton.ok);
     }
 
-    container.innerHTML.push(interaction);
+    container.child.push(interaction);
   }
   
   /**
@@ -76,9 +77,11 @@ class AlertLayer extends ModalLayer {
     // 设置内容
     if (Array.isArray(this['option']['content']['value'])) {
       let fragment = document.createDocumentFragment();
-      contentChild = ModalLayer['_assistant']['element']['objectToNode'](this['option']['content']['value'])
-      Object.keys(contentChild).forEach(k => fragment.append(contentChild[k]));
+      contentChild = ModalLayer['_assistant']['element']['objectToNode'](this['option']['content']['value']);
+      contentChild.forEach(v => fragment.append(v));
       contentNode.appendChild(fragment);
+    } else if (ModalLayer['_assistant']['object']['isOnlyObject'](this['option']['content']['value'])) {
+      contentNode.appendChild(ModalLayer['_assistant']['element']['objectToNode'](this['option']['content']['value']));
     } else {
       contentNode.innerHTML = this['option']['content']['value'];
     }
@@ -95,8 +98,8 @@ class AlertLayer extends ModalLayer {
 
     super.initEvent();
 
-    actionIndex = this['variable']['struct']['_backup']['action'].innerHTML.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
-    interactionIndex = this['variable']['struct']['_backup']['interaction'].innerHTML.indexOf(this['variable']['struct']['_backup']['interaction_button']['ok']);
+    actionIndex = this['variable']['struct']['_backup']['action'].child.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
+    interactionIndex = this['variable']['struct']['_backup']['interaction'].child.indexOf(this['variable']['struct']['_backup']['interaction_button']['ok']);
 
     if (!this['event']['action'][actionIndex]) this['event']['action'][actionIndex] = this.remove;
     if (!this['event']['interaction'][interactionIndex]) this['event']['interaction'][interactionIndex] = this.remove;

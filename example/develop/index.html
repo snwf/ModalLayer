@@ -451,10 +451,8 @@ document.querySelector('#tips').onclick = function () {
       },
       content: '<span>Hi asdfasdf</span>'
     };
-    ModalLayer.tips(option, function (error) {
-    });
-    ModalLayer.tips(option2, function (error) {
-    });
+    ModalLayer.tips(option, e => console.error(e));
+    ModalLayer.tips(option2, e => console.error(e));
     // ModalLayer.msg('测试一下', function (error) {
     //   console.error(error);
     // });

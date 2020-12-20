@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 22:41:38
+* @Last Modified time: 2020-12-21 05:33:57
 */
 
 class PageLayer extends ModalLayer {
@@ -56,32 +56,32 @@ class PageLayer extends ModalLayer {
     contentPage = this['variable']['struct']['_backup']['content_page'] = ModalLayer['_struct']['content_page'];
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
 
-    title.innerHTML.push(action);
+    title.child.push(action);
 
     if (this['option']['title'] !== false)
-      container.innerHTML.push(title);
+      container.child.push(title);
 
-    if (action.innerHTML.length === 0) {
-      actionButton['minimize']['data-index'] = 0;
-      action.innerHTML.push(actionButton['minimize']);
-      actionButton['expand']['data-index'] = 1;
-      action.innerHTML.push(actionButton['expand']);
-      actionButton['close']['data-index'] = 2;
-      action.innerHTML.push(actionButton['close']);
+    if (action.child.length === 0) {
+      actionButton['minimize']['attribute'].push({'key': 'data-index', 'value': 0});
+      action.child.push(actionButton['minimize']);
+      actionButton['expand']['attribute'].push({'key': 'data-index', 'value': 1});
+      action.child.push(actionButton['expand']);
+      actionButton['close']['attribute'].push({'key': 'data-index', 'value': 2});
+      action.child.push(actionButton['close']);
     }
 
-    content.innerHTML.push(contentPage);
+    content.child.push(contentPage);
 
-    container.innerHTML.push(content);
+    container.child.push(content);
     
     if (this['option']['resize']['enable']) {
       resize = this['variable']['struct']['_backup']['resize_box'] = ModalLayer['_struct']['resize_box'];
-      container.innerHTML.push(resize);
+      container.child.push(resize);
     }
     
     if (this['option']['progress']['enable']) {
       progress = this['variable']['struct']['_backup']['progress_bar'] = ModalLayer['_struct']['progress_bar'];
-      container.innerHTML.push(progress);
+      container.child.push(progress);
     }
   }
 
@@ -121,7 +121,7 @@ class PageLayer extends ModalLayer {
     super.initEvent();
 
     Object.keys(this['event']['presetAction']).forEach(k => {
-      let index = this['variable']['struct']['_backup']['action'].innerHTML.indexOf(this['variable']['struct']['_backup']['action_button'][k]);
+      let index = this['variable']['struct']['_backup']['action'].child.indexOf(this['variable']['struct']['_backup']['action_button'][k]);
       if (!this['event']['action'][index]) this['event']['action'][index] = this['event']['presetAction'][k];
     });
   }

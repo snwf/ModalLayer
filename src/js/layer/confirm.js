@@ -5,7 +5,7 @@
 * @Description         确认层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 22:31:03
+* @Last Modified time: 2020-12-21 05:33:19
 */
 
 class ConfirmLayer extends AlertLayer {
@@ -23,9 +23,10 @@ class ConfirmLayer extends AlertLayer {
     interaction = this['variable']['struct']['_backup']['interaction'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'];
 
-    if (interaction.innerHTML.includes(interactionButton['ok'])) {
-      interactionButton['no']['data-index'] = interaction.innerHTML.length;
-      interaction.innerHTML.push(interactionButton['no']);
+    if (interaction.child.includes(interactionButton['ok'])) {
+      if (!interactionButton['no']['attribute']) interactionButton['no']['attribute'] = [];
+      interactionButton['no']['attribute'].push({'key': 'data-index', 'value': interaction.child.length});
+      interaction.child.push(interactionButton['no']);
     }
   }
 }

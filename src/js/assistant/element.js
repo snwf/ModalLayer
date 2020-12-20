@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 21:41:07
+* @Last Modified time: 2020-12-21 04:26:57
 */
 
 class ElementAssistant {
@@ -199,6 +199,90 @@ class ElementAssistant {
     }
     return buildNode;
   }
+
+  /**
+   * 构建节点/元素
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-21T01:57:45+0800
+   * @param     {Mixed}                  struct  结构
+   * @return    {Mixed}                          构造好的节点/元素
+   */
+  static build (struct) {
+    // 判断是否为合法结构
+    if (
+      !Array.isArray(struct) &&
+      !(ObjectAssistant['isOnlyObject'](struct))
+    )
+      throw TypeError('Not a valid structure.');
+
+    let kws, stack;
+    let handle, single, elements;
+
+    stack = [];
+    single = false;
+    kws = {
+      text: 'text',
+      html: 'html',
+      child: 'child'
+    };
+    // 兼容性处理
+    if (struct['type'] && typeof struct['type'] === 'string') {
+      single = true;
+      struct = [struct];
+    }
+    elements = struct.constructor ? new struct.constructor : Object.create(null);
+
+    // 构建方法
+    handle = function (_struct) {
+      if (!_struct['type']) throw Error('Need a type.');
+
+      let element;
+
+      if (_struct['namespace'])
+        element = document.createElementNS(_struct['namespace'], _struct['type']);
+      else
+        element = document.createElement(_struct['type']);
+
+      if (_struct.id) element.id = _struct.id;
+      if (_struct.class) {
+        if (element.className instanceof SVGAnimatedString)
+          element.className.baseVal = _struct.class;
+        else
+          element.className = _struct.class;
+      }
+      _struct.attribute?.forEach(o => {
+        if (o['namespace'] === undefined)
+          element.setAttribute(o['key'], o['value']);
+        else
+          element.setAttributeNS(o['namespace'], o['key'], o['value']);
+      });
+
+      return element;
+    }
+
+    Object.keys(struct).forEach(k => {
+      elements[k] = handle(struct[k]);
+      if (!struct[k][kws.child]) return;
+      // 如果存在子节点则广度优先遍历结构.
+      struct[k][kws.child].forEach(v => stack.push([elements[k], v]));
+      for (let _parent, _struct, _element; stack.length > 0;) {
+        [_parent, _struct] = stack.shift();
+        _element = _parent.appendChild(handle(_struct));
+
+        if (_struct[kws.html]) {
+          _element.innerHTML = _struct[kws.html];
+        } else if (_struct[kws.text]) {
+          _element.innerText = _struct[kws.text];
+        } else if (_struct[kws.child]) {
+          _struct[kws.child].forEach(v => stack.push([_element, v]));
+        }
+      }
+    });
+
+    return single ? elements.pop() : elements;
+  }
+
 
   /**
    * 将某个节点全屏显示

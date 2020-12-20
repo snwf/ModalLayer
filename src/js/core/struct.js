@@ -5,7 +5,7 @@
 * @Description         构建ModalLayer所需的Node数据
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 21:08:54
+* @Last Modified time: 2020-12-21 05:24:03
 */
 
 const STRUCT = Object.create(null);
@@ -18,7 +18,7 @@ const STRUCT = Object.create(null);
 Object.defineProperty(STRUCT, 'mask', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
+      'type': 'div',
       'class': 'modal-layer-mask'
     }));
   },
@@ -34,8 +34,8 @@ Object.defineProperty(STRUCT, 'mask', {
 Object.defineProperty(STRUCT, 'container', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'innerHTML': [],
-      'nodeType': 'div',
+      'child': [],
+      'type': 'div',
       'class': 'modal-layer-container'
     }));
   },
@@ -51,8 +51,8 @@ Object.defineProperty(STRUCT, 'container', {
 Object.defineProperty(STRUCT, 'action', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'innerHTML': [],
-      'nodeType': 'div',
+      'child': [],
+      'type': 'div',
       'class': 'modal-layer-action',
     }));
   },
@@ -69,18 +69,18 @@ Object.defineProperty(STRUCT, 'action_button', {
   get: function () {
     return JSON.parse(JSON.stringify({
       'minimize': {
-        'nodeType': 'span',
-        'data-fa-transform': 'up-4 shrink-2',
+        'type': 'span',
+        'attribute': [{'key': 'data-fa-transform', 'value': 'up-4 shrink-2'}],
         'class': 'fas fa-window-minimize modal-layer-action-btn modal-layer-action-btn-minimize'
       },
       'expand': {
-        'nodeType': 'span',
-        'data-fa-transform': 'shrink-2',
+        'type': 'span',
+        'attribute': [{'key': 'data-fa-transform', 'value': 'shrink-2'}],
         'class': 'fas fa-expand-arrows-alt modal-layer-action-btn modal-layer-action-btn-expand'
       },
       'close': {
-        'nodeType': 'span',
-        'data-fa-transform': 'rotate-45 grow-1',
+        'type': 'span',
+        'attribute': [{'key': 'data-fa-transform', 'value': 'rotate-45 grow-1'}],
         'class': 'fas fa-plus modal-layer-action-btn modal-layer-action-btn-close'
       }
     }));
@@ -97,10 +97,10 @@ Object.defineProperty(STRUCT, 'action_button', {
 Object.defineProperty(STRUCT, 'title', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
+      'type': 'div',
       'class': 'modal-layer-title',
-      'innerHTML': [{
-        'nodeType': 'h4',
+      'child': [{
+        'type': 'h4',
         'class': 'modal-layer-title-content'
       }]
     }));
@@ -117,8 +117,8 @@ Object.defineProperty(STRUCT, 'title', {
 Object.defineProperty(STRUCT, 'content', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'innerHTML': [],
-      'nodeType': 'div',
+      'child': [],
+      'type': 'div',
       'class': 'modal-layer-content'
     }));
   },
@@ -134,7 +134,7 @@ Object.defineProperty(STRUCT, 'content', {
 Object.defineProperty(STRUCT, 'content_text', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
+      'type': 'div',
       'class': 'modal-layer-text-content'
     }));
   },
@@ -150,11 +150,13 @@ Object.defineProperty(STRUCT, 'content_text', {
 Object.defineProperty(STRUCT, 'content_page', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'name': '',
-      'frameborder': 0,
-      'scrolling': 'no',
-      'nodeType': 'iframe',
-      'class': 'modal-layer-page-content'
+      'type': 'iframe',
+      'class': 'modal-layer-page-content',
+      'attribute': [
+        {'key': 'name', 'value': ''},
+        {'key': 'frameborder', 'value': 0},
+        {'key': 'scrolling', 'value': 'no'},
+      ]
     }));
   },
   'enumerable' : true,
@@ -169,8 +171,7 @@ Object.defineProperty(STRUCT, 'content_page', {
 Object.defineProperty(STRUCT, 'content_image', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'load-status': 2,
-      'nodeType': 'canvas',
+      'type': 'canvas',
       'class': 'modal-layer-image-canvas'
     }));
   },
@@ -186,10 +187,10 @@ Object.defineProperty(STRUCT, 'content_image', {
 Object.defineProperty(STRUCT, 'content_loading', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
+      'type': 'div',
       'class': 'modal-layer-loading-box',
-      'innerHTML': [{
-        'nodeType': 'span',
+      'child': [{
+        'type': 'span',
         'class': 'modal-layer-loading-icon'
       }]
     }));
@@ -207,19 +208,19 @@ Object.defineProperty(STRUCT, 'content_loading_icon', {
   get: function () {
     return JSON.parse(JSON.stringify([
       {
-        'nodeType': 'span',
+        'type': 'span',
         'class': 'modal-layer-loading-icon fas fa-spinner fa-spin fa-fw'
       },
       {
-        'nodeType': 'span',
+        'type': 'span',
         'class': 'modal-layer-loading-icon fas fa-circle-notch fa-spin fa-fw'
       },
       {
-        'nodeType': 'span',
+        'type': 'span',
         'class': 'modal-layer-loading-icon fas fa-sync fa-spin fa-fw'
       },
       {
-        'nodeType': 'span',
+        'type': 'span',
         'class': 'modal-layer-loading-icon fas fa-cog fa-spin fa-fw'
       },
     ]));
@@ -237,8 +238,8 @@ Object.defineProperty(STRUCT, 'content_loading_icon', {
 Object.defineProperty(STRUCT, 'toolbar', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'innerHTML': [],
-      'nodeType': 'div',
+      'child': [],
+      'type': 'div',
       'class': 'modal-layer-toolbar'
     }));
   },
@@ -254,8 +255,8 @@ Object.defineProperty(STRUCT, 'toolbar', {
 Object.defineProperty(STRUCT, 'interaction', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'innerHTML': [],
-      'nodeType': 'div',
+      'child': [],
+      'type': 'div',
       'class': 'modal-layer-interaction'
     }));
   },
@@ -273,18 +274,18 @@ Object.defineProperty(STRUCT, 'interaction_button', {
   get: function () {
     return JSON.parse(JSON.stringify({
       'ok': {
-        'nodeType': 'span',
-        'innerText': 'Confirm',
+        'type': 'span',
+        'text': 'Confirm',
         'class': 'modal-layer-interaction-btn modal-layer-interaction-btn-ok'
       },
       'no': {
-        'nodeType': 'span',
-        'innerText': 'Reject',
+        'type': 'span',
+        'text': 'Reject',
         'class': 'modal-layer-interaction-btn modal-layer-interaction-btn-no'
       },
       'cancel': {
-        'nodeType': 'span',
-        'innerText': 'Cancel',
+        'type': 'span',
+        'text': 'Cancel',
         'class': 'modal-layer-interaction-btn modal-layer-interaction-btn-cancel'
       }
     }));
@@ -301,13 +302,13 @@ Object.defineProperty(STRUCT, 'interaction_button', {
 Object.defineProperty(STRUCT, 'progress_bar', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
+      'type': 'div',
       'class': 'modal-layer-progress-bar',
-      'innerHTML': [{
-        'nodeType': 'div',
+      'child': [{
+        'type': 'div',
         'class': 'modal-layer-progress-bar-background',
-        'innerHTML': [{
-          'nodeType': 'span',
+        'child': [{
+          'type': 'span',
           'class': 'modal-layer-progress-bar-progress'
         }]
       }]
@@ -325,46 +326,46 @@ Object.defineProperty(STRUCT, 'progress_bar', {
 Object.defineProperty(STRUCT, 'resize_box', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
+      'type': 'div',
       'class': 'modal-layer-resize-box',
-      'innerHTML':[
+      'child':[
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'top'
         },
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'left'
         },
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'right'
         },
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'bottom'
         },
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'left-top'
         },
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'right-top'
         },
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'left-bottom'
         },
         {
-          'nodeType': 'div',
+          'type': 'div',
           'class': 'modal-layer-resize-bar',
           'position-resize-bar': 'right-bottom'
         }
@@ -383,8 +384,8 @@ Object.defineProperty(STRUCT, 'resize_box', {
 Object.defineProperty(STRUCT, 'minimize_queue', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'innerHTML': [],
-      'nodeType': 'div',
+      'child': [],
+      'type': 'div',
       'id': 'modal-layer-minimize-queue'
     }));
   },
@@ -400,10 +401,10 @@ Object.defineProperty(STRUCT, 'minimize_queue', {
 Object.defineProperty(STRUCT, 'minimize_queue_item', {
   get: function () {
     return JSON.parse(JSON.stringify({
-      'nodeType': 'div',
+      'type': 'div',
       'class': 'modal-layer-minimize-queue-item',
-      'innerHTML': [{
-        'nodeType': 'h4',
+      'child': [{
+        'type': 'h4',
         'class': 'modal-layer-minimize-queue-item-title'
       }]
     }));
@@ -421,61 +422,71 @@ Object.defineProperty(STRUCT, 'image_tools', {
   get: function () {
     return JSON.parse(JSON.stringify({
       'crop': {
-        'title': 'crop',
-        'nodeType': 'div',
-        'tool-type': 'crop',
-        'innerHTML': [{
-          'nodeType': 'span',
+        'type': 'div',
+        'class': 'modal-layer-toolbar-item',
+        'child': [{
+          'type': 'span',
           'class': 'modal-layer-toolbar-item-icon'
         }],
-        'class': 'modal-layer-toolbar-item'
+        'attribute': [
+          {'key': 'title', 'value': 'crop'},
+          {'key': 'tool-type', 'value': 'crop'},
+        ]
       },
       'spin': {
-        'title': 'spin',
-        'nodeType': 'div',
-        'tool-type': 'spin',
-        'innerHTML': [{
-          'nodeType': 'span',
+        'type': 'div',
+        'class': 'modal-layer-toolbar-item',
+        'child': [{
+          'type': 'span',
           'class': 'modal-layer-toolbar-item-icon'
         }],
-        'class': 'modal-layer-toolbar-item'
+        'attribute': [
+          {'key': 'title', 'value': 'spin'},
+          {'key': 'tool-type', 'value': 'spin'},
+        ]
       },
       'revert': {
-        'title': 'revert',
-        'nodeType': 'div',
-        'tool-type': 'revert',
-        'innerHTML': [{
-          'nodeType': 'span',
+        'type': 'div',
+        'class': 'modal-layer-toolbar-item',
+        'child': [{
+          'type': 'span',
           'class': 'modal-layer-toolbar-item-icon'
         }],
-        'class': 'modal-layer-toolbar-item'
+        'attribute': [
+          {'key': 'title', 'value': 'revert'},
+          {'key': 'tool-type', 'value': 'revert'},
+        ]
       },
       'filter': {
-        'title': 'filter',
-        'nodeType': 'div',
-        'tool-type': 'filter',
-        'innerHTML': [
+        'type': 'div',
+        'class': 'modal-layer-toolbar-item',
+        'attribute': [
+          {'key': 'title', 'value': 'filter'},
+          {'key': 'tool-type', 'value': 'filter'},
+        ],
+        'child': [
           {
-            'nodeType': 'span',
+            'type': 'span',
             'class': 'modal-layer-toolbar-item-icon'
           },
           {
-            'innerHTML': [],
-            'nodeType': 'div',
+            'child': [],
+            'type': 'div',
             'class': 'modal-layer-toolbar-item-child-list'
           },
         ],
-        'class': 'modal-layer-toolbar-item'
       },
       'download': {
-        'title': 'save',
-        'nodeType': 'div',
-        'tool-type': 'download',
-        'innerHTML': [{
-          'nodeType': 'span',
+        'type': 'div',
+        'class': 'modal-layer-toolbar-item',
+        'child': [{
+          'type': 'span',
           'class': 'modal-layer-toolbar-item-icon'
         }],
-        'class': 'modal-layer-toolbar-item'
+        'attribute': [
+          {'key': 'title', 'value': 'save'},
+          {'key': 'tool-type', 'value': 'download'},
+        ]
       }
     }));
   },
@@ -488,27 +499,33 @@ Object.defineProperty(STRUCT, 'image_tools_child', {
     return JSON.parse(JSON.stringify({
       'filter': {
         'mirror': {
-          'title': '镜像',
-          'innerText': '镜',
-          'nodeType': 'span',
-          'filter-type': 'mirror',
-          'class': 'modal-layer-toolbar-filter-icon'
+          'text': '镜',
+          'type': 'span',
+          'class': 'modal-layer-toolbar-filter-icon',
+          'attribute': [
+            {'key': 'title', 'value': '镜像'},
+            {'key': 'filter-type', 'value': 'mirror'},
+          ]
         },
         'blur': {
-          'data-radius': 3,
-          'data-sigma': 1.5,
-          'innerText': '模',
-          'title': '高斯模糊',
-          'nodeType': 'span',
-          'filter-type': 'blur',
-          'class': 'modal-layer-toolbar-filter-icon'
+          'text': '模',
+          'type': 'span',
+          'class': 'modal-layer-toolbar-filter-icon',
+          'attribute': [
+            {'key': 'data-radius', 'value': 3},
+            {'key': 'data-sigma', 'value': 1.5},
+            {'key': 'title', 'value': '高斯模糊'},
+            {'key': 'filter-type', 'value': 'blur'},
+          ]
         },
         'gray': {
-          'title': '灰度化',
-          'innerText': '灰',
-          'nodeType': 'span',
-          'filter-type': 'gray',
-          'class': 'modal-layer-toolbar-filter-icon'
+          'text': '灰',
+          'type': 'span',
+          'class': 'modal-layer-toolbar-filter-icon',
+          'attribute': [
+            {'key': 'title', 'value': '灰度化'},
+            {'key': 'filter-type', 'value': 'gray'},
+          ]
         }
       }
     }));
