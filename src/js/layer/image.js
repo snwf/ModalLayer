@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-21 05:34:18
+* @Last Modified time: 2020-12-24 01:14:27
 */
 
 class ImageLayer extends ModalLayer {
@@ -222,43 +222,43 @@ class ImageLayer extends ModalLayer {
     contentImage = this['variable']['struct']['_backup']['content_image'] = ModalLayer['_struct']['content_image'];
     toolChild = this['variable']['struct']['_backup']['image_tools_child'] = ModalLayer['_struct']['image_tools_child'];
 
-    title.child.push(action);
+    title['child'].push(action);
 
     if (this['option']['title'] !== false)
-      container.child.push(title);
+      container['child'].push(title);
 
-    if (action.child.length === 0) {
+    if (action['child'].length === 0) {
       actionButton['close']['attribute'].push({'key': 'data-index', 'value': 0});
-      action.child.push(actionButton.close);
+      action['child'].push(actionButton.close);
     }
 
     // 工具
     Object.keys(this['option']['layer']['toolbar']['config']).forEach(k => {
       if (this['option']['layer']['toolbar']['config'][k]['enable'])
-        toolbar.child.push(tools[k]);
+        toolbar['child'].push(tools[k]);
       if (ModalLayer['_assistant']['object']['isOnlyObject'](this['option']['layer']['toolbar']['config'][k]['config']) && this['option']['layer']['toolbar']['config'][k]['enable']) {
         Object.keys(this['option']['layer']['toolbar']['config'][k]['config']).forEach(key => {
-            tools[k].child[1].child.push(toolChild[k][key]);
+            tools[k]['child'][1]['child'].push(toolChild[k][key]);
         });
       }
     });
 
     // 工具栏
     if (this['option']['layer']['toolbar']['enable'])
-      container.child.push(toolbar);
+      container['child'].push(toolbar);
 
-    content.child.push(contentImage);
+    content['child'].push(contentImage);
 
-    container.child.push(content);
+    container['child'].push(content);
     
     if (this['option']['resize']['enable']) {
       resize = this['variable']['struct']['_backup']['resize_box'] = ModalLayer['_struct']['resize_box'];
-      container.child.push(resize);
+      container['child'].push(resize);
     }
     
     if (this['option']['progress']['enable']) {
       progress = this['variable']['struct']['_backup']['progress_bar'] = ModalLayer['_struct']['progress_bar'];
-      container.child.push(progress);
+      container['child'].push(progress);
     }
   }
 
@@ -329,7 +329,7 @@ class ImageLayer extends ModalLayer {
   initEvent () {
     super.initEvent();
 
-    let index = this['variable']['struct']['_backup']['action'].child.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
+    let index = this['variable']['struct']['_backup']['action']['child'].indexOf(this['variable']['struct']['_backup']['action_button']['close']);
 
     if (!this['event']['action'][index]) this['event']['action'][index] = this.remove;
   }
@@ -374,7 +374,7 @@ class ImageLayer extends ModalLayer {
    * @DateTime 2020-09-04T22:44:59+0800
    */
   resize () {
-    let defaultArea;
+    let scale, defaultArea;
     let canvas, canvasRect;
     let container, contentNode;
     let toolbar, toolbarHeight, oriToolbarHeight;
@@ -386,6 +386,13 @@ class ImageLayer extends ModalLayer {
     canvasRect = canvas.getBoundingClientRect();
     toolbar = container.querySelector('.modal-layer-toolbar');
     oriToolbarHeight = toolbar.getBoundingClientRect().height;
+    scale = getComputedStyle(container, null).transform;
+    if (scale !== 'none') {
+      scale = scale.substring(7, scale.length - 1).split(',')
+      scale = [Number(scale[0]), Number(scale[3])];
+    } else {
+      scale = [1, 1];
+    }
 
     contentComputedStyle = window.getComputedStyle(contentNode, null);
     // Content之前的兄弟节点总共有多高
@@ -399,7 +406,10 @@ class ImageLayer extends ModalLayer {
       defaultArea = [...this['option']['layer']['size']];
     else {
       if (this['variable']['image']['status'] !== ModalLayer['_enum']['LOAD_STATUS']['LOADING'])
-        defaultArea = [canvasRect.width, canvasRect.height];
+        defaultArea = [
+          ModalLayer['_assistant']['number']['divide'](canvasRect.width, scale[0]),
+          ModalLayer['_assistant']['number']['divide'](canvasRect.height, scale[1])
+        ];
       else
         defaultArea = [...this['option']['layer']['sizeRange']['min']];
     }
@@ -741,7 +751,7 @@ class ImageLayer extends ModalLayer {
           kEvent.preventDefault();
           break;
         case 'Escape':
-          this.show();
+          this['variable']['status'].then(v => this.show());
           cleanEvent();
           kEvent.preventDefault();
           break;
@@ -764,7 +774,9 @@ class ImageLayer extends ModalLayer {
       sPic.height = repaintVariable[3];
       sPic.getContext('2d').drawImage(sPicBackup, repaintVariable[0] - cropCasCenter[0], repaintVariable[1] - cropCasCenter[1], repaintVariable[2], repaintVariable[3], 0, 0, sPic.width, sPic.height);
 
-      this['show']().then(() => this['resize']());
+      this['resize']();
+      this['positioning']();
+      this['show']();
     };
 
     moveEvent = mEvent => {
@@ -774,6 +786,8 @@ class ImageLayer extends ModalLayer {
       mEvent = mEvent ?? window.event;
       // 鼠标左键点击后执行相应操作
       if (operation && mEvent.buttons === 1) {
+        // 取消文字选中
+        window.getSelection().empty();
         if (operation === 'drag') {
           if (
             repaintVariable[0] + mEvent.movementX > cropCasCenter[0] &&
@@ -809,32 +823,27 @@ class ImageLayer extends ModalLayer {
           // 限制resize后的截取框大小不能超过最大和最小值
           // 并且起始坐标位于整张图片之内
           if (
+            repaintVariable[2] < minWidth ||
             repaintVariable[0] < cropCasCenter[0] ||
             repaintVariable[0] + repaintVariable[2] > cropCasCenter[0] + maxWidth
           ) {
             repaintVariable[0] = backup[0];
             repaintVariable[2] = backup[2];
+            if (repaintVariable[0] + repaintVariable[2] > cropCasCenter[0] + maxWidth)
+              repaintVariable[0] = cropCasCenter[0] + maxWidth - repaintVariable[2];
           }
 
           if (
+            repaintVariable[3] < minHeight ||
             repaintVariable[1] < cropCasCenter[1] ||
             repaintVariable[1] + repaintVariable[3] > cropCasCenter[1] + maxHeight
           ) {
             repaintVariable[1] = backup[1];
             repaintVariable[3] = backup[3];
-          }
-
-          if (repaintVariable[2] < minWidth) {
-            repaintVariable[2] = backup[2];
-            if (repaintVariable[0] + repaintVariable[2] > cropCasCenter[0] + maxWidth)
-              repaintVariable[0] = cropCasCenter[0] + maxWidth - repaintVariable[2];
-          }
-
-          if (repaintVariable[3] < minHeight) {
-            repaintVariable[3] = backup[3];
             if (repaintVariable[1] + repaintVariable[3] > cropCasCenter[1] + maxHeight)
               repaintVariable[1] = cropCasCenter[1] + maxHeight - repaintVariable[3];
           }
+
         }
       } else {
         mPoint = [mEvent.x, mEvent.y];
@@ -902,7 +911,7 @@ class ImageLayer extends ModalLayer {
       'position': 'lb',
       'areaProportion': null,
       'transition': {'animation': [{'transform': 'translateX(-100%)'}, {'transform': 'translateX(0)'}]},
-      'content': '按 <span style="color: red">ESC</span> 退出裁剪模式.<br>双击裁剪框或者按下 <span style="color: red">空格(space)</span> 进行裁剪.<br>'
+      'content': '按 <span style="color: red">ESC</span> 退出裁剪模式.<br><span style="color: red">双击</span> 或按下 <span style="color: red">回车(enter)</span> 进行裁剪.<br>'
     });
   }
 
@@ -974,22 +983,21 @@ class ImageLayer extends ModalLayer {
 
     showPromise = this['variable']['image']['layer']['show']();
 
+    // 若worker无用请手动结束worker
     if (ModalLayer['_env']['feature']['Worker']) {
-      wKey = 'image-layer-worker-' + Date.now();
-      sText = '!' + ModalLayer['_worker'].get('canvasFilter').toString() + '()';
-      wScript = URL.createObjectURL(new Blob(sText.split(''), {'type': 'text/javascript'}));
-      if (!ModalLayer['_assistant']['worker']['has'](wKey))
+      wKey = 'image-layer-image-filter-worker';
+      if (!ModalLayer['_assistant']['worker']['has'](wKey)) {
+        sText = '!' + ModalLayer['_worker'].get('canvasFilter').toString() + '()';
+        wScript = URL.createObjectURL(new Blob(sText.split(''), {'type': 'text/javascript'}));
         ModalLayer['_assistant']['worker']['create'](wKey, wScript);
-      ModalLayer['_assistant']['worker']['listener'](wKey).then(e => {
-        if (e['data']['error'] == 0)
-          ctx.putImageData(new ImageData(new Uint8ClampedArray(e['data']['buffer']), cas.width, cas.height), 0 , 0);
-        else
-          console.error(Error(e['data']['message']));
-        showPromise.then(() => this['variable']['image']['layer']['hide']());
-
-        // 使用完毕关闭worker
-        ModalLayer['_assistant']['worker']['close'](wKey);
-      });
+        ModalLayer['_assistant']['worker']['listener'](wKey, e => {
+          if (e['data']['error'] == 0)
+            ctx.putImageData(new ImageData(new Uint8ClampedArray(e['data']['buffer']), cas.width, cas.height), 0 , 0);
+          else
+            console.error(Error(e['data']['message']));
+          showPromise.then(() => this['variable']['image']['layer']['hide']());
+        });
+      }
     }
 
     ({

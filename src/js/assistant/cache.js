@@ -5,7 +5,7 @@
 * @Description         缓存助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-28 00:03:26
+* @Last Modified time: 2020-12-23 23:59:10
 */
 
 class CacheAssistant {
@@ -101,9 +101,7 @@ class CacheAssistant {
     if (k) {
       o[symbol].delete(k);
     } else {
-      o[symbol].forEach((v, k) => {
-        o[symbol].delete(k);
-      });
+      o[symbol].forEach((v, k) => o[symbol].delete(k));
     }
   }
 

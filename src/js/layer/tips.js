@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-21 05:07:31
+* @Last Modified time: 2020-12-23 21:50:33
 */
 class TipsLayer extends MessageLayer {
   // 兼容性配置
@@ -46,7 +46,7 @@ class TipsLayer extends MessageLayer {
       'up': 'bottom',
       'down': 'top'
     }[iconPosition.toLowerCase()];
-    container.child.push({
+    container['child'].push({
       type: 'span',
       class: `depend-icon triangle-${position}`,
       attribute: [{'key': 'style', 'value': `${position}: -${iconSize}px; border-width: ${iconSize}px; border-${position}-width: 0px`}]

@@ -5,22 +5,24 @@
 * @Description         专门用于处理画布图像层画布滤镜worker代码
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-09-25 00:40:30
+* @Last Modified time: 2020-12-23 23:07:58
 */
 
 // TODO 如果数据比较大需要更多Worker并行执行.
-if (window.Worker) {
+if (ModalLayer['_env']['feature']['worker']) {
   ModalLayer['_worker'].set('canvasFilter', function () {
+
+    this.handle = Object.create(null);
 
     /**
      * 图像灰度化
      *
      * @Author   Wolf
      * @DateTime 2020-09-21T22:33:51+0800
-     * @param    {Object}                 args 
+     * @param    {Object}                 args
      * @return   {Uint8ClampedArray}           处理完毕的像素
      */
-    function gray (args) {
+    this.handle['gray'] = function (args) {
       let pixels, nPixels;
       let r, g, b, a, gray;
 
@@ -38,7 +40,7 @@ if (window.Worker) {
         nPixels[i + 1] = gray;
         nPixels[i + 2] = gray;
         nPixels[i + 3] = a;
-      }  
+      }
 
       return nPixels;
     }
@@ -51,13 +53,14 @@ if (window.Worker) {
      * @param    {Object}                 args
      * @return   {Uint8ClampedArray}           处理完毕的像素
      */
-    function mirror (args) {
+    this.handle['mirror'] = function (args) {
       let imgX, imgY;
       let currIndex, mirrIndex;
       let r, g, b, axis, width, height, pixels, nPixels;
 
       axis = args['axis'];
-      [width, height] = args['size'];
+      width = args['size'][0];
+      height = args['size'][1];
       pixels = new Uint8ClampedArray(args['buffer']);
       nPixels = new Uint8ClampedArray(pixels.length);
 
@@ -90,10 +93,10 @@ if (window.Worker) {
      *
      * @Author   Wolf
      * @DateTime 2020-09-19T01:59:46+0800
-     * @param    {Object}                 args 
-     * @return   {Uint8ClampedArray}           处理完毕的像素                
+     * @param    {Object}                 args
+     * @return   {Uint8ClampedArray}           处理完毕的像素
      */
-    function blur (args) {
+    this.handle['blur'] = function (args) {
       let width, height;
       let pixels, nPixels;
       let sigma, radius, divisor, gaussianMask;
@@ -101,7 +104,8 @@ if (window.Worker) {
 
       sigma = args['sigma'];
       radius = args['radius'];
-      [width, height] = args['size'];
+      width = args['size'][0];
+      height = args['size'][1];
       gaussianMask = args['gaussianMask'];
       pixels = new Uint8ClampedArray(args['buffer']);
       nPixels = new Uint8ClampedArray(pixels.length);
@@ -169,9 +173,7 @@ if (window.Worker) {
      * @param    {Event}                  event MessageEvent
      */
     this.onmessage = function (event) {
-      let pixels;
-
-      pixels = event['data']['type']?.(event['data']);
+      let pixels = this.handle[event['data']['type']](event['data']);
 
       this.postMessage({
         'error': 0,

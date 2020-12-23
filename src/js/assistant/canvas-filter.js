@@ -5,7 +5,7 @@
 * @Description         画布滤镜助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-10-27 01:18:13
+* @Last Modified time: 2020-12-23 22:51:20
 */
 
 class CanvasFilterAssistant {
@@ -76,7 +76,7 @@ class CanvasFilterAssistant {
         newImgData[i + 1] = gray;
         newImgData[i + 2] = gray;
         newImgData[i + 3] = a;
-      }  
+      }
 
     } catch (e) {
       throw e;

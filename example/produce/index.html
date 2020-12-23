@@ -139,18 +139,7 @@
       ModalLayer.alert({
         popupTime: 0,
         parentModalLayer: this,
-        text: {
-          interaction: {
-            ok: '确定'
-          }
-        },
-        event: {
-          interaction: {
-            ok: function () {
-              void this.remove();
-            }
-          }
-        },
+        interaction: [{text: 'ok', alias: 'modal-layer-interaction-btn-ok'}],
         content: '<i class="fas fa-check-circle" style="color: green"></i> 小伙子很有眼光嘛!'
       });
     };

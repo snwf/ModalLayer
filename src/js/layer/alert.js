@@ -5,7 +5,7 @@
 * @Description         提示层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-21 05:33:09
+* @Last Modified time: 2020-12-23 21:57:28
 */
 
 class AlertLayer extends ModalLayer {
@@ -30,35 +30,35 @@ class AlertLayer extends ModalLayer {
     actionButton = this['variable']['struct']['_backup']['action_button'] = ModalLayer['_struct']['action_button'];
     interactionButton = this['variable']['struct']['_backup']['interaction_button'] = ModalLayer['_struct']['interaction_button'];
 
-    title.child.push(action);
+    title['child'].push(action);
 
     if (this['option']['title'] !== false)
-      container.child.push(title);
+      container['child'].push(title);
 
-    container.child.push(content);
+    container['child'].push(content);
     
     if (this['option']['resize']['enable']) {
       resize = this['variable']['struct']['_backup']['resize_box'] = ModalLayer['_struct']['resize_box'];
-      container.child.push(resize);
+      container['child'].push(resize);
     }
     
     if (this['option']['progress']['enable']) {
       progress = this['variable']['struct']['_backup']['progress_bar'] = ModalLayer['_struct']['progress_bar'];
-      container.child.push(progress);
+      container['child'].push(progress);
     }
 
-    if (action.child.length === 0) {
+    if (action['child'].length === 0) {
       actionButton.close['attribute'].push({'key': 'data-index', 'value': 0});
-      action.child.push(actionButton.close);
+      action['child'].push(actionButton.close);
     }
 
-    if (interaction.child.length === 0) {
+    if (interaction['child'].length === 0) {
       if (!interactionButton['ok']['attribute']) interactionButton['ok']['attribute'] = [];
       interactionButton['ok']['attribute'].push({'key': 'data-index', 'value': 0});
-      interaction.child.push(interactionButton.ok);
+      interaction['child'].push(interactionButton.ok);
     }
 
-    container.child.push(interaction);
+    container['child'].push(interaction);
   }
   
   /**
@@ -98,8 +98,8 @@ class AlertLayer extends ModalLayer {
 
     super.initEvent();
 
-    actionIndex = this['variable']['struct']['_backup']['action'].child.indexOf(this['variable']['struct']['_backup']['action_button']['close']);
-    interactionIndex = this['variable']['struct']['_backup']['interaction'].child.indexOf(this['variable']['struct']['_backup']['interaction_button']['ok']);
+    actionIndex = this['variable']['struct']['_backup']['action']['child'].indexOf(this['variable']['struct']['_backup']['action_button']['close']);
+    interactionIndex = this['variable']['struct']['_backup']['interaction']['child'].indexOf(this['variable']['struct']['_backup']['interaction_button']['ok']);
 
     if (!this['event']['action'][actionIndex]) this['event']['action'][actionIndex] = this.remove;
     if (!this['event']['interaction'][interactionIndex]) this['event']['interaction'][interactionIndex] = this.remove;

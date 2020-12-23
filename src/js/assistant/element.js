@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-21 04:26:57
+* @Last Modified time: 2020-12-23 22:05:09
 */
 
 class ElementAssistant {
@@ -246,12 +246,12 @@ class ElementAssistant {
 
       if (_struct.id) element.id = _struct.id;
       if (_struct.class) {
-        if (element.className instanceof SVGAnimatedString)
+        if (typeof element.className === 'object' && 'baseVal' in element.className)
           element.className.baseVal = _struct.class;
         else
           element.className = _struct.class;
       }
-      _struct.attribute?.forEach(o => {
+      _struct['attribute']?.forEach(o => {
         if (o['namespace'] === undefined)
           element.setAttribute(o['key'], o['value']);
         else

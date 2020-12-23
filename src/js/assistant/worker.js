@@ -5,7 +5,7 @@
 * @Description         Worker助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-11-15 02:47:13
+* @Last Modified time: 2020-12-24 01:39:40
 */
 
 class WorkerAssistant {
@@ -87,11 +87,40 @@ class WorkerAssistant {
    * @param    {Mixed}                  worker 一个worker对象或是一个名称
    */
   static close (worker) {
+    let key, cache;
+    
+    cache = CacheAssistant['get']('list', WorkerAssistant);
+
     if (!(worker instanceof Worker)) {
+      key = worker;
       worker = WorkerAssistant['get'](worker);
-      WorkerAssistant['list'].delete(worker);
+    } else {
+      for (let keys = cache.keys(); !keys.done; keys = keys.next()) {
+        if (keys.value === worker) {
+          key = keys.value;
+          break;
+        }
+      }
     }
-    worker?.terminate();
+
+    if (worker) {
+      worker.terminate();
+      cache.delete(key);
+    }
+  }
+
+  /**
+   * 关闭所有Worker
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-23T23:41:17+0800
+   */
+  static closeAll () {
+    let cache = CacheAssistant['get']('list', WorkerAssistant);
+    if (cache) cache.forEach((v, k) => {
+      v.terminate();
+      cache.delete(k);
+    });
   }
 
   /**
@@ -112,14 +141,15 @@ class WorkerAssistant {
       if (worker === undefined)
         throw Error('Worker not found.');
     }
-    promise = new Promise((resolve, reject) => {
-      worker.onmessageerror = reject;
 
-      worker.onmessage = function (e) {
-        callback?.(e);
-        resolve(e);
-      };
-    });
+    if (callback) {
+      worker.onmessage = callback;
+    } else {
+      promise = new Promise((resolve, reject) => {
+        worker.onmessageerror = reject;
+        worker.onmessage = resolve;
+      });
+    }
 
     return promise;
   }
@@ -142,14 +172,15 @@ class WorkerAssistant {
       if (worker === undefined)
         throw Error('Worker not found.');
     }
-    promise = new Promise((resolve, reject) => {
-      worker.addEventListener('messageerror', reject);
 
-      worker.addEventListener('message', function (e) {
-        callback?.(e);
-        resolve(e);
+    if (callback) {
+      worker.addEventListener('message', callback);
+    } else {
+      promise = new Promise((resolve, reject) => {
+        worker.addEventListener('messageerror', reject);
+        worker.addEventListener('message', resolve);
       });
-    });
+    }
 
     return promise;
   }

@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-21 05:36:15
+* @Last Modified time: 2020-12-24 00:19:49
 */
 
 class ModalLayer {
@@ -295,6 +295,7 @@ class ModalLayer {
    * @DateTime 2020-09-04T12:05:52+0800
    */
   initVariable () {
+    this['variable']['status'] = null;
     this['variable']['struct'] = Object.create(null);
     this['variable']['timeout'] = Object.create(null);
     this['variable']['interval'] = Object.create(null);
@@ -795,7 +796,7 @@ class ModalLayer {
     animations = this['variable']['animation']['transition'];
     zIndex = ModalLayer['_assistant']['element']['maxZIndex']();
 
-    promise = new Promise(resolve => {
+    this['variable']['status'] = promise = new Promise(resolve => {
       let fn = e => {
         // 自动关闭模态层
         if (this['option']['popupTime'] > 0)
@@ -851,7 +852,7 @@ class ModalLayer {
     if (Number.isInteger(this['variable']['timeout']['auto_shutdown']))
       window.clearTimeout(this['variable']['timeout']['auto_shutdown']);
 
-    promise = new Promise(resolve => {
+    this['variable']['status'] = promise = new Promise(resolve => {
       let fn = e => {
         nodeKeys.forEach(k => {
           if (nodes[k].classList.contains(showCls))
