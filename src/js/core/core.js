@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-24 00:19:49
+* @Last Modified time: 2020-12-24 02:05:46
 */
 
 class ModalLayer {
@@ -441,7 +441,7 @@ class ModalLayer {
       // 设置样式类
       for (let i = 0; i < allNodes.length; i++) {
         if (allNodes[i].classList.contains(ui)) allNodes[i].classList.remove(ui);
-        allNodes[i].className = `${ui} ${allNodes[i].className}`;
+        if (typeof allNodes[i].className === 'string') allNodes[i].className = `${ui} ${allNodes[i].className}`;
       }
 
       // 设置默认class

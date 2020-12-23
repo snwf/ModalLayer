@@ -5,7 +5,7 @@
 * @Description         构建ModalLayer所需的Node数据
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-21 05:24:03
+* @Last Modified time: 2020-12-24 02:44:26
 */
 
 const STRUCT = Object.create(null);
@@ -69,19 +69,112 @@ Object.defineProperty(STRUCT, 'action_button', {
   get: function () {
     return JSON.parse(JSON.stringify({
       'minimize': {
-        'type': 'span',
-        'attribute': [{'key': 'data-fa-transform', 'value': 'up-4 shrink-2'}],
-        'class': 'fas fa-window-minimize modal-layer-action-btn modal-layer-action-btn-minimize'
+        'type': 'svg',
+        'namespace': 'http://www.w3.org/2000/svg',
+        'class': 'modal-layer-action-btn modal-layer-action-btn-minimize',
+        'attribute': [
+          {'key': 'role', 'value': 'img'},
+          {'key': 'viewBox', 'value': '0 0 512 512'},
+          {'key': 'xmlns', 'value': 'http://www.w3.org/2000/svg'},
+          {'key': 'style', 'value': 'width: .875em; vertical-align: -.125em; transform-origin: 0.4375em 0.5em;'},
+        ],
+        'child': [
+          {
+            'type': 'g',
+            'namespace': 'http://www.w3.org/2000/svg',
+            'attribute': [{'key': 'transform', 'value': 'translate(256 256)'}],
+            'child': [
+              {
+                'type': 'g',
+                'namespace': 'http://www.w3.org/2000/svg',
+                'attribute': [{'key': 'transform', 'value': 'translate(0, -128)  scale(0.875, 0.875)  rotate(0 0 0)'}],
+                'child': [
+                  {
+                    'type': 'path',
+                    'namespace': 'http://www.w3.org/2000/svg',
+                    'attribute': [
+                      {'key': 'fill', 'value': 'currentColor'},
+                      {'key': 'transform', 'value': 'translate(-256 -256)'},
+                      {'key': 'd', 'value': 'M464 352H48c-26.5 0-48 21.5-48 48v32c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48v-32c0-26.5-21.5-48-48-48z'}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       'expand': {
-        'type': 'span',
-        'attribute': [{'key': 'data-fa-transform', 'value': 'shrink-2'}],
-        'class': 'fas fa-expand-arrows-alt modal-layer-action-btn modal-layer-action-btn-expand'
+        'type': 'svg',
+        'namespace': 'http://www.w3.org/2000/svg',
+        'class': 'modal-layer-action-btn modal-layer-action-btn-expand',
+        'attribute': [
+          {'key': 'role', 'value': 'img'},
+          {'key': 'viewBox', 'value': '0 0 448 512'},
+          {'key': 'xmlns', 'value': 'http://www.w3.org/2000/svg'},
+          {'key': 'style', 'value': 'width: .875em; vertical-align: -.125em; transform-origin: 0.4375em 0.5em;'},
+        ],
+        'child': [
+          {
+            'type': 'g',
+            'namespace': 'http://www.w3.org/2000/svg',
+            'attribute': [{'key': 'transform', 'value': 'translate(224 256)'}],
+            'child': [
+              {
+                'type': 'g',
+                'namespace': 'http://www.w3.org/2000/svg',
+                'attribute': [{'key': 'transform', 'value': 'translate(0, 0)  scale(0.875, 0.875)  rotate(0 0 0)'}],
+                'child': [
+                  {
+                    'type': 'path',
+                    'namespace': 'http://www.w3.org/2000/svg',
+                    'attribute': [
+                      {'key': 'fill', 'value': 'currentColor'},
+                      {'key': 'transform', 'value': 'translate(-224 -256)'},
+                      {'key': 'd', 'value': 'M448 344v112a23.94 23.94 0 0 1-24 24H312c-21.39 0-32.09-25.9-17-41l36.2-36.2L224 295.6 116.77 402.9 153 439c15.09 15.1 4.39 41-17 41H24a23.94 23.94 0 0 1-24-24V344c0-21.4 25.89-32.1 41-17l36.19 36.2L184.46 256 77.18 148.7 41 185c-15.1 15.1-41 4.4-41-17V56a23.94 23.94 0 0 1 24-24h112c21.39 0 32.09 25.9 17 41l-36.2 36.2L224 216.4l107.23-107.3L295 73c-15.09-15.1-4.39-41 17-41h112a23.94 23.94 0 0 1 24 24v112c0 21.4-25.89 32.1-41 17l-36.19-36.2L263.54 256l107.28 107.3L407 327.1c15.1-15.2 41-4.5 41 16.9z'}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       'close': {
-        'type': 'span',
-        'attribute': [{'key': 'data-fa-transform', 'value': 'rotate-45 grow-1'}],
-        'class': 'fas fa-plus modal-layer-action-btn modal-layer-action-btn-close'
+        'type': 'svg',
+        'namespace': 'http://www.w3.org/2000/svg',
+        'class': 'modal-layer-action-btn modal-layer-action-btn-close',
+        'attribute': [
+          {'key': 'role', 'value': 'img'},
+          {'key': 'viewBox', 'value': '0 0 448 512'},
+          {'key': 'xmlns', 'value': 'http://www.w3.org/2000/svg'},
+          {'key': 'style', 'value': 'width: .875em; vertical-align: -.125em; transform-origin: 0.4375em 0.5em;'},
+        ],
+        'child': [
+          {
+            'type': 'g',
+            'namespace': 'http://www.w3.org/2000/svg',
+            'attribute': [{'key': 'transform', 'value': 'translate(224 256)'}],
+            'child': [
+              {
+                'type': 'g',
+                'namespace': 'http://www.w3.org/2000/svg',
+                'attribute': [{'key': 'transform', 'value': 'translate(0, 0)  scale(1.0625, 1.0625)  rotate(45 0 0)'}],
+                'child': [
+                  {
+                    'type': 'path',
+                    'namespace': 'http://www.w3.org/2000/svg',
+                    'attribute': [
+                      {'key': 'fill', 'value': 'currentColor'},
+                      {'key': 'transform', 'value': 'translate(-224 -256)'},
+                      {'key': 'd', 'value': 'M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z'}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     }));
   },
