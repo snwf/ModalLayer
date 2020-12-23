@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-23 22:05:09
+* @Last Modified time: 2020-12-24 03:00:27
 */
 
 class ElementAssistant {
@@ -247,7 +247,7 @@ class ElementAssistant {
       if (_struct.id) element.id = _struct.id;
       if (_struct.class) {
         if (typeof element.className === 'object' && 'baseVal' in element.className)
-          element.className.baseVal = _struct.class;
+          element.className['baseVal'] = _struct.class;
         else
           element.className = _struct.class;
       }
