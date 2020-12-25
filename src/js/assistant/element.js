@@ -5,7 +5,7 @@
 * @Description         元素助手
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-24 03:00:27
+* @Last Modified time: 2020-12-26 02:46:50
 */
 
 class ElementAssistant {
@@ -201,6 +201,84 @@ class ElementAssistant {
   }
 
   /**
+   * 解析节点/元素
+   * 返回一个元素结构
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-25T01:04:53+0800
+   * @param     {Element}                  node  元素
+   * @param     {String}                   type  直接使用html或是返回为child的形式 (html, text, element)
+   * @return    {Object}                         可用于build方法的结构对象
+   */
+  static parse (node, type = 'element') {
+    if (!(node instanceof Element)) throw TypeError('Not a element.');
+
+    let handle;
+    let ignore;
+    let kws, stack, struct;
+
+    stack = [[null, node]];
+    ignore = 'http://www.w3.org/1999/xhtml';
+    kws = {
+      text: 'text',
+      html: 'html',
+      child: 'child'
+    };
+
+    // 解析方法
+    handle = function (_node) {
+      let _struct, _attribute;
+
+      _attribute = [];
+      _struct = Object.create(null);
+      _struct['type'] = _node.nodeName;
+      if (_struct['type'] === '#text' || _struct['type'] === '#comment') {
+        _struct['text'] = _node.data;
+      } else {
+        if (_node.id) _struct.id = _node.id;
+        if (_node.className) _struct['class'] = _node.className?.baseVal ?? _node.className;
+        if (_node.namespaceURI && _node.namespaceURI !== ignore) _struct['namespace'] = _node.namespaceURI;
+
+        // 解析属性
+        _node.getAttributeNames().forEach(attr => {
+          if (attr === 'id' || attr === 'class') return;
+          let attrNode = _node.getAttributeNode(attr);
+          let attrItem = {'key': attr, 'value': attrNode.value};
+          if (attrNode.namespaceURI && attrNode.namespaceURI !== ignore) attrItem['namespace'] = attrNode.namespaceURI;
+          _attribute.push(attrItem);
+        });
+        if (_attribute.length > 0) _struct['attribute'] = _attribute;
+      }
+
+      return _struct;
+    }
+
+    for (let i = stack.shift();; i = stack.shift()) {
+      let p, n, s;
+      p = i[0];
+      n = i[1];
+      s = handle(n);
+      if (type === 'text') {
+        s[kws['text']] = n.innerText;
+      } else if (type === 'html') {
+        s[kws['html']] = n.innerHTML;
+      } else if (type === 'element') {
+        if (p) {
+          if (!p[kws['child']]) p[kws['child']] = [];
+          p[kws['child']].push(s);
+        }
+        if (n.childNodes.length > 0) for (let j = 0; j < n.childNodes.length; stack.push([s, n.childNodes[j++]]));
+      } else {
+        throw TypeError('type is not a valid.');
+      }
+      if (!p) struct = s;
+      if (stack.length <= 0) break;
+    }
+
+    return struct;
+  }
+
+  /**
    * 构建节点/元素
    *
    * @Author    wolf
@@ -241,22 +319,31 @@ class ElementAssistant {
 
       if (_struct['namespace'])
         element = document.createElementNS(_struct['namespace'], _struct['type']);
-      else
-        element = document.createElement(_struct['type']);
-
-      if (_struct.id) element.id = _struct.id;
-      if (_struct.class) {
-        if (typeof element.className === 'object' && 'baseVal' in element.className)
-          element.className['baseVal'] = _struct.class;
+      else {
+        // 为DOMString元素
+        if (_struct['type'] === '#text')
+          element = document.createTextNode(_struct['text']);
+        else if (_struct['type'] === '#comment')
+          element = document.createComment(_struct['text']);
         else
-          element.className = _struct.class;
+          element = document.createElement(_struct['type']);
       }
-      _struct['attribute']?.forEach(o => {
-        if (o['namespace'] === undefined)
-          element.setAttribute(o['key'], o['value']);
-        else
-          element.setAttributeNS(o['namespace'], o['key'], o['value']);
-      });
+
+      if (_struct['type'] !== '#text' && _struct['type'] !== '#comment') {
+        if (_struct.id) element.id = _struct.id;
+        if (_struct.class) {
+          if (typeof element.className === 'object' && 'baseVal' in element.className)
+            element.className['baseVal'] = _struct.class;
+          else
+            element.className = _struct.class;
+        }
+        _struct['attribute']?.forEach(o => {
+          if (o['namespace'] === undefined)
+            element.setAttribute(o['key'], o['value']);
+          else
+            element.setAttributeNS(o['namespace'], o['key'], o['value']);
+        });
+      }
 
       return element;
     }
