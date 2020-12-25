@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-09 21:09:07
+* @Last Modified time: 2020-12-26 03:07:18
 */
 
 const OPTION = Object.create(null);
@@ -50,7 +50,7 @@ Object.defineProperty(OPTION, 'loading', {
     'icon': 0, // 加载动画图标
     'size': 48, // 图标大小, 主要是用于设置font-size
     'rate': null, // 规定了一次循环中的速度变化, 参考css animation中的animation-timing-function属性
-    'duration': 2, // 完成一次循环所用时间, 单位为秒
+    'duration': 1, // 完成一次循环所用时间, 单位为秒
     'area': [48, 48], // 尺寸, 对用css中的width与height
     'color': 'white', // 文字/图标颜色
     'background': 'transparent', // 背景颜色
