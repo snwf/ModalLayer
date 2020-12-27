@@ -123,6 +123,7 @@
     let option = {
       popupTime: 5,
       window: 'main',
+      area: null,
       transition: {
         duration: .5,
         easing: 'linear',
@@ -197,7 +198,7 @@
       void this.hide();
       ModalLayer.alert({
         popupTime: 0,
-        parentModalLayer: this,
+        parent: this,
         text: {
           interaction: {
             ok: '确定'
@@ -246,7 +247,7 @@
           function () {
             this.hide();
             ModalLayer.alert({
-              parentModalLayer: this,
+              parent: this,
               content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + this.variable.nodes.container.querySelector('input').value
             });
           }

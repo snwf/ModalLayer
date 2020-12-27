@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-26 03:07:18
+* @Last Modified time: 2020-12-28 02:03:57
 */
 
 const OPTION = Object.create(null);
@@ -141,8 +141,8 @@ Object.defineProperty(OPTION, 'common', {
     'position': null, // 模态层定位 [x, y] 或 预设值ENUM.POSITION
     'popupTime': 5, // 模态层默认显示时间
     'skin': 'default', // 皮肤样式
-    'parentModalLayer': null, // 父模态层
-    'areaProportion': [0.18, 0.21], // 浏览器窗口(可见区域)与模态层的比例 [width, height], 若为null则适应内容.
+    'parent': null, // 父模态层
+    'area': [0.18, null], // 浏览器窗口(可见区域)与模态层的比例或具体的宽高值 [width, height], 若为null则适应内容.
     'content': { // 内容容器设置
       'value': null, // 容器内容, 可以为文本或String Node
       'fullContainer': false // 是否将内容填充整个模态层

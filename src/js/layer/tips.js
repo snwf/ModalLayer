@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-23 21:50:33
+* @Last Modified time: 2020-12-27 01:55:51
 */
 class TipsLayer extends MessageLayer {
   // 兼容性配置
@@ -69,7 +69,7 @@ class TipsLayer extends MessageLayer {
     this['option']['resize']['enable'] = false;
     this['option']['progress']['enable'] = false;
     this['option']['mask']['enable'] = false;
-    this['option']['areaProportion'] = null;
+    this['option']['area'] = null;
   }
 
   // tips定位

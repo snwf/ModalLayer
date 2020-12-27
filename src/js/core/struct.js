@@ -5,7 +5,7 @@
 * @Description         构建ModalLayer所需的Node数据
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-26 03:12:53
+* @Last Modified time: 2020-12-28 02:52:20
 */
 
 const STRUCT = Object.create(null);
@@ -410,42 +410,42 @@ Object.defineProperty(STRUCT, 'resize_box', {
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'top'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'top'}]
         },
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'left'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'left'}]
         },
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'right'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'right'}]
         },
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'bottom'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'bottom'}]
         },
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'left-top'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'left-top'}]
         },
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'right-top'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'right-top'}]
         },
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'left-bottom'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'left-bottom'}]
         },
         {
           'type': 'div',
           'class': 'modal-layer-resize-bar',
-          'position-resize-bar': 'right-bottom'
+          'attribute': [{'key': 'position-resize-bar', 'value': 'right-bottom'}]
         }
       ]
     }));

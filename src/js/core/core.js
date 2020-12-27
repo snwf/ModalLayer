@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-24 02:05:46
+* @Last Modified time: 2020-12-28 02:56:07
 */
 
 class ModalLayer {
@@ -195,6 +195,9 @@ class ModalLayer {
     if (ModalLayer['_assistant']['object']['isString'](options['window']))
       options['window'] = document.querySelector(options['window']);
 
+    // 尺寸大小
+    if (!Array.isArray(options['area']) && options['area'] !== null) options['area'] = [options['area'], options['area']];
+
     // 定位配置
     if (options['position']) {
       if (!Array.isArray(options['position'])) {
@@ -260,6 +263,11 @@ class ModalLayer {
     // 检查父容器是否为期望值
     if (this['option']['window'] && !(this['option']['window'] instanceof Element))
       throw new TypeError('option.window does not meet the expected value.');
+
+    // 检查尺寸
+    this['option']['area'] && this['option']['area'].forEach(v => {
+      if ((!Number.isFinite(v) || v < 0) && v !== null) throw TypeError('option.area must an positive array or null.')
+    });
 
     // 检查过渡动画是否正确设置
     if (Number.isFinite(this['option']['transition']['animation'])) {
@@ -676,27 +684,25 @@ class ModalLayer {
    * @DateTime 2020-09-02T02:28:37+0800
    */
   resize() {
-    let defaultArea;
-    let container, modalChildNodes;
+    let container, defaultArea;
 
-    defaultArea = [0, 0];
+    defaultArea = [];
     container = this['variable']['nodes']['container'];
-    if (this['option']['areaProportion'] === null) {
-      defaultArea = [container.offsetWidth, container.offsetHeight];
-    } else {
-      modalChildNodes = container.children;
 
+    if (this['option']['area'] !== null) {
       // 先设置宽度, 不然会出现高度不正确的现象
-      defaultArea[0] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, this['option']['areaProportion'][0]);
-      container.style.width = defaultArea[0] + 'px';
-
-      for (let i = 0; i < modalChildNodes.length; i++)
-        defaultArea[1] = getComputedStyle(modalChildNodes[i]).position == 'absolute' ? defaultArea[1] : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](modalChildNodes[i]), defaultArea[1]);
-      container.style.height = defaultArea[1] + 'px';
+      for (let i = 0; i < 2; i++) {
+        defaultArea[i] = this['option']['area'][i] ?? (!i ? container.offsetWidth : container.offsetHeight);
+        // 如果为比值则计算具体大小
+        if (defaultArea[i] > 0 && defaultArea[i] < 1) defaultArea[i] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, defaultArea[i]);
+        container.style[!i ? 'width' : 'height'] = defaultArea[i] + 'px';
+      }
+    } else {
+      defaultArea[0] = container.offsetWidth;
+      defaultArea[1] = container.offsetHeight;
     }
 
     // 记录初始化后的最小值
-    this['variable']['defaultArea'] = defaultArea;
     this['variable']['defaultRect']['width'] = defaultArea[0];
     this['variable']['defaultRect']['height'] = defaultArea[1];
   }
@@ -752,8 +758,8 @@ class ModalLayer {
         posX = (parentNode ? parentNode.offsetWidth : document.documentElement.clientWidth) - container.offsetWidth;
         posY = (parentNode ? parentNode.offsetHeight : document.documentElement.clientHeight) - container.offsetHeight;
       } else {
-        width = this['variable']['defaultRect']['width'];
-        height = this['variable']['defaultRect']['height'];
+        width = container.offsetWidth;
+        height = container.offsetHeight;
 
         parent = {
           scrollY: parentNode?.scrollTop ?? 0,
@@ -859,8 +865,8 @@ class ModalLayer {
             nodes[k].classList.replace(showCls, hideCls);
         });
         // 如果父模态层存在则展示
-        if (this['option']['parentModalLayer'] instanceof ModalLayer)
-          this['option']['parentModalLayer'].show();
+        if (this['option']['parent'] instanceof ModalLayer)
+          this['option']['parent'].show();
 
         // 更改当前状态
         this['setStatus']('hide');
