@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-28 22:16:14
+* @Last Modified time: 2020-12-28 23:35:06
 */
 
 class ModalLayer {
@@ -190,13 +190,13 @@ class ModalLayer {
    * @Author   Wolf
    * @DateTime 2020-09-04T14:14:23+0800
    */
-  compatibleOption(options) {
+  compatibleOption (options) {
     // 父容器
     if (ModalLayer['_assistant']['object']['isString'](options['window']))
       options['window'] = document.querySelector(options['window']);
 
     // 尺寸大小
-    if (!Array.isArray(options['area']) && options['area'] !== null) options['area'] = [options['area'], options['area']];
+    if (options['area'] !== null && !Array.isArray(options['area'])) options['area'] = [options['area'], options['area']];
 
     // 定位配置
     if (options['position']) {
@@ -684,31 +684,37 @@ class ModalLayer {
    * @DateTime 2020-09-02T02:28:37+0800
    */
   resize() {
-    let container, defaultArea;
+    let area, parent, container;
 
-    defaultArea = [];
+    area = [];
     container = this['variable']['nodes']['container'];
+    if (this['option']['window'])
+      parent = this['option']['window'] === document.body ? document.documentElement : this['option']['window'];
+    else
+      parent = null;
 
     if (this['option']['area'] !== null) {
       // 先设置宽度, 不然会出现高度不正确的现象
       for (let i = 0; i < 2; i++) {
+        let innerKey = !i ? 'innerWidth' : 'innerHeight';
+        let offsetKey = !i ? 'offsetWidth' : 'offsetHeight';
         if (this['option']['area'][i]) {
-          defaultArea[i] = this['option']['area'][i];
+          area[i] = this['option']['area'][i];
           // 如果为比值则计算具体大小
-          if (defaultArea[i] > 0 && defaultArea[i] < 1) defaultArea[i] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, defaultArea[i]);
-          container.style[!i ? 'width' : 'height'] = defaultArea[i] + 'px';
+          if (area[i] > 0 && area[i] < 1) area[i] = ModalLayer['_assistant']['number']['multiply'](parent ? parent[offsetKey] : window[innerKey], area[i]);
+          container.style[!i ? 'width' : 'height'] = area[i] + 'px';
         } else {
-          defaultArea[i] = !i ? container.offsetWidth : container.offsetHeight;
+          area[i] = container[offsetKey];
         }
       }
     } else {
-      defaultArea[0] = container.offsetWidth;
-      defaultArea[1] = container.offsetHeight;
+      area[0] = container.offsetWidth;
+      area[1] = container.offsetHeight;
     }
 
     // 记录初始化后的最小值
-    this['variable']['defaultRect']['width'] = defaultArea[0];
-    this['variable']['defaultRect']['height'] = defaultArea[1];
+    this['variable']['defaultRect']['width'] = area[0];
+    this['variable']['defaultRect']['height'] = area[1];
   }
 
   /**
@@ -726,9 +732,12 @@ class ModalLayer {
     container.style.cssText += `top: ${y}px; left: ${x}px; width: ${w}px; height: ${h}px;`;
 
     // 如果为页面层则跟随模态层变化
-    if ([ModalLayer['_enum']['TYPE']['PAGE'], ModalLayer['_enum']['TYPE']['VIDEO'], ModalLayer['_enum']['TYPE']['AUDIO']].includes(this.type)) {
-      let pageNode = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
-      pageNode.style.cssText += `width: ${this['option']['layer']['area'][0] + w - this['variable']['defaultRect']['width']}px; height: ${this['option']['layer']['area'][1] + h - this['variable']['defaultRect']['height']}px;`;
+    if (
+      this['option']['layer']['area'] &&
+      [ModalLayer['_enum']['TYPE']['PAGE'], ModalLayer['_enum']['TYPE']['VIDEO'], ModalLayer['_enum']['TYPE']['AUDIO']].includes(this.type)
+    ) {
+      let page = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
+      page.style.cssText += `width: ${this['option']['layer']['area'][0] + w - this['variable']['defaultRect']['width']}px; height: ${this['option']['layer']['area'][1] + h - this['variable']['defaultRect']['height']}px;`;
     }
   }
 

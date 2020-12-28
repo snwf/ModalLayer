@@ -5,10 +5,29 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-23 21:57:26
+* @Last Modified time: 2020-12-28 23:43:54
 */
 
 class PageLayer extends ModalLayer {
+
+  /**
+   * 配置兼容性处理
+   *
+   * @Author    wolf
+   * @Datetime  2020-12-28T22:43:02+0800
+   * @param     {Object}                  options  配置
+   */
+  compatibleOption (options) {
+    super.compatibleOption(options);
+    
+    if (Array.isArray(options['layer']['area'])) {
+      if (options['layer']['area'].length === 1)
+        options['layer']['area'].push(null);
+      else if (options['layer']['area'].length > 2)
+        options['layer']['area'] = options['layer']['area'].splice(0, 2);
+    }
+  }
+
   /**
    * 初始化配置
    *
@@ -92,22 +111,19 @@ class PageLayer extends ModalLayer {
    * @DateTime 2020-09-03T17:56:59+0800
    */
   initNode () {
-    let container;
-    let pageNode, pageStyle;
-    let scaleAnimationCss, scaleAnimationName, scaleAnimationChange;
+    let page, container;
 
     super.initNode();
 
     container = this['variable']['nodes']['container'];
-    pageNode = container.querySelector('.modal-layer-page-content');
-    pageStyle = 'display: block; width: ' + this['option']['layer']['area'][0] + 'px; height: ' + this['option']['layer']['area'][1] + 'px';
+    page = container.querySelector('.modal-layer-page-content');
 
     Object.keys(this['option']['layer']).forEach(key => {
-      if (ModalLayer['_assistant']['object']['isEmpty'](this['option']['layer'][key])) return;
+      if (ModalLayer['_assistant']['object']['isEmpty'](this['option']['layer'][key]) || Array.isArray(this['option']['layer'][key])) return;
       if (key === 'name')
-        pageNode.setAttribute('name', this['option']['layer']['name'] + this['option']['index']);
+        page.setAttribute('name', this['option']['layer']['name'] + this['option']['index']);
       else
-        pageNode.setAttribute(key, this['option']['layer'][key]);
+        page.setAttribute(key, this['option']['layer'][key]);
     });
   }
 
@@ -128,29 +144,31 @@ class PageLayer extends ModalLayer {
 
  /**
   * 根据屏幕大小重绘模态层大小
+  * 页面层优先判断, 如果layer.area与option.area都设置了则优先使用layer.area.
   *
   * @Author   Wolf
   * @DateTime 2020-09-02T02:28:37+0800
   */
   resize () {
-    let width, height;
-    let page, content, container, children;
+    let page, content, container;
 
-    height = 0;
     container = this['variable']['nodes']['container'];
-    children = container.children;
+    content = container.querySelector('.modal-layer-content');
+    page = content.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
 
-    page = container.querySelector('iframe[name=' + this['option']['layer']['name'] + this['option']['index'] + ']');
-    page.style.cssText =  `width: ${this['option']['layer']['area'][0]}px; height: ${this['option']['layer']['area'][1]}px;`;
-    width = this['option']['layer']['area'][0] + (page.parentNode.offsetLeft * 2);
-    for (let i = 0; i < children.length; i++)
-      height = getComputedStyle(children[i], null).position == 'absolute' ? height : window.Math.max(ModalLayer['_assistant']['element']['getNodeHeight'](children[i]), height);
-    container.style.cssText += `width: ${width}px; height: ${height}px;`;
+    if (this['option']['layer']['area']) {
+      page.style.cssText =  `width: ${this['option']['layer']['area'][0]}px; height: ${this['option']['layer']['area'][1]}px;`;
+    } else if (this['option']['area']) {
+      content.style.cssText = 'height: 100%;';
+      page.style.cssText = 'width: 100%; height: 100%';
+      super.resize();
+    } else {
+      page.style.cssText = 'width: 800px; height: 600px;';
+    }
 
     // 记录初始化后的最小值
-    this['variable']['defaultRect']['width'] = width;
-    this['variable']['defaultRect']['height'] = height;
-    this['variable']['defaultArea'] = [width, height];
+    this['variable']['defaultRect']['width'] = container.offsetWidth;
+    this['variable']['defaultRect']['height'] = container.offsetHeight;
   }
 }
 

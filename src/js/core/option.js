@@ -5,7 +5,7 @@
 * @Description         ModalLayer配置
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-28 02:03:57
+* @Last Modified time: 2020-12-28 22:39:17
 */
 
 const OPTION = Object.create(null);
@@ -21,7 +21,7 @@ Object.defineProperty(OPTION, 'page', {
     'srcdoc': null, // 展示的内容
     'frameborder': 0, // iframe边框
     'scrolling': 'no', // 是否启用滚动条
-    'area': [800, 600], // 页面层默认大小
+    'area': [800, 600], // 页面层默认大小, 若设置为null则使用option.area
     'allowfullscreen': true, // 是否允许全屏
     'name': 'modal-layer-page-' // 名称前缀
   }
