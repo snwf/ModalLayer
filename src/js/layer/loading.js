@@ -5,7 +5,7 @@
 * @Description         加载层
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-26 03:19:11
+* @Last Modified time: 2020-12-28 22:27:08
 */
 
 class LoadingLayer extends ModalLayer {
@@ -23,11 +23,11 @@ class LoadingLayer extends ModalLayer {
     // 初始化加载层特殊配置
     this['option']['layer'] = ModalLayer['_assistant']['object']['merge'](this['option']['layer'], ModalLayer['_option']['loading']);
 
+    this['option']['area'] = null;
     this['option']['title'] = false;
     this['option']['drag']['enable'] = false;
     this['option']['resize']['enable'] = false;
     this['option']['progress']['enable'] = false;
-    this['option']['mask']['clickRemove'] = false;
     this['option']['content']['fullContainer'] = true;
   }
 
@@ -137,30 +137,6 @@ class LoadingLayer extends ModalLayer {
     loadingIcon.style.cssText += 'font-size: ' + this['option']['layer']['size'] + 'px; width: ' + this['option']['layer']['area'][0] + 'px; height: ' + this['option']['layer']['area'][1] + 'px; color: ' + this['option']['layer'].color + '; animation-duration: ' + this['option']['layer'].duration + 's;';
     if (!ModalLayer['_assistant']['object']['isEmpty'](this['option']['layer']['rate']))
       loadingIcon.style.animationTimingFunction = this['option']['layer']['rate'];
-  }
-
-  /**
-  * 根据屏幕大小重绘模态层大小
-   *
-   * @Author    wolf
-   * @Datetime  2020-11-15T02:20:06+0800
-   */
-  resize () {
-    let defaultArea;
-
-    if (this['option']['window']) {
-      let rect = this['option']['window'].getBoundingClientRect();
-      defaultArea = [rect.width === 0 ? window.innerWidth : rect.width, rect.height === 0 ? window.innerHeight : rect.height];
-    } else {
-      defaultArea = [window.innerWidth, window.innerHeight];
-    }
-
-    this['variable']['nodes']['container'].style.cssText += `width: ${defaultArea[0]}px; height: ${defaultArea[1]}px`;
-
-    // 记录初始化后的最小值
-    this['variable']['defaultArea'] = defaultArea;
-    this['variable']['defaultRect']['width'] = defaultArea[0];
-    this['variable']['defaultRect']['height'] = defaultArea[1];
   }
 }
 

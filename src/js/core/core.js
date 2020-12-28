@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-28 02:56:07
+* @Last Modified time: 2020-12-28 22:16:14
 */
 
 class ModalLayer {
@@ -692,10 +692,14 @@ class ModalLayer {
     if (this['option']['area'] !== null) {
       // 先设置宽度, 不然会出现高度不正确的现象
       for (let i = 0; i < 2; i++) {
-        defaultArea[i] = this['option']['area'][i] ?? (!i ? container.offsetWidth : container.offsetHeight);
-        // 如果为比值则计算具体大小
-        if (defaultArea[i] > 0 && defaultArea[i] < 1) defaultArea[i] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, defaultArea[i]);
-        container.style[!i ? 'width' : 'height'] = defaultArea[i] + 'px';
+        if (this['option']['area'][i]) {
+          defaultArea[i] = this['option']['area'][i];
+          // 如果为比值则计算具体大小
+          if (defaultArea[i] > 0 && defaultArea[i] < 1) defaultArea[i] = ModalLayer['_assistant']['number']['multiply'](window.innerWidth, defaultArea[i]);
+          container.style[!i ? 'width' : 'height'] = defaultArea[i] + 'px';
+        } else {
+          defaultArea[i] = !i ? container.offsetWidth : container.offsetHeight;
+        }
       }
     } else {
       defaultArea[0] = container.offsetWidth;
