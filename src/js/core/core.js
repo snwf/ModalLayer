@@ -5,7 +5,7 @@
 * @Description         一些常用的窗体的封装
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-28 23:35:06
+* @Last Modified time: 2020-12-30 03:48:40
 */
 
 class ModalLayer {
@@ -1378,14 +1378,17 @@ class ModalLayer {
   }
 }
 // 密封类
-Object.seal(ModalLayer);
 
-if (Object.is(window['ModalLayer'], ModalLayer)) {
+if (
+  window['ModalLayer'] instanceof Function &&
+  window['ModalLayer']['name'] === 'ModalLayer' &&
+  window['ModalLayer']['_version'] < ModalLayer['_version']
+) {
   console.group('ModalLayer already exists');
   console.warn(`Already version ${window['ModalLayer']['_version']}`);
   console.warn(`Try to introduce version: ${ModalLayer['_version']}`);
   console.groupEnd();
 } else {
-  Object.preventExtensions(ModalLayer);
-  Object.defineProperty(window, 'ModalLayer', { 'value': ModalLayer });
+  Object.seal(ModalLayer);
+  Object.defineProperty(window, 'ModalLayer', {'value': ModalLayer});
 }

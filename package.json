@@ -2,7 +2,12 @@
   "name": "ModalLayer-Compiler",
   "version": "1.0.0",
   "description": "Modal window written by Javascript",
-  "scripts": {},
+  "scripts": {
+    "build": "gulp --gulpfile gulpfile",
+    "build-copy": "gulp --gulpfile gulpfile --copy_file true",
+    "build-production": "gulp --gulpfile gulpfile --env production",
+    "build-production-copy": "gulp --gulpfile gulpfile --env production --copy_file true"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/snwf/ModalLayer.git"
@@ -20,7 +25,16 @@
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
     "clean-css": "^4.2.3",
-    "google-closure-compiler-windows": "^20200830.0.0"
+    "del": "^6.0.0",
+    "google-closure-compiler": "^20201207.0.0",
+    "google-closure-compiler-windows": "^20200830.0.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-cli": "^2.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^2.0.0",
+    "request": "^2.88.2"
   },
   "dependencies": {}
 }

@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Example</title>
-  <link rel="stylesheet" href="../../dist/css/modallayer.min.css">
+  <link rel="stylesheet" href="../../dist/modallayer.min.css">
   <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=Proxy%2Ces2015%2Ces2016%2Ces2017%2Ces2018%2Ces2019%2Ces5%2Ces7%2Ces6"></script> -->
 <!--   <script src="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/8.1.0/math.min.js" integrity="sha512-jZKoHppj8aIM7qVRs9BUkS+YUtEbw7tJ7oKu0+g3rKCzRJyMWzaAdukppHp4ubV3HPxzrG03iExbMTnlbySPKA==" crossorigin="anonymous"></script>  -->
   <script src="../../static/fontawesome-free-5.14.0/js/all.min.js"></script>
   <script src="../../static/mathjs/math.min.js"></script>
-  <script src="../../dist/js/modallayer.min.js"></script>
+  <script src="../../dist/modallayer.min.js"></script>
   <style>
     #test-button-container {
       position: absolute;
@@ -138,7 +138,7 @@
       this.hide();
       ModalLayer.alert({
         popupTime: 0,
-        parentModalLayer: this,
+        parent: this,
         interaction: [{text: 'ok', alias: 'modal-layer-interaction-btn-ok'}],
         content: '<i class="fas fa-check-circle" style="color: green"></i> 小伙子很有眼光嘛!'
       });
@@ -178,7 +178,7 @@
           function () {
             this.hide();
             ModalLayer.alert({
-              parentModalLayer: this,
+              parent: this,
               content: '<i class="fas fa-check-circle" style="color: green"></i> 提交成功!<br>你提交的数据为: ' + this.variable.nodes.container.querySelector('input').value
             });
           }
