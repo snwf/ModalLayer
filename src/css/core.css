@@ -5,10 +5,11 @@
 * @Description         ModalLayer核心样式
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-06 01:16:31
+* @Last Modified time: 2020-12-31 02:06:05
 */
 
-.modal-layer-hide {
+.modal-layer-hide,
+.modal-layer-hide .modal-layer-show {
   overflow: hidden;
   visibility: hidden;
 }
