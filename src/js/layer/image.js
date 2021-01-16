@@ -5,7 +5,7 @@
 * @Description
 *
 * @Last Modified by:   wolf
-* @Last Modified time: 2020-12-24 01:14:27
+* @Last Modified time: 2021-01-17 03:26:52
 */
 
 class ImageLayer extends ModalLayer {
@@ -287,7 +287,7 @@ class ImageLayer extends ModalLayer {
           itemIconNode = itemNode.querySelector('.modal-layer-toolbar-item-icon');
 
           itemNode.setAttribute('title', v['title']);
-          itemIconNode.classList.add(...v['icon'].split(' '));
+          v['icon'].trim().length && itemIconNode.classList.add(...v['icon'].split(' '));
 
           if (ModalLayer['_assistant']['object']['isOnlyObject'](v['config'])) {
             Object.entries(v['config']).forEach((val, key) => {
